@@ -1,0 +1,195 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="" type="image/ico"/>
+
+    <title>Resume Formatter</title>
+
+    <!-- Bootstrap -->
+    <link href="{% static 'vendors/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="{% static 'vendors/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="{% static 'vendors/nprogress/nprogress.css' %}" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="{% static 'vendors/iCheck/skins/flat/green.css' %}" rel="stylesheet">
+
+    <!-- bootstrap-progressbar -->
+    <link href="{% static 'vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css' %}" rel="stylesheet">
+    <!-- JQVMap -->
+    <link href="{% static 'vendors/jqvmap/dist/jqvmap.min.css' %}" rel="stylesheet"/>
+    <!-- bootstrap-daterangepicker -->
+    <link href="{% static 'vendors/bootstrap-daterangepicker/daterangepicker.css' %}" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <link href="{% static 'build/css/custom.min.css' %}" rel="stylesheet">
+
+    <link href="{% static 'vendors/pnotify/dist/pnotify.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/pnotify/dist/pnotify.buttons.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/pnotify/dist/pnotify.nonblock.css' %}" rel="stylesheet">
+
+    <!-- jQuery custom content scroller -->
+    <link href="{% static 'vendors/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.min.css' %}"
+          rel="stylesheet"/>
+
+    <!-- Animate.css -->
+    <link href="{% static 'vendors/switchery/dist/switchery.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendors/animate.css/animate.min.css' %}" rel="stylesheet">
+    <!-- starrr -->
+    <link href="{% static 'vendors/starrr/dist/starrr.css' %}" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="{% static 'build/css/custom.min.css' %}" rel="stylesheet">
+    <link href="{% static 'custom_css/custom.css' %}" rel="stylesheet">
+
+
+    <style>
+
+        .img_height_width_header {
+            width: 30% !important;
+            height: 60% !important;
+        }
+        body{
+            background:#fff;
+        }
+        .upload_button{
+
+            color: #fff;
+            background-color: #dc3545;
+            border-color: #dc3545;
+            padding: 12PX 96PX;
+          }
+        {% block style %} {% endblock %}
+
+    </style>
+
+
+</head>
+
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col">
+                <div class="left_col scroll-view">
+                    <div class="navbar nav_title" style="border: 0;">
+                        <a href="{% url 'superadmin:dashboard' %}" class="site_title">
+                           
+                            <span>Resume Formatter</span></a>
+                    </div>
+    
+                    <div class="clearfix"></div>
+    
+                    <br/>
+    
+                    <!-- sidebar menu -->
+                    {% include "superadmin/layout/sidebar.html" %}
+                    <!-- /sidebar menu -->
+    
+                </div>
+            </div>
+    
+            <!-- top navigation -->
+            {% include "superadmin/layout/header.html" %}
+            <!-- /top navigation -->
+    
+            <!-- page content -->
+            {% block content %}{% endblock %}
+            <!-- /page content -->
+    
+            <!-- footer content -->
+            {% include "superadmin/layout/footer.html" %}
+            <!-- /footer content -->
+        </div>
+    </div>
+
+<!-- jQuery -->
+<script src="{% static 'vendors/jquery/dist/jquery.min.js' %}"></script>
+<!-- Bootstrap -->
+<script src="{% static 'vendors/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+<!-- FastClick -->
+<script src="{% static 'vendors/fastclick/lib/fastclick.js' %}"></script>
+<!-- NProgress -->
+<script src="{% static 'vendors/nprogress/nprogress.js' %}"></script>
+<!-- Chart.js -->
+<script src="{% static 'vendors/Chart.js/dist/Chart.min.js' %}"></script>
+<!-- gauge.js -->
+<script src="{% static 'vendors/gauge.js/dist/gauge.min.js' %}"></script>
+<!-- bootstrap-progressbar -->
+<script src="{% static 'vendors/bootstrap-progressbar/bootstrap-progressbar.min.js' %}"></script>
+<!-- iCheck -->
+<script src="{% static 'vendors/iCheck/icheck.min.js' %}"></script>
+<!-- Skycons -->
+<script src="{% static 'vendors/skycons/skycons.js' %}"></script>
+<!-- Flot -->
+<script src="{% static 'vendors/Flot/jquery.flot.js' %}"></script>
+<script src="{% static 'vendors/Flot/jquery.flot.pie.js' %}"></script>
+<script src="{% static 'vendors/Flot/jquery.flot.time.js' %}"></script>
+<script src="{% static 'vendors/Flot/jquery.flot.stack.js' %}"></script>
+<script src="{% static 'vendors/Flot/jquery.flot.resize.js' %}"></script>
+<!-- Flot plugins -->
+<script src="{% static 'vendors/flot.orderbars/js/jquery.flot.orderBars.js' %}"></script>
+<script src="{% static 'vendors/flot-spline/js/jquery.flot.spline.min.js' %}"></script>
+<script src="{% static 'vendors/flot.curvedlines/curvedLines.js' %}"></script>
+<!-- DateJS -->
+<script src="{% static 'vendors/DateJS/build/date.js' %}"></script>
+<!-- JQVMap -->
+<script src="{% static 'vendors/jqvmap/dist/jquery.vmap.js' %}"></script>
+<script src="{% static 'vendors/jqvmap/dist/maps/jquery.vmap.world.js' %}"></script>
+<script src="{% static 'vendors/jqvmap/examples/js/jquery.vmap.sampledata.js' %}"></script>
+<!-- bootstrap-daterangepicker -->
+<script src="{% static 'vendors/moment/min/moment.min.js' %}"></script>
+<script src="{% static 'vendors/bootstrap-daterangepicker/daterangepicker.js' %}"></script>
+<script src="{% static 'vendors/switchery/dist/switchery.min.js' %}"></script>
+
+
+<script src="{% static 'vendors/pnotify/dist/pnotify.js' %}"></script>
+<script src="{% static 'vendors/pnotify/dist/pnotify.buttons.js' %}"></script>
+<script src="{% static 'vendors/pnotify/dist/pnotify.nonblock.js' %}"></script>
+<!-- Custom Theme Scripts -->
+<script src="{% static 'build/js/custom.min.js' %}"></script>
+<script src="{% static 'js/custom_functions.js' %}"></script>
+
+
+<script type="text/javascript">
+
+    function changeStatusOfUserTrade() {
+        debugger
+        if ($("#Trade_cnt").is(':checked')) {
+            var switchStatus = $("#Trade_cnt").is(':checked');
+            $("#Trade_cnt").prop('checked', false);
+            $(this).prop('checked', false);
+        } else {
+            var switchStatus = $("#Trade_cnt").is(':checked');
+            $("#Trade_cnt").prop('checked', true);
+            $(this).prop('checked', true);
+        }
+
+        var fd = new FormData();
+        $.ajax({
+            url: "/core/change_trade_status/",
+            headers: {"X-CSRFToken": '{{csrf_token}}'},
+            data: fd,
+            cache: false,
+            processData: false,
+            contentType: false,
+            type: 'POST',
+            success: function (dataofconfirm) {
+                ShowNotify('Congratulation', 'Trade status updated', 'success');
+                window.location.reload()
+            }
+
+        });
+
+    }
+
+</script>
+
+{% block javascript %}
+{% endblock %}
+
+</body>
+</html>

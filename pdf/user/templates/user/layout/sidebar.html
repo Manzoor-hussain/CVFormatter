@@ -1,0 +1,55 @@
+<div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+    <div class="menu_section">
+        <ul class="nav side-menu">
+            <li><a href="{% url 'core:dashboard' %}"><i class="fa fa-home"></i> Home</a></li>
+
+            <li><a><i class="fa fa-gear"></i>Demat <span class="fa fa-chevron-down"></span></a>
+                <ul class="nav child_menu" style="">
+                    <li><a href="{% url 'core:demates' %}">Setup</a></li>
+                    <li><a href="{% url 'core:demat_login' %}">Login </a></li>
+                </ul>
+            </li>
+
+
+            <li><a><i class="fa fa-gear"></i>Portfolio <span class="fa fa-chevron-down"></span></a>
+                <ul class="nav child_menu" style="">
+                    <li><a href="{% url 'core:portfolio_management' %}">Management</a></li>
+                    <li><a href="{% url 'core:live_position' %}">Live position </a></li>
+                    <li><a href="{% url 'core:live_holdings' %}">Live Holdings </a></li>
+                    <li><a href="{% url 'core:funds_portfolio' %}">Funds </a></li>
+
+                </ul>
+            </li>
+
+
+            <li><a href="{% url 'core:change_trade_settings_page' %}"><i class="fa fa-clock-o"></i> Trade Settings</a>
+            <li><a href="#"><i class="fa fa-clock-o"></i> Watch List</a>
+            </li>
+            <li><a href="#"><i class="fa fa-shopping-cart"></i> Orders</a>
+            </li>
+
+            <li><a href="#"><i class="fa fa-google-wallet"></i> Trades</a>
+            </li>
+            <li><a href="#"><i class="fa fa-line-chart"></i> Net Position</a>
+            </li>
+
+
+            <li><a><i class="fa fa-gear"></i>Management <span class="fa fa-chevron-down"></span></a>
+                <ul class="nav child_menu" style="">
+                    <li><a href="RiskManagement.php">Risk Management</a></li>
+                    <li><a href="TimeManagement.php">Time Management</a></li>
+
+                </ul>
+            </li>
+
+            <li><a href="#"><i class="fa fa-file"></i> Orders Logs</a></li>
+            <li><a href="#"><i class="fa fa-columns"></i> Activity Logs</a></li>
+            <li><a href="#"><i class="fa fa-gear"></i> Trade Settings</a></li>
+            <li><a href="#"><i class="fa fa-line-chart"></i> Option Analytics</a></li>
+            <li><a href="#"><i class="fa fa-wechat"></i> Broadcast Messages</a></li>
+            <li><a href="#"><i class="fa fa-question"></i> Support</a></li>
+
+        </ul>
+    </div>
+
+</div>

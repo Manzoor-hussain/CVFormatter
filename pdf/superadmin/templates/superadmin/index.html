@@ -1,0 +1,356 @@
+{% extends 'superadmin/layout/base.html' %}
+{% block content %}
+<div class="right_col" role="main">
+
+   
+
+        <div class="row">
+
+            <div class="col-md-12 col-sm-12 ">
+
+                <div class="x_panel">
+
+                    <div class="x_title">
+
+                        <h2>Services</h2>
+
+                        <ul class="nav navbar-right panel_toolbox">
+
+                            <li>
+                                <button type="button" onclick="Add();" data-bs-toggle="modal"
+                                        data-bs-target="#exampleModal" class="btn btn-success">Add
+                                </button>
+                            </li>
+
+
+                        </ul>
+
+                        <div class="clearfix"></div>
+
+                    </div>
+
+                    <div class="x_content">
+
+                        <div class="row">
+
+                            <div class="col-sm-12">
+
+                                <div class="card-box table-responsive" id="loadlisting">
+
+                                    <table id="datatable" class="table table-striped table-bordered"
+                                           style="width:100%">
+
+                                        <thead>
+
+                                        <tr>
+
+
+                                            <th>Sr#</th>
+                                            <th>Name</th>
+                                            <th>Description</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+
+
+                                        </tr>
+
+                                        </thead>
+
+
+                                        <tbody>
+                                        {% for obj in service %}
+
+                                            <tr>
+
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ obj.title }}</td>
+                                                <td>{{ obj.description }}</td>
+                                               
+                                                <td>
+                                                    <!-- Default switch -->
+                                                    <div class="custom-control custom-switch"
+                                                         onclick="changeStatusOfService({{ obj.id }}, {{ forloop.counter }});">
+                                                        <input type="checkbox" class="custom-control-input"
+                                                               {% if obj.is_permisstion %}checked{% endif %}
+                                                               id="switch_{{ forloop.counter }}">
+                                                        <label class="custom-control-label"
+                                                               for="label_{{ forloop.counter }}"></label>
+                                                    </div>
+                                                </td>
+
+                                                <td align="center">
+
+
+                                                    <a href="javascript:updateRecordModel('{{ obj.id }}');"><i
+                                                            class="fa fa-pencil-square-o"></i> </a>
+
+                                                    &nbsp;
+
+                                                    <a href="javascript:deleteEntry('{{ obj.id }}');"><i
+                                                            class="fa fa-times-circle-o"></i> </a>
+                                                </td>
+
+                                            </tr>
+                                        {% endfor %}
+
+
+                                        </tbody>
+
+                                    </table>
+
+
+                                    <div id="deleteEntry"></div>
+
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+   
+
+
+</div>
+
+<div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">User Services</h5>
+                <button type="button"
+                        style="width: 50px;"
+                        class="btn btn-block btn-outline-danger" data-dismiss="modal">X
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <form id="save_form" enctype="multipart/form-data">
+                    <div class="d-flex justify-content-center text-dark">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label h6" for="name">Service Name</label>
+                                <input type="text" class="grpreq form-control" id="title" name="title"
+                                       placeholder="Name" autocomplete="off"/>
+                                <span class="help-block errorDiv" id="name_error"></span>
+                                <br>
+                                <label class="control-label h6">Permission</label>
+                                <select class="grpreq select2_multiple form-control" multiple="multiple"
+                                id="is_permisstion" name="is_permisstion">
+                                    <option value="True">True</option>
+                                    <option value="False">False</option>
+                                   
+                                    </select>
+                                <span class="help-block errorDiv" id="instruments_error"></span>
+                                <br>
+                                <label class="control-label h6" for="name">Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="4"></textarea>
+                                <!-- <input type="textarea" class="grpreq form-control" id="description" name="description"
+                                       placeholder="Description" autocomplete="off"/> -->
+                                <span class="help-block errorDiv" id="name_error"></span>
+                              
+                                <hr>
+                                <div class="offset-md-3 col-md-6 d-flex align-items-baseline">
+                                    <button type="button" class="btn btn-block btn-outline-danger"
+                                            data-dismiss="modal"
+                                            id="closed">Close
+                                    </button>
+                                    <button type="button" class="btn btn-block btn-outline-primary"
+                                            style="display: none" id="saveButton"
+                                            onClick="return save()">Save
+                                    </button>
+                                    <button type="button" class="btn btn-block btn-outline-primary"
+                                            style="display: none" id="editButton"
+                                            onClick="return edit()">Save
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+                <div id="save"></div>
+
+            </div>
+            <div class="modal-footer">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="text" id="identity" style="display: none"/>
+
+
+{% endblock %}
+
+
+{% block javascript %}
+    <script type="text/javascript">
+
+        function changeStatusOfService(id, loop_index) {
+            if ($("#switch_" + loop_index).is(':checked')) {
+                var switchStatus = $("#switch_" + loop_index).is(':checked');
+                var status = 1;
+                $("#switch_" + loop_index).prop('checked', false);
+            } else {
+                var switchStatus = $("#switch_" + loop_index).is(':checked');
+                $("#switch_" + loop_index).prop('checked', true);
+                var status = 0;
+            }
+
+            var fd = new FormData();
+            fd.append('id', id);
+            $.ajax({
+                url: "/admin/change_service/",
+                headers: {"X-CSRFToken": '{{csrf_token}}'},
+                data: fd,
+                cache: false,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+                success: function (dataofconfirm) {
+                    ShowNotify('Congratulation', 'Service status updated', 'success');
+                }
+
+            });
+
+        }
+
+        function updateRecordModel(id) {
+            $.get("/admin/get_service_detail/?id=" + id, function (data) {
+                $('#identity').val(data.id);
+                $('#title').val(data.title);
+                $('#description').val(data.description);
+                var is_permisstion = data.is_permisstion
+                if (is_permisstion == true){
+                    $("#is_permisstion").val([" "]);
+                    $("#is_permisstion option[value='True']").prop("selected", is_permisstion);
+                }
+                if (is_permisstion == false)
+                {
+                    $("#is_permisstion").val(["False"]);
+                }
+            
+              
+               
+                var selectedValues = $("#is_permisstion").val();
+                console.log(selectedValues);
+
+                $('#saveButton').css('display', 'none');
+                $('#editButton').css('display', 'block');
+                $('#exampleModal').modal('show', {backdrop: 'static'});
+            });
+
+        }
+
+
+        function Add() {
+            $('#identity').val('');
+
+            $('#name').val('');
+            $('#instruments').val('');
+            $('#lot_size').val('');
+            $('#exampleModal').modal('show', {backdrop: 'static'});
+            $('#saveButton').css('display', 'block');
+            $('#editButton').css('display', 'none');
+        }
+
+
+        function save() {
+
+            {% comment %} var a = validateEntry('save_form', '');
+
+            if (a === "1" || a === 1) {
+                return false;
+            } {% endcomment %}
+
+            //document.getElementById('save').innerHTML = "<div style='background: #fff;text-align:center'><img width='80px' src='/static/wheel.gif'><div>";
+            var myform = document.getElementById("save_form");
+            var fd = new FormData(myform);
+
+            $.ajax({
+                url: "/admin/add-service/",
+                headers: {"X-CSRFToken": '{{csrf_token}}'},
+                data: fd,
+                cache: false,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+                success: function (dataofconfirm) {
+                    $("#save").html(dataofconfirm);
+                    $('#exampleModal').modal('toggle');
+                    window.location.reload()
+                },
+                error: function (data) {
+                    document.getElementById('save').innerHTML = '';
+                    ShowNotify('Error', data.responseJSON.error, 'error');
+                }
+            });
+        }
+
+
+        function deleteEntry(id) {
+            var result = confirm("Want to delete?");
+            if (result) {
+                document.getElementById('deleteEntry').innerHTML = "<div style='background: #fff;text-align:center'><img width='80px' src='/static/wheel.gif'/><div>";
+                var fd = new FormData();
+                fd.append('id', id);
+                $.ajax({
+                    url: "/admin/delete-service/",
+                    headers: {"X-CSRFToken": '{{csrf_token}}'},
+                    data: fd,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    type: 'POST',
+                    success: function (dataofconfirm) {
+                        $("#deleteEntry").html(dataofconfirm);
+                        ShowNotify('Congratulations', 'Bank successfully deleted', 'success');
+                        window.location.reload()
+                    }
+                });
+            }
+        }
+
+
+        function edit() {
+            {% comment %} var a = validateEntry('save_form', '');
+            if (a === "1" || a === 1) {
+                return false;
+            } {% endcomment %}
+
+            document.getElementById('save').innerHTML = "<div style='background: #fff;text-align:center'><img width='80px' src='/static/wheel.gif'><div>";
+            var myform = document.getElementById("save_form");
+            var id = $('#identity').val();
+            var fd = new FormData(myform);
+            fd.append('id', id);
+            $.ajax({
+                url: "/admin/add-service/?id=" + id,
+                headers: {"X-CSRFToken": '{{csrf_token}}'},
+                data: fd,
+                cache: false,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+                success: function (dataofconfirm) {
+                    $("#save").html(dataofconfirm);
+                    $('#exampleModal').modal('toggle');
+                    window.location.reload()
+                },
+                error: function (data) {
+                    document.getElementById('save').innerHTML = '';
+                    ShowNotify('Error', data.responseJSON.error, 'error');
+                }
+            });
+        }
+    </script>
+{% endblock %}

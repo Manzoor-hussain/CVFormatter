@@ -1,0 +1,344 @@
+{% extends 'superadmin/layout/base.html' %}
+{% block content %}
+
+
+
+
+
+
+<div class="right_col" role="main">
+
+
+    <h2>User Management</h2>
+    <table class="table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Email</th>
+            <th>Give Permission</th>
+          </tr>
+        </thead>
+    {% for obj in users %}
+        <tbody>
+            <tr>
+            <td>{{ obj.username }}</td>
+            <td>{{ obj.email }}</td>
+            <td><button type="button" onclick="Add('{{obj.username}}');" data-bs-toggle="modal"
+                data-bs-target="#exampleModal" class="btn btn-success">Click for permission</button></td>
+         
+           
+            </tr>
+        </tbody>
+        {% endfor%}
+    </table>
+     
+
+
+
+
+  
+   
+    
+
+ </div>
+
+
+   
+
+
+</div>
+
+<div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">User Services</h5>
+                <span id="username" style="font-size: 20px; margin-left: -50px;"></span>
+               
+                <button type="button"
+                        style="width: 50px;"
+                        class="btn btn-block btn-outline-danger" data-dismiss="modal">X
+                </button>
+            </div>
+          
+            <div class="modal-body" id="modalBody">
+                <div class="row">
+                    <div class="col-2"></div>
+                    <div class="col-8">
+                      
+                        <table class="table">
+                            <thead>
+                              <tr>
+                                <th>ID</th>
+                                <th>Service Name</th>
+                                <th>Give Permission</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                                {% for obj in service %}
+                              <tr>
+                                <td>{{ obj.id }}</td>
+                                <td>{{ obj.title }}</td>
+                                <td><input type="checkbox" value="{{ obj.id }}" id="checkbox{{obj.id}}"</td>
+                              </tr>
+                              {% endfor %}
+                            
+                    
+                            </tbody>
+                          </table>
+
+                    </div>
+                    <div class="col-2"></div>
+
+                </div>
+                <div class="offset-md-3 col-md-6 d-flex align-items-baseline">
+                    <button type="button" class="btn btn-block btn-outline-danger"
+                            data-dismiss="modal"
+                            id="closed">Close
+                    </button>
+                </div>   
+               
+
+
+                 
+               
+            
+
+            </div>
+            <div class="modal-footer">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="text" id="identity" style="display: none"/>
+
+
+{% endblock %}
+
+
+{% block javascript %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // Attach event handler to checkboxes
+            $("input[type='checkbox']").on("change", function() {
+                // Check if the checkbox is checked
+                if ($(this).is(":checked")) {
+                
+                    var checkboxValue = $(this).val();   
+                    var username = $("#username").text();
+                    var ischeck = true;  
+                    givenPermissionToUser(username,checkboxValue,ischeck)
+                      
+                } else { var checkboxValue = $(this).val();   
+                    var username = $("#username").text();
+                    var ischeck = false;  
+                    givenPermissionToUser(username,checkboxValue,ischeck)
+
+               
+                }
+            });
+            });
+        
+            function givenPermissionToUser(username,serviceId,ischeck){
+
+
+
+            var fd = new FormData();
+            fd.append('username', username);
+            fd.append('service',serviceId)
+            fd.append('ischeck',ischeck)
+            $.ajax({
+                url: "/admin/change-permission/",
+                headers: {"X-CSRFToken": '{{csrf_token}}'},
+                data: fd,
+                cache: false,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+                success: function (dataofconfirm) {
+                    ShowNotify('Congratulation', 'User status updated', 'success');
+                }
+
+            });
+            }
+        
+        
+
+
+        function changeStatusOfService(id, loop_index) {
+            if ($("#switch_" + loop_index).is(':checked')) {
+                var switchStatus = $("#switch_" + loop_index).is(':checked');
+                var status = 1;
+                $("#switch_" + loop_index).prop('checked', false);
+            } else {
+                var switchStatus = $("#switch_" + loop_index).is(':checked');
+                $("#switch_" + loop_index).prop('checked', true);
+                var status = 0;
+            }
+
+            var fd = new FormData();
+            fd.append('id', id);
+            $.ajax({
+                url: "/admin/change_service/",
+                headers: {"X-CSRFToken": '{{csrf_token}}'},
+                data: fd,
+                cache: false,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+                success: function (dataofconfirm) {
+                    ShowNotify('Congratulation', 'User status updated', 'success');
+                }
+
+            });
+
+        }
+
+        function updateRecordModel(id) {
+            $.get("/admin/get_service_detail/?id=" + id, function (data) {
+                $('#identity').val(data.id);
+                $('#title').val(data.title);
+                $('#description').val(data.description);
+                $('#is_permisstion').val(data.is_permisstion);
+
+                $('#saveButton').css('display', 'none');
+                $('#editButton').css('display', 'block');
+                $('#exampleModal').modal('show', {backdrop: 'static'});
+            });
+
+        }
+
+
+        function Add( username ) {
+            $('#username').html(username);
+            $(":checkbox").prop("checked", false);
+            $.get("/admin/get-user-services/?username=" + username)
+
+                
+              
+                    .done(function (data) {
+                       var objects = JSON.parse(data);
+
+                        // Iterate over the objects
+                        for (var i = 0; i < objects.length; i++) {
+                        var obj = objects[i];
+                        var model = obj.model;
+                        var pk = obj.pk;
+                        var fields = obj.fields;
+                        
+                        // Access specific properties within 'fields'
+                        var title = fields.title;
+                        var description = fields.description;
+                        var isPermission = fields.is_permisstion;
+                        var users = fields.user;
+                        id="#checkbox"+pk
+                        $(id).prop("checked", true);
+                        
+                      
+                        }
+                   
+        
+                    })
+                    .fail(function (xhr, status, error) {
+                        console.log("error", xhr, status, error);
+                        // handle error case
+                        $('#errorModal').modal('show', {backdrop: 'static'});
+                        
+                    });
+            $('#exampleModal').modal('show', {backdrop: 'static'});
+            $('#saveButton').css('display', 'block');
+            $('#editButton').css('display', 'none');
+        }
+
+
+        function save() {
+
+            {% comment %} var a = validateEntry('save_form', '');
+
+            if (a === "1" || a === 1) {
+                return false;
+            } {% endcomment %}
+
+            //document.getElementById('save').innerHTML = "<div style='background: #fff;text-align:center'><img width='80px' src='/static/wheel.gif'><div>";
+            var myform = document.getElementById("save_form");
+            var fd = new FormData(myform);
+
+            $.ajax({
+                url: "/admin/add-service/",
+                headers: {"X-CSRFToken": '{{csrf_token}}'},
+                data: fd,
+                cache: false,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+                success: function (dataofconfirm) {
+                    $("#save").html(dataofconfirm);
+                    $('#exampleModal').modal('toggle');
+                    window.location.reload()
+                },
+                error: function (data) {
+                    document.getElementById('save').innerHTML = '';
+                    ShowNotify('Error', data.responseJSON.error, 'error');
+                }
+            });
+        }
+
+
+        function deleteEntry(id) {
+            var result = confirm("Want to delete?");
+            if (result) {
+                document.getElementById('deleteEntry').innerHTML = "<div style='background: #fff;text-align:center'><img width='80px' src='/static/wheel.gif'/><div>";
+                var fd = new FormData();
+                fd.append('id', id);
+                $.ajax({
+                    url: "/admin/delete-bank/",
+                    headers: {"X-CSRFToken": '{{csrf_token}}'},
+                    data: fd,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    type: 'POST',
+                    success: function (dataofconfirm) {
+                        $("#deleteEntry").html(dataofconfirm);
+                        ShowNotify('Congratulations', 'Bank successfully deleted', 'success');
+                        window.location.reload()
+                    }
+                });
+            }
+        }
+
+
+        function edit() {
+            {% comment %} var a = validateEntry('save_form', '');
+            if (a === "1" || a === 1) {
+                return false;
+            } {% endcomment %}
+
+            document.getElementById('save').innerHTML = "<div style='background: #fff;text-align:center'><img width='80px' src='/static/wheel.gif'><div>";
+            var myform = document.getElementById("save_form");
+            var id = $('#identity').val();
+            var fd = new FormData(myform);
+            fd.append('id', id);
+            $.ajax({
+                url: "/admin/add-service/?id=" + id,
+                headers: {"X-CSRFToken": '{{csrf_token}}'},
+                data: fd,
+                cache: false,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+                success: function (dataofconfirm) {
+                    $("#save").html(dataofconfirm);
+                    $('#exampleModal').modal('toggle');
+                    window.location.reload()
+                },
+                error: function (data) {
+                    document.getElementById('save').innerHTML = '';
+                    ShowNotify('Error', data.responseJSON.error, 'error');
+                }
+            });
+        }
+    </script>
+{% endblock %}

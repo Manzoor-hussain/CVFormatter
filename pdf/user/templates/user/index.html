@@ -1,0 +1,41 @@
+{% extends 'user/layout/base.html' %}
+
+{% block content %}
+
+      
+        <div class="container" >
+            <a href="" class="btn btn-primary" style="visibility: hidden;">dd</a>
+        </div> 
+
+      
+        <div class="main__container">
+         
+            <div class="" style="display: flex;     flex-wrap: wrap;">
+               {% for obj in service %}
+                <div class="card mycard">
+                
+                  <div class="card-body" >
+                     
+                   <a href="{% url 'user:upload_file' %}{{ obj.title }}/"> <h5 class="card-title">{{ obj.title }}</h5></a>
+                    <p class="card-text">{{ obj.description}}</p>
+                    <p class="card-text"><small class="text-muted"></small></p>
+                  </div>
+                </div>
+                {% endfor %}
+              
+              </div>
+                 
+          </div>
+        
+
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+
+
+
+</script>
+
+
+{% endblock %}

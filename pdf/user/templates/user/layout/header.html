@@ -1,0 +1,40 @@
+<div class="top_nav">
+    <div class="nav_menu">
+        <div class="nav_left mt-1 ml-4"> 
+            <label class="fa-2x">
+                <span class="text-dark">Resume Formatter</span>
+              
+             </label>
+
+        </div>
+        <div class="nav_right mt-1">
+
+            {% if request.user.email %}
+            <a href="{% url 'logout' %}">
+                <button type="button" class="btn btn-danger btn-lg">Logout</button>
+                </a>
+              {% else %}
+              <a href="{% url 'login' %}">
+                <button type="button" class="btn btn-danger btn-lg" >Login</button></a>
+                <a href="{% url 'register_page' %}">
+                <button type="button" class="btn btn-danger btn-lg">Signup</button>
+                </a>
+
+
+              {% endif %}
+            
+
+        </div>
+       
+      
+       
+
+
+      
+    </div>
+</div>
+  
+  
+  
+  
+  

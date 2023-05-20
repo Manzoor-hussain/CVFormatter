@@ -1,0 +1,383 @@
+{% extends 'user/layout/base.html' %}
+
+{% block style %}
+
+.custom-file-input::-webkit-file-upload-button {
+    visibility: hidden;
+  }
+  
+  .custom-file-input::before {
+    content: 'Choose file';
+    display: inline-block;
+    background: #007bff;
+    color: #fff;
+    border-radius: 4px;
+    padding: 8px 20px;
+    outline: none;
+    white-space: nowrap;
+    -webkit-user-select: none;
+    cursor: pointer;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-color: #007bff;
+  }
+  
+  .custom-file-input:hover::before {
+    border-color: #0069d9;
+    background-color: #0069d9;
+    color: #fff;
+  }
+  
+  .custom-file-input:active::before {
+    background-color: #0062cc;
+    border-color: #005cbf;
+  }
+
+ .upload_button{
+
+    color: #fff;
+    background-color: #dc3545;
+    border-color: #dc3545;
+    padding: 12PX 96PX;
+  }
+  
+    .loader-container {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+    }
+    .loader {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 2s linear infinite;
+        margin: 0 auto;
+    }
+    .loader-text {
+        margin-top: 10px;
+        text-align: center;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+
+
+
+
+
+{% endblock %}
+
+
+{% block content %}
+   
+    <div class="container">
+       
+        <div class="row">
+      
+        
+          
+          <div class="col-3">
+
+           
+             
+           
+          </div>
+          <div class="col-5" style="text-align: center;">
+           
+            <h1>Convert to {{ service_name }}</h1>
+            <p>Format your unformatted Resume by using our AI powered solution with incredible accuracy.
+                Developed by Machine learning 1.</p>
+
+                <div class=""  style="display:none" id="download_button">
+                    <a href="javascript:downloadFile();" class="btn btn-danger" style="padding: 12PX 74PX;
+                    font-size: 20px;
+                    text-align: center;">Download</a>
+                   
+                  
+                  </div>
+                <form method="POST" action="" enctype="multipart/form-data" id="upload_form">
+                    {% csrf_token %} 
+                    <div class="" id="select_button">
+                        <label class="upload_button" for="fileInput"  style="
+                        color: #fff;
+                        background-color: #dc3545;
+                        border-color: #dc3545;
+                        padding: 12PX 74PX;
+                        font-size: 20px;
+                        text-align: center;">Select Word File</label>
+                      
+                      </div>
+                    
+                      <input type="hidden" name="title" id="title" value=" {{ service_name }}">
+                      <input type="hidden" name="user" id="user" value=" {{ request.user.id }}">
+                    <div>
+                        <input type="file" class="form-control" name="pdf" id="fileInput" accept=".docx" style="display:none">
+                    </div>  
+                   
+                    
+                       
+
+                      
+          
+                </form>
+                <div class="loader-container" id="loader_container">
+                  <div class="loader"></div>
+                  <div class="loader-text"></div>
+                  <br>
+              </div>
+              <div class="loader-text" id="loader-text" style="display: none;">Taking time for getting response from api</div>
+              <div id="mybar_main" style="display:none;">
+               
+                <div id="myBar"></div>
+              </div>
+             
+                
+                <div class=""  style="display:none" id="convert_button" >
+                    <label class="upload_button"  style="
+                    color: #fff;
+                    background-color: #dc3545;
+                    border-color: #dc3545;
+                    padding: 12PX 74PX;
+                    font-size: 20px;
+                    text-align: center;">Click to Convert</label>
+                  
+                  </div>
+                 
+          </div>
+        
+          <div class="col-3">
+          
+            
+           
+          </div>
+         
+
+         
+        </div>
+      </div>
+     
+
+{% endblock %}
+
+{% block javascript %}
+
+<script>
+    $(function() {
+        // Handle file selection event
+        $('#fileInput').on('change', function() {
+          // Get selected file name
+        var fileName = $(this).val().split('\\').pop();
+          // Update label text
+        $(this).next('.input-group-text').html(fileName);
+        $('#fileInput').css('display', 'block')
+        $('#select_button').css('display','none')
+        $('#convert_button').css('display','block')
+
+
+        //# previewFile()
+       
+         
+
+        });
+    });
+  
+    
+ 
+   
+    const convert_button = document.getElementById("convert_button");
+
+    convert_button.addEventListener("click", function() {
+              
+                //runProgressBar(120);
+
+         
+           
+            $('#mybar_main').css('display','block')
+            $('#loader-text').css('display','block')
+          
+            $('#fileInput').css('display', 'none')
+            $('#select_button').css('display','none')
+            $('#convert_button').css('display','none')
+
+            
+            var myform = document.getElementById("upload_form");
+            var fd = new FormData(myform);
+            var i = 0;
+            move(i)
+
+            $.ajax({
+                url: "/perform_services/",
+                headers: {"X-CSRFToken": '{{csrf_token}}'},
+                data: fd,
+                cache: false,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+
+             
+                success: function (dataofconfirm) {
+                   move(99)
+                    $('#fileInput').css('display', 'none')
+                    $('#select_button').css('display','none')
+                    $('#convert_button').css('display','none')
+                    
+                    $('#loader_container').css('display','none')
+                    $('#mybar_main').css('display','none')
+                    $('#loader-text').css('display','none')
+                    $('#download_button').css('display','block')
+                    
+                    //window.location.reload()
+                  
+                },
+                error: function (data) {
+                    //document.getElementById('save').innerHTML = '';
+                    ShowNotify('Error', data.responseJSON.error, 'error');
+                }
+            });
+    });
+   
+    function move(i) {
+      if (i == 0) {
+        i = 1;
+        var elem = document.getElementById("myBar");
+        var width = 1;
+        var id = setInterval(frame, 1800);
+        function frame() {
+          if (width >= 100) {
+            clearInterval(id);
+            i = 0;
+          } else {
+            width++;
+            elem.style.width = width + "%";
+          }
+        }
+      }
+    }
+
+
+    function downloadFile() {
+        $.ajax({
+          url: '/download_docx/',
+          type: 'GET',
+          xhrFields: {
+          responseType: 'blob'
+          },
+          success: function(response) {
+            const url = window.URL.createObjectURL(response);
+            const link = document.createElement('a');
+            link.href = url;
+            var title = $('#title').val();
+            title=title.replaceAll(" ","-");
+            title='output'+title+'.docx'
+            link.download =title
+    
+           
+
+            // if (title.includes("Expert")) {
+            //  link.download = 'output_expert_resource.docx';
+            // }
+            // if (title.includes("Joss")) {
+            //   link.download = 'output_joss_search.docx';
+            // }
+            // if (title.includes("ASPION")) {
+            //   link.download = 'output_aspion_search.docx';
+            // }
+            // if (title.includes("Clarus")) {
+            //   link.download = 'output_clarus.docx';
+            // }
+            
+            link.click();
+            window.URL.revokeObjectURL(url);
+            $('#select_button').css('display','block');
+            $('#download_button').css('display','none');
+          },
+          error: function(xhr, status, error) {
+            console.log("error");
+          }
+        });
+      }
+
+
+// Call the runProgressBar function with a duration of 3 minutes (180 seconds)
+
+
+
+
+  
+    {% comment %} 
+    function downloadFile() {
+        $.ajax({
+            url: '/download_docx/',
+            type: 'GET',
+            success: function(response) {
+                const blob = new Blob([response]);
+
+                // create a temporary URL for the blob object
+                const url = window.URL.createObjectURL(blob);
+    
+                // create a link element and set its properties
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'output_expert_resource.docx';
+    
+                // simulate a click on the link element
+                link.click();
+    
+                // clean up the temporary URL
+                window.URL.revokeObjectURL(url);
+                $('#select_button').css('display','block')
+                $('#download_button').css('display','none')
+        
+
+            },
+            error: function(xhr, status, error) {
+                // handle error response
+                console.log("error")
+            }
+        });
+    } {% endcomment %}
+
+      
+
+
+        function previewFile() {
+    
+            const preview = document.getElementById('preview');
+            const file = document.querySelector('input[type=file]').files[0];
+            const reader = new FileReader();
+        
+            reader.addEventListener("load", function () {
+              const pdfViewer = `<embed src="${reader.result}" width="500" height="600" type="application/docx">`;
+              preview.innerHTML = pdfViewer;
+            }, false);
+        
+            if (file) {
+              reader.readAsDataURL(file);
+            }
+          }
+        
+        //  document.querySelector('input[type=file]').addEventListener('change', previewFile);
+       
+
+
+        
+
+  
+  
+  
+  
+  
+  
+
+      
+
+</script>
+{% endblock %}
