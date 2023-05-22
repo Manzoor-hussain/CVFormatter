@@ -13,7 +13,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
 from .models import Service, Permission, Myservice, Mypermission
-from .serializer import ServiceSerializer, PermisstionSerializer
+from .serializer import ServiceSerializer, PermisstionSerializer, MypermissionSerializer, MyserviceSerializer
 from django.core import serializers
 
 import pdb
@@ -255,10 +255,14 @@ def add_service(request):
 @api_view(['GET'])
 @login_required
 def get_user_detail(request):
-    service = Myservice.objects.all()
+    service = Myservice.objects.only('title')
     permission = Mypermission.objects.all()
     users = User.objects.filter(is_superuser=False).exclude(username="hussain")
-    return render(request, 'superadmin/user_permission.html', context ={"permission":permission,"users":users,"service":service})
+    serializers = MypermissionSerializer(permission ,many=True)
+   
+   
+  
+    return render(request, 'superadmin/user_permission.html', context ={"permission":serializers.data,"users":users,"service":service})
 
 @api_view(['GET'])
 @login_required
@@ -267,6 +271,7 @@ def get_user_services(request):
     user= User.objects.filter(username=username_).last()
     mypermissions = Mypermission.objects.filter(user=user)
     myservices = Myservice.objects.filter(mypermission__user=user)
+   
     json_data = serializers.serialize('json', myservices)   
     return Response(status=200, data=json_data)
 

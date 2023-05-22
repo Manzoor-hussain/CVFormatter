@@ -264,8 +264,10 @@
 
 
     function downloadFile() {
-        $.ajax({
-          url: '/download_docx/',
+      var title = $('#title').val();
+      console.log("titler",title)
+        $.ajax({ 
+          url: "/download_docx/?title="+title,
           type: 'GET',
           xhrFields: {
           responseType: 'blob'

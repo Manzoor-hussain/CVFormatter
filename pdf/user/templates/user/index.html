@@ -1,4 +1,5 @@
 {% extends 'user/layout/base.html' %}
+{% load tz %}
 
 {% block content %}
 
@@ -11,6 +12,7 @@
         <div class="main__container">
          
             <div class="" style="display: flex;     flex-wrap: wrap;">
+              {% now "Y-m-d" as current_date %}
                {% for obj in service %}
                 <div class="card mycard">
                 
@@ -18,7 +20,19 @@
                      
                    <a href="{% url 'user:upload_file' %}{{ obj.title }}/"> <h5 class="card-title">{{ obj.title }}</h5></a>
                     <p class="card-text">{{ obj.description}}</p>
-                    <p class="card-text"><small class="text-muted"></small></p>
+                    {% if obj.count %}
+
+                    <p class="card-text"><small class="text-muted">{{ obj.count}} time used that service </small></p>
+
+                  
+                   
+                     <p class="card-text"><small class="text-muted">{{ obj.created_at}}  {{ obj.time}} </small></p>
+
+                   
+                   
+                   
+                    {% endif %}
+
                   </div>
                 </div>
                 {% endfor %}

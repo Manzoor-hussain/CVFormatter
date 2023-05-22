@@ -18,8 +18,10 @@ from .services.FMCG import fmcg_converter
 from .services.linum import linum_converter
 from .services.Alxander import alexander_steele_converter
 from django.http import FileResponse
+from django.contrib.auth.models import User
 from django.conf import settings
-from superadmin.models import Service, Myservice, Mypermission
+from superadmin.models import Service, Myservice, Mypermission, Countservices
+from .serializers import UserSerializerForCount
 import os
 import time
 import pdb
@@ -29,14 +31,17 @@ import pdb
 def get_index_page(request):
     mypermissions = Mypermission.objects.filter(user=request.user)
     myservices = Myservice.objects.filter(mypermission__user=request.user,is_permisstion=True)
+    
 
+    services_ = UserSerializerForCount(myservices, many=True, context={'request': request})
+    services_ = services_.data
  
     if request.user.is_superuser:
         services_ = Myservice.objects.all()
         return render(request, 'superadmin/index.html',context={'service': services_})
     
 
-    return render(request, 'user/index.html',context={'service': myservices})
+    return render(request, 'user/index.html',context={'service': services_})
 
 @api_view(['GET'])
 def index(request):
@@ -90,9 +95,15 @@ def perform_services(request):
 api_view(['GET'])
 @login_required
 def download_docx(request):
+    title = request.GET.get('title').strip()
+   
+  
+    service_obj = Myservice.objects.get(title=title)
+    
+    user_ = request.user
+    obj = Storefile.objects.filter(user=request.user.id).last()
    
     
-    obj = Storefile.objects.filter(user=request.user.id).last()
     if obj:
         
         id = obj.id
@@ -109,12 +120,23 @@ def download_docx(request):
         response = HttpResponse(content_type='application/octet-stream')
         response['Content-Disposition'] = f'attachment; filename="{filename}"'
         # Open the file and write its contents to the response
+       
         with open(file_path, 'rb') as file:
             response.write(file.read())
+            try:
+                counter_obj=Countservices.objects.filter(user=user_, service=service_obj).last()
+                count=counter_obj.count
+                count= count+1
+                counter_obj.count=count
+                counter_obj.save()
+            except:
+                Countservices.objects.create(user=user_, service=service_obj, count=1)
+           
         
             os.remove(input_file_path)
             os.remove(file_path)
             obj.delete()
+            
         
         
         

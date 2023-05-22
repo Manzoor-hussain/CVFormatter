@@ -2,100 +2,146 @@
 
 
 
+{% block style %} 
 
+.gradient-custom-2 {
+/* fallback for old browsers */
+background: #fccb90;
+
+/* Chrome 10-25, Safari 5.1-6 */
+background: -webkit-linear-gradient(to right, #ee7724, #d8363a, #dd3675, #b44593);
+
+/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+background: linear-gradient(to right, #ee7724, #d8363a, #dd3675, #b44593);
+}
+
+@media (min-width: 768px) {
+.gradient-form {
+height: 100vh !important;
+}
+}
+@media (min-width: 769px) {
+.gradient-custom-2 {
+border-top-right-radius: .3rem;
+border-bottom-right-radius: .3rem;
+}
+}
+.custom_set{
+   background:#F2F3F8;
+}
+
+
+{% endblock %}
 
 {% block content %}
-    <div class="row">
-      <div class="col-lg-1"></div>
-      <div class="col-xl-10">
-        <div class="card rounded-3 text-black">
-          <div class="row g-0">
-            <div class="col-lg-6">
-              <div class="card-body p-md-5 mx-md-4">
-
-                <div class="text-center">
-                  <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/lotus.webp"
-                    style="width: 185px;" alt="logo">
-                  <h4 class="mt-1 mb-5 pb-1">We are The ML1 Team</h4>
-                </div>
-               
-                {% if error_message %}
-                    <p style="font-size: 20px; color: red; text-align: center;">{{ error_message }}</p>
-                 {% endif %}
-               
-
-                <form method="POST" action="{% url 'login' %}" id="loginForm" class="needs-validation" novalidate>
-                  {% csrf_token %}
-                  <p>Please login to your account</p>
+   
 
 
 
-                  <div class="input-group mb-3">
+    <section class="h-100 gradient-form" style="background-color: #eee;">
+        <div class="container py-5 h-100">
+          <div class="row d-flex justify-content-center align-items-center h-100" style="margin-right:0px;">
+            <div class="col-xl-10">
+              <div class="card rounded-3 text-black">
+                <div class="row g-0">
+                  <div class="col-lg-6">
+                    <div class="card-body p-md-5 mx-md-4">
+      
+                      <div class="text-center">
+                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/lotus.webp"
+                          style="width: 185px;" alt="logo">
+                        <h4 class="mt-1 mb-5 pb-1">We are The ML1 Team</h4>
+                      </div>
                      
-                      <input type="email" class="form-control" placeholder="Enter Your Email" required name="username" id="email" earia-label="Username" aria-describedby="basic-addon1">
-                      <div class="invalid-feedback">Please enter a valid email address.</div>
-                  </div>
-                 
-                  <div class="input-group mb-3">
-                      <input type="password" autocomplete="off" class="grpreq form-control shadow"
-                             id="password" name="password" autocomplete="off"
-                             placeholder="Enter Your Password" required
-                             value=""/>
-                             <div class="invalid-feedback">Please enter a password.</div>
-                      <div class="help-block errorDiv" id="secret_key_2_error"></div>
-                      <!-- <div class="input-group-text">
-                          <a> <i onclick="showValue(this, 'secret_key_2');"
-                                 class="fa fa-eye fa-eye-slash"></i></a>
-                      </div> -->
-                  </div>
-                 
-                   
-                 
+                      {% if error_message %}
+                          <p style="font-size: 20px; color: red; text-align: center;">{{ error_message }}</p>
+                       {% endif %}
+                     
+      
+                      <form method="POST" action="{% url 'login' %}" id="loginForm" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <p>Please login to your account</p>
 
-                  <div class="text-center pt-1 mb-5 pb-1 ">
-                    <button class="btn btn-danger" type="submit">Log
-                      in</button>
-                  
-                  </div>
-                  <div class="text-center pt-1 mb-5 pb-1 ">
-                      <a class="text-muted" href="#!">Forgot password?</a>
+
+
+                        <div class="input-group mb-3">
+                           
+                            <input type="email" class="form-control" placeholder="Enter Your Email" required name="username" id="email" earia-label="Username" aria-describedby="basic-addon1">
+                            <div class="invalid-feedback">Please enter a valid email address.</div>
+                        </div>
+                       
+                        <div class="input-group mb-3">
+                            <input type="password" autocomplete="off" class="grpreq form-control shadow"
+                                   id="password" name="password" autocomplete="off"
+                                   placeholder="Enter Your Password" required
+                                   value=""/>
+                                   <div class="invalid-feedback">Please enter a password.</div>
+                            <div class="help-block errorDiv" id="secret_key_2_error"></div>
+                            <!-- <div class="input-group-text">
+                                <a> <i onclick="showValue(this, 'secret_key_2');"
+                                       class="fa fa-eye fa-eye-slash"></i></a>
+                            </div> -->
+                        </div>
+                       
+                         
+                       
+      
+                        <div class="text-center pt-1 mb-5 pb-1 ">
+                          <button class="btn btn-danger" type="submit">Log
+                            in</button>
+                        
+                        </div>
+                        <div class="text-center pt-1 mb-5 pb-1 ">
+                            <a class="text-muted" href="#!">Forgot password?</a>
+                          </div>
+                      
+      
+                        <div class="d-flex align-items-center justify-content-center pb-4">
+                          <p class="mb-0 me-2">Don't have an account?</p>
+                          <a href="{% url 'register_page' %}">
+                            <button type="button" class="btn btn-outline-danger">Create new</button>
+                          </a>
+                        
+                        </div>
+      
+                      </form>
+      
                     </div>
-                
-
-                  <div class="d-flex align-items-center justify-content-center pb-4">
-                    <p class="mb-0 me-2">Don't have an account?</p>
-                    <a href="{% url 'register_page' %}">
-                      <button type="button" class="btn btn-outline-danger">Create new</button>
-                    </a>
-                  
                   </div>
-
-                </form>
-
-              </div>
-            </div>
-            <div class="col-lg-6 d-flex align-items-center custom_set" >
-              <div class="text-black px-3 py-4 p-md-5 mx-md-4">
-                <h4 class="mb-4">We are more than just a company</h4>
-                <p class="small mb-0">Machine learning (ML) is a subset of artificial intelligence (AI) that allows 
-                  computer systems to automatically improve their performance on a specific task with experience. It is a data-driven approach that involves training algorithms on large amounts of data and using statistical models to make predictions or decisions without being explicitly programmed.</p>
+                  <div class="col-lg-6 d-flex align-items-center custom_set" >
+                    <div class="text-black px-3 py-4 p-md-5 mx-md-4">
+                      <h4 class="mb-4">We are more than just a company</h4>
+                      <p class="small mb-0">Machine learning (ML) is a subset of artificial intelligence (AI) that allows 
+                        computer systems to automatically improve their performance on a specific task with experience. It is a data-driven approach that involves training algorithms on large amounts of data and using statistical models to make predictions or decisions without being explicitly programmed.</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-   
+      </section>
 
 
-      <div class="col-lg-1"></div>
-    </div>
-   
-
-
-
-
-
-     
+      <!-- <div class="row">
+        <div class="col-4"></div>
+        <div class="col-4">
+          <form id="loginForm" action="{% url 'login' %}" method="POST" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" class="form-control" id="email" name="username" required>
+              <div class="invalid-feedback">Please enter a valid email address.</div>
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" class="form-control" id="password" name="password" required>
+              <div class="invalid-feedback">Please enter a password.</div>
+            </div>
+            <button type="submit" class="btn btn-primary">Log In</button>
+          </form>
+        </div>
+      </div> -->
 {% endblock %}
 
 {% block javascript %}

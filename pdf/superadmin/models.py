@@ -22,6 +22,11 @@ class Mypermission(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     service = models.ForeignKey(Myservice, on_delete=models.CASCADE)
     is_check = models.BooleanField(default=True)
+class Countservices(models.Model):
+    user=models.ForeignKey(User, on_delete=models.CASCADE)
+    service=models.ForeignKey(Myservice, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now=True)
+    count = models.IntegerField()
 
   
     
