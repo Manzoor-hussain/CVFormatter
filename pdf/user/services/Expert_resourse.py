@@ -2,11 +2,12 @@ import os
 import openai
 import docx
 import docx2txt
-import textwrap
+import PyPDF2
 import re
+import json
+from docx import Document
 from .keys import api_key
 
-# /Users/manzoorhussain/Documents/ILOVEPDF/pdf_input/Palak_Singh_Formatted_CV.docx
 
 def get_completion(prompt, model="gpt-3.5-turbo"):
     messages = [{"role": "user", "content": prompt}]
@@ -17,171 +18,237 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
     )
     return response.choices[0].message["content"]
 
-def expert_resource_converter(path,pathoutput,save_path):
-    # print("asli path",path)
-    formatted = pathoutput 
-    #"/Users/manzoorhussain/Documents/Services/IlovePDF/pdf/media/pdf_output/Expert_Resource.docx"
-    
-    #un_formatted="/Users/manzoorhussain/Documents/ILOVEPDF/pdf/media/pdf_input/Nicholas_Eager.docx"
-    # print("dekho me yha hu",un_formatted)
-    doc = docx.Document(path)
+def expert_resource_converter(path, pathout, path_save):
+    formatted= pathout
+    un_formatted = path
+
     formated_text = docx2txt.process(formatted)
-    unformated_text = docx2txt.process(path)
-    # print("ye tecxt ha",unformated_text)
+
+    try:
+        with open(un_formatted, 'rb') as file:
+        # Create a PDF reader object
+            pdf_reader = PyPDF2.PdfReader(file)
+            unformated_text = ""
+            for i in range (len(pdf_reader.pages)):
+                first_page = pdf_reader.pages[i]
+                unformated_text += first_page.extract_text()
+            print('Its PDF')
+    except:
+        try:
+    #         un_formatted.split(".")[-1] == "docx"
+            unformated_text = docx2txt.process(un_formatted)
+            print('Its Docx')
+        except:
+            print('WE DONT SUPPORT THIS TYPE OF FILE')
+
 
     os.environ["OPEN_API_KEY"] = api_key
     openai.api_key = api_key
     
-    print("Conversion Started...")
-    # llm=OpenAI(temperature=0, max_tokens=1500,openai_api_key=api_key)
-    fields_labels = "Name, EDUCATION, CERTIFICATIONS, DOMAIN EXPERTISE, AWARDS, SKILLS, PROFESSIONAL AFFILIATIONS, PUBLICATIONS, VOLUNTEERING, RELEVANT CERTIFICATIONS AND EXPERIENCES, TOOLS, SOFT SKILLS, TECHNICAL SKILLS, SKILLS OVERVIEW, INTERESTS, LANGUAGES, SUMMARY OVERVIEW, EMPLOYMENT SUMMARY , Duration, Client, Role, Company, Technologies Include"
-    test_text=f"""
+    print("Process has Started...")
 
-    Do the following tasks on this text: "{unformated_text}":
+    test_text = """
 
-    1: Extract the information according to these labels {fields_labels}.
+    Ectract data from this text:
 
-    2: Must include all the fields and subfields i.e. fields_labels in the output. 
+    \"""" + unformated_text + """\"
 
-    3: The output must be in key value format.
-
-    4: Do not include any fields or subfields other than the mentioned.
-
-    5: Do not include email, phone number and personal address.
-
-    6: The template should look like this:
-
-
-    Name:
-
-
-    EDUCATION:
-
-    CERTIFICATIONS:
-
-    DOMAIN EXPERTISE:
-
-    AWARDS:
-
-    SKILLS:
-
-    PROFESSIONAL AFFILIATIONS:
-
-    PUBLICATIONS:
-
-    VOLUNTEERING:
-
-    RELEVANT CERTIFICATIONS AND EXPERIENCES :
-
-    TOOLS:
-
-    SOFT SKILLS:
-
-    TECHNICAL SKILLS:
-
-    SKILLS OVERVIEW:
-
-    INTERESTS:
-
-    LANGUAGES:
-
-
-    SUMMARY OVERVIEW
-     Summary overview should be written in the form of paragraph
-
-    EMPLOYMENT SUMMARY 
-
-        Duration: \n Give single line space after Duration and do not include key word Duration
-        Client: \n Give single line space after Client
-        Role: \n Give single line space after Role
-        Company: \n Give single line space after Company
-        Technologies Include: \n Give single line space after Technologies Include
-        Responsibilities
-        add the responsibilities in the form of list and add "*" before every responsibility. For example
-        * first responsibility
-        * second responsibility
-        * third responsibility
+    in following JSON format:
+    {
+    "Name" : "value",
+    "Summary" : "value",
+    "Summary Overview" : "value",
+    "Volunteering" : "vlaue",
+    "Education" : [
+        {"Institute" : "Name Of institute",
+        "Duration": "Studying duration in institute",
+        "Location" : "Location of institute,"
+        "Degree title" : "Name of degree completed from that institute",
+        },
+        {"Institute" : "Name Of institute",
+        "Duration": "Studying duration in institute",
+        "Location" : "Location of institute,"
+        "Degree title" : "Name of degree completed from that institute",
+        },
         ...
-        after responsibilities give double line space
+        ],
+    "Achievements" : ["achievement1", "achievement2", ...],
+    "Certifications" : ["certification1", "certification2", ...],
+    "Awards" : ["award1", "award2", ...],
+    "Publications" : ["publication1", "publication2", ...],
+    "Tools" : ["tool1", "tool2", ...],
+    "Relevant Certifications and experiences" : ["relevant Certification1", "relevant Certification2", ...],
+    "Soft Skills" : ["soft skill1", "soft skill2", ...],
+    "Technical Skills" : ["technical skill1", "technical skill2", ...],
+    "Languages" : ["language1", "language2", ...],
+    "Interests" : ["interest1", "interest2", ...],
+    "Trainings" : ["training1", "training2", ...],
+    "Skills" : ["skill1", "skill2", ...],
+    "Experience" : [
+        {"Role" : "Specific role in that Company"
+        "Name of Company" : "Company Name here",
+        "Client" : "value"
+        "Duration" : "Time period in whic he the person has worked in that company",
+        "Technologies Include" : "any technology which he used or on which he have completed work",
+        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...],
+        },
+        {"Role" : "Specific role in that Company"
+        "Name of Company" : "Company Name here",
+        "Client" : "value"
+        "Duration" : "Time period in whic he the person has worked in that company",
+        "Technologies Include" : "any technology which he used or on which he have completed work",
+        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...],
+        },
+        ...
+        ]
+    }
 
+    Do not include Grade
+
+    Do not include Mobile number, Emali and home address 
     """
+
 
     result = get_completion(test_text)
 
 
-    txt='\n'+result.replace("\n","\n\n") + '\n'
+    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
 
-    name_pattern = r'(Name ?:|EDUCATION ?:|CERTIFICATIONS ?:|DOMAIN EXPERTISE ?:|AWARDS ?:|SKILLS ?:|PROFESSIONAL AFFILIATIONS ?:|PUBLICATIONS ?:|VOLUNTEERING ?:|RELEVANT CERTIFICATIONS AND EXPERIENCES ?:|TOOLS ?:|SOFT SKILLS ?:|TECHNICAL SKILLS ?:|SKILLS OVERVIEW ?:|INTERESTS ?:|LANGUAGES ?:|SUMMARY OVERVIEW ?:|EMPLOYMENT SUMMARY ?:?)'
+    doc = docx.Document(formatted)
 
-    try:
-        name = re.split(name_pattern,txt)
-    except:
-        name = ''
+    for i,p in enumerate(doc.paragraphs):  
 
-    dc = {i:'' for i in ["Name", "EDUCATION", "CERTIFICATIONS", "DOMAIN EXPERTISE", "AWARDS", "SKILLS", "PROFESSIONAL AFFILIATIONS", "PUBLICATIONS", "VOLUNTEERING", "RELEVANT CERTIFICATIONS AND EXPERIENCES", "TOOLS", "SOFT SKILLS", "TECHNICAL SKILLS", "SKILLS OVERVIEW", "INTERESTS","LANGUAGES", "SUMMARY OVERVIEW", "EMPLOYMENT SUMMARY"]}
-    for ind,i in enumerate(name):
         try:
-            if i.strip(' :') in dc and name[ind+1].strip(' :') not in dc:
-                dc[i.strip(' :')] += name[ind+1].strip()
+            if p.text.strip(' :\n').lower() == 'name':
+                doc.paragraphs[i].add_run("\t" + dc['Name'].strip()).bold = False
+
         except:
             pass
 
-    dc["CERTIFICATIONS"] = re.sub('\n? *\n\n *| *\n *','\n', dc["CERTIFICATIONS"]).replace("-","")
-    dc["INTERESTS"] = re.sub('\n? *\n\n *| *\n *','\n', dc["INTERESTS"]).replace("-","")
-    dc['EMPLOYMENT SUMMARY'] = dc['EMPLOYMENT SUMMARY'].replace("*", "• ")
-    dc['SOFT SKILLS'] = dc['SOFT SKILLS'].replace('\n\n','\n')
-    dc['RELEVANT CERTIFICATIONS AND EXPERIENCES'] = dc['RELEVANT CERTIFICATIONS AND EXPERIENCES'].replace(" \n\n", "\n")
-    dc["SKILLS"] = re.sub('\n? *\n\n *| *\n *','\n',dc["SKILLS"])
-    dc['RELEVANT CERTIFICATIONS AND EXPERIENCES'] = dc['RELEVANT CERTIFICATIONS AND EXPERIENCES'].replace(" \n\n", "\n")
-    dc['EDUCATION'] = dc['EDUCATION'].replace(":", "\n").replace(",","\n")
+        try:
+            if p.text.strip(' :\n').lower() == 'volunteering':
+                doc.paragraphs[i+2].add_run(dc['Volunteering'].strip()).bold = False
 
-    
+        except:
+            pass
 
-    # Open the existing document
-    doc = docx.Document(formatted)
+        try:
+            if p.text.strip(' :\n').lower() == 'summary overview':
+                doc.paragraphs[i+2].add_run(dc['Summary Overview'].strip()).bold = False
+                doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
 
-    # Get the first paragraph
-    for i,p in enumerate(doc.paragraphs):
-        for key in dc:
-            if p.text.strip(' :\n').lower() == key.lower().replace('current ',''):
+        except:
+            pass
 
-                if key.lower() in ['education','employment summary']:
-    #                 dc[key] = dc[key].replace("\n\n\n\n", "\n\n")
-                    doc.paragraphs[i+2].text = re.sub('\n? *\n\n *| *\n *','\n',dc[key])
-    #                           
-                elif key.lower() in ['certifications','interests', 'languages', 'skills']:
-                    formatted_text = ''
-                    groups = re.split(',|;|-|\n',str(dc[key]).strip())
-    #                 print (groups)
-                    for group in groups:
-    #                     print(groups)
-    #                     break
+        try:
+            if p.text.strip(' :\n').lower() == 'summary':
+                doc.paragraphs[i+2].add_run(dc['Summary'].strip()).bold = False
+                doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
 
-                        if len(groups) == 1:
-                            formatted_text = str(dc[key])
-                            break
-                        wrapper = textwrap.TextWrapper(width=60, initial_indent='• ',
-                                                       subsequent_indent='  ')
-                        formatted_text += wrapper.fill(group) + '\n'
-                    doc.paragraphs[i+2].text = formatted_text.strip()
-    #                 
-                elif key.lower() in ['name']:
-                    doc.paragraphs[i].text = doc.paragraphs[i].text+" "+str(dc[key])
+        except:
+            pass
+
+        try:     
+            if p.text.strip(' :\n').lower() == 'education':
+                for j in dc['Education']:
+        #             doc.paragraphs[i+2].add_run(j['Institute Name']).bold = Fals
+                    doc.paragraphs[i+2].add_run(j['Duration'].strip() + '\n').bold = True
+                    doc.paragraphs[i+2].add_run(j['Institute'].strip() + ", " + j["Location"].strip() + '\n').bold = False
+                    doc.paragraphs[i+2].add_run(j['Degree title'].strip() + '\n\n').bold = False
 
 
-                else:
-                    doc.paragraphs[i+2].text = str(dc[key])
+        except:
+            pass
 
-    for table in doc.tables:
-        for row in table.rows:
-            for i,cell in enumerate(row.cells):
-                for key in dc:
-                    if cell.text.strip(' :\n').lower() == key.lower().replace('current ',''):
-                        row.cells[i+1].text = str(dc[key])
+        try:
+            if p.text.strip(' :\n').lower() == 'achievements':
+                for j in dc['Achievements']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+        except:
+            pass
 
-    # Save the updated document as a new file
-    doc.save(save_path)
-    print ("\n")
-    print("Conversion Completed...")
+        try:
+            if p.text.strip(' :\n').lower() == 'awards':
+                for j in dc['Awards']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+        except:
+            pass
 
-#Expert_Resource_Converter()
+        try:
+            if p.text.strip(' :\n').lower() == 'relevant certifications and experiences':
+                for j in dc['Relevant Certifications and experiences']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+        except:
+            pass
+
+        try:
+            if p.text.strip(' :\n').lower() == 'publications':
+                for j in dc['Publications']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+        except:
+            pass
+
+        try:
+            if p.text.strip(' :\n').lower() == 'certifications':
+                for j in dc['Certifications']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+        except:
+            pass
+
+        try:
+            if p.text.strip(' :\n').lower() == 'soft skills':
+                for j in dc['Soft Skills']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+        except:
+            pass
+
+        try:
+            if p.text.strip(' :\n').lower() == 'technical skills':
+                for j in dc['Technical Skills']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+        except:
+            pass
+
+        try:
+            if p.text.strip(' :\n').lower() == 'languages':
+                for j in dc['Languages']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+        except:
+            pass
+
+        try:
+            if p.text.strip(' :\n').lower() == 'interests':
+                for j in dc['Interests']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+        except:
+            pass
+
+        try:
+            if p.text.strip(' :\n').lower() == 'trainings':
+                for j in dc['Trainings']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+        except:
+            pass
+
+        try:
+            if p.text.strip(' :\n').lower() == 'skills':
+                for j in dc['Skills']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+        except:
+            pass
+
+
+        if p.text.strip(' :\n').lower() == 'employment summary':
+            for j in dc['Experience']:
+                doc.paragraphs[i+2].add_run(j['Duration'].strip() + '\n').bold = True 
+                doc.paragraphs[i+2].add_run("Role:" + "\t\t" + j['Role'].strip() + '\n').bold = False
+                doc.paragraphs[i+2].add_run("Client:" + "\t\t" + j['Client'].strip() + '\n').bold = False
+                doc.paragraphs[i+2].add_run("Technologies:" + "\t" + j['Technologies Include'].strip() + '\n').bold = False
+                doc.paragraphs[i+2].add_run("Company:" + "\t" + j['Name of Company'].strip() + '\n\n').bold = False
+
+                for k in j['Responsibilities']:
+                    doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
+                doc.paragraphs[i+2].add_run('\n')
+
+    doc.save(path_save)
+    print("Process has Completed...")

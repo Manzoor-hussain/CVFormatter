@@ -1,12 +1,14 @@
 import os
 import openai
 import docx
-import docx2txt
 import re
 import json
-from .keys import api_key
+from pprint import pprint
+import docx2txt
+import PyPDF2
 from docx.enum.text import WD_UNDERLINE
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
+from .keys import api_key
 
 
 def get_completion(prompt, model="gpt-3.5-turbo"):
@@ -18,28 +20,34 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
     )
     return response.choices[0].message["content"]
 
-def sang_zarrin_converter(path, pathoutput,save_path):
-    formatted= pathoutput
-   # un_formatted=os.getcwd() + path
-    # un_formatted=os.getcwd() + "/unformated/AymanAbouChakra_CV_2021.docx"
-    # un_formatted=os.getcwd() + "/unformated/Ayman Abdul-Hadi.docx"
-    # un_formatted=os.getcwd() + "/unformated/Amr Abdelbaki.docx"
-
-
-    doc = docx.Document(path)
+def sang_zarrin_converter(path, pathout, path_save):
+    formatted = pathout
+    un_formatted = path
     formated_text = docx2txt.process(formatted)
-    unformated_text = docx2txt.process(path)
+
+    try:
+        with open(un_formatted, 'rb') as file:
+        # Create a PDF reader object
+            pdf_reader = PyPDF2.PdfReader(file)
+            unformated_text = ""
+            for i in range (len(pdf_reader.pages)):
+                first_page = pdf_reader.pages[i]
+                unformated_text += first_page.extract_text()
+            print('Its PDF')
+    except:
+        try:
+    #         un_formatted.split(".")[-1] == "docx"
+            unformated_text = docx2txt.process(un_formatted)
+            print('Its Docx')
+        except:
+            print('WE DONT SUPPORT THIS TYPE OF FILE')
 
 
     os.environ["OPEN_API_KEY"] = api_key
     openai.api_key = api_key
-    # llm=OpenAI(temperature=0, max_tokens=1500,openai_api_key=api_key)
-    
     
     print("Process has Started...")
-    fields_labels = "Name, SUMMARY, EXPERIENCE, EDUCATION, CERTIFICATIONS, TRAININGS, COMPUTER SKILLS, SKILLS, QUALIFICATIONS,   LANGUAGES, INTERESTS"
 
-    
     test_text = """
 
     Ectract data from this text:
@@ -52,19 +60,21 @@ def sang_zarrin_converter(path, pathoutput,save_path):
     "Summary" : "value",
     "Experience" : [
         {"Designation" : "The specific designation or position on which he works in this company",
-        "Company Name" : ["Name of company", "Location of company"],
+        "Company Name" : "Name of company",
+        "Location" : "Location of company",
         "Duration" : "Working Duration in Company",
         "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...],
         },
-        {"Company Name" : "Name of company",
-        "Company Location" : "Location of company",
+        {"Designation" : "The specific designation or position on which he works in this company",
+        "Company Name" : "Name of company",
+        "Location" : "Location of company",
         "Duration" : "Working Duration in Company",
         "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...],
         },
         ...
         ]
     "Education" : [
-        {"Institute Name" : "Name Of institute and its location if available separated with comma "," ",
+        {"Institute Name" : "Name Of institute and its location if available separated with comma",
         "Degree Nmae": "Name of degree",
         "Duration" : "Studying duration in institute",
         },
@@ -86,92 +96,86 @@ def sang_zarrin_converter(path, pathoutput,save_path):
 
     result = get_completion(test_text)
 
-
     dc = dict(json.loads(re.sub(',[ \n]*\]',']',re.sub(',[ \n]*\}','}',result.replace('...','')))))
-
 
     doc = docx.Document(formatted)
 
     for i,p in enumerate(doc.paragraphs):
-        
         try:
             if p.text.strip(' :\n').lower() == 'summary':
                 doc.paragraphs[i+2].add_run(dc['Summary'].strip()).bold = False
                 doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
         except:
             pass
-        
+
         try:
             if p.text.strip(' :\n').lower() == 'experience':
                 for j in dc['Experience']:
                     doc.paragraphs[i+2].add_run(j['Designation'].strip() + '\n').bold = True
-                    doc.paragraphs[i+2].add_run(j["Company Name"][0].strip() + ',  ' + j["Company Name"][1].strip() + '\n').bold = True
+                    doc.paragraphs[i+2].add_run(j["Company Name"].strip() + ',  ' + j["Location"].strip() + '\n').bold = True
                     doc.paragraphs[i+2].add_run(j['Duration'].strip() + '\n\n').bold = True
-                    doc.paragraphs[i+2].add_run('Responsibilities:' + '\n').bold = True
-                    for k in j['Responsibilities']:
-                        doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
-                    doc.paragraphs[i+2].add_run('\n\n')
+                    if len(j["Responsibilities"]) == 0:
+                        pass
+                    else:
+                        len(j["Responsibilities"]) != 0
+                        doc.paragraphs[i+2].add_run("Responsibilities:" + '\n').bold = True
+                        for k in j['Responsibilities']:
+                            doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
+                        doc.paragraphs[i+2].add_run('\n')
         except:
             pass
-        
+
         try:
             if p.text.strip(' :\n').lower() == 'education':
                 for j in dc['Education']:
                     doc.paragraphs[i+2].add_run(j['Institute Name'].strip() + '\n').bold = False
                     doc.paragraphs[i+2].add_run(j['Degree Nmae'].strip() + '\n').bold = False
                     doc.paragraphs[i+2].add_run(j['Duration'].strip() + '\n\n').bold = False
-
         except:
             pass
-        
-        try:
+
+        try: 
             if p.text.strip(' :\n').lower() == 'trainings':
                 for j in dc['Trainings']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
-        
+
         try:
             if p.text.strip(' :\n').lower() == 'computer skills':
                 for j in dc['Computer Skills']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
-        
+
         try:
             if p.text.strip(' :\n').lower() == 'skills':
                 for j in dc['Skills']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
-        
+
         try:
             if p.text.strip(' :\n').lower() == 'qualifications':
                 for j in dc['Qualifications']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
-        
+
         try:
             if p.text.strip(' :\n').lower() == 'languages':
                 for j in dc['Languages']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
-        
+
         try:
             if p.text.strip(' :\n').lower() == 'interests':
                 for j in dc['Interests']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
-    doc.save(save_path)
-    print("\n")
-    print("--------------------------------------------------------------------------------------------------------------------")
-    print("\n")
-    print("Process has Completed...")
 
-# path="/Users/manzoorhussain/Documents/Services/IlovePDF/pdf/media/pdf_input/Takara_Thomas.docx"
-# pathoutput="/Users/manzoorhussain/Documents/Services/IlovePDF/pdf/media/pdf_output/Sang_template.docx"
-# save_path="/Users/manzoorhussain/Documents/Services/IlovePDF/pdf/media/pdf_input"
-# Sang_Converter(path, pathoutput,save_path)
+    doc.save(path_save)
+    print("Process has Completed...")
+    

@@ -7,6 +7,10 @@ from pprint import pprint
 import json
 import re
 import textwrap
+import PyPDF2
+import pdfplumber
+
+from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
 
 def get_completion(prompt, model="gpt-3.5-turbo"):
@@ -19,14 +23,38 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
     return response.choices[0].message["content"]
 
 
+# Functions to check whether the unformatted file is a docx or pdf
+def read_text_from_docx(file_path):
+    doc = docx.Document(file_path)
+    text = [paragraph.text for paragraph in doc.paragraphs]
+    return '\n'.join(text)
+
+def read_text_from_pdf(file_path):
+    with open(file_path, 'rb') as file:
+        pdf_reader = PyPDF2.PdfReader(file)
+        text = []
+        for page in pdf_reader.pages:
+            text.append(page.extract_text())
+        return '\n'.join(text)
+
+
 def clarus_converter(path,pathoutput,save_path):
     
+    # paths to unformatted and formatted files
+    formatted= pathoutput
+    # unformatted= os.getcwd() + path
     
-    formatted = pathoutput 
-    # extract the text from the Word document
-    doc = docx.Document(path)
+    
+    if path.endswith('.docx'):
+        unformatted_text = read_text_from_docx(path)
+    elif path.endswith('.pdf'):
+        unformatted_text = read_text_from_pdf(path)
+    else:
+        error = 'Format not supported.'
+        print(error)
+    
     formatted_text = docx2txt.process(formatted)
-    unformatted_text = docx2txt.process(path)
+    
     
     
     print("Process has started...")
@@ -85,8 +113,12 @@ def clarus_converter(path,pathoutput,save_path):
     
     dc = dict(json.loads(re.sub(',[ \n]*\]',']',re.sub(',[ \n]*\}','}',result.replace('...','')))))
     
+#     print("Dictttttt")
+#     print(dc)
+#     print("Dictttttt")
+    
     doc = docx.Document(formatted)
-
+    
     for i,p in enumerate(doc.paragraphs):
 
 
@@ -207,6 +239,9 @@ def clarus_converter(path,pathoutput,save_path):
 
     doc.save(save_path)
     print("Conversion has completed !!")
+    
+    
+    
     
     
     

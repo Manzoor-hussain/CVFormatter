@@ -1,43 +1,68 @@
 import os
-import re
-import json
-from pprint import pprint
-
+import openai
 import docx
 import docx2txt
+from .keys import api_key
+from pprint import pprint
+import json
+import re
 import textwrap
+import PyPDF2
+import pdfplumber
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
 import openai
-from .keys import api_key
+
 openai.api_key = api_key
 
 
-def get_completion(prompt, model="gpt-3.5-turbo", temperature=0): 
+def get_completion(prompt, model="gpt-3.5-turbo"):
     messages = [{"role": "user", "content": prompt}]
     response = openai.ChatCompletion.create(
         model=model,
         messages=messages,
-        temperature=temperature, 
+        temperature=0, # this is the degree of randomness of the model's output
     )
     return response.choices[0].message["content"]
 
+
+# Functions to check whether the unformatted file is a docx or pdf
+def read_text_from_docx(file_path):
+    doc = docx.Document(file_path)
+    text = [paragraph.text for paragraph in doc.paragraphs]
+    return '\n'.join(text)
+
+def read_text_from_pdf(file_path):
+    with open(file_path, 'rb') as file:
+        pdf_reader = PyPDF2.PdfReader(file)
+        text = []
+        for page in pdf_reader.pages:
+            text.append(page.extract_text())
+        return '\n'.join(text)
+    
+    
 def linum_converter(path,pathoutput,save_path):
 
-    formatted = pathoutput
-    #un_formatted = os.getcwd() + path
-
-
-    # extract the text from the Word document
-    formated_text = docx2txt.process(formatted)
-    unformated_text = docx2txt.process(path)
+    # path to formatted file
+    formatted= pathoutput
+    
+    if path.endswith('.docx'):
+        unformatted_text = read_text_from_docx(path)
+    elif path.endswith('.pdf'):
+        unformatted_text = read_text_from_pdf(path)
+    else:
+        error = 'Format not supported.'
+        print(error)
+    
+    formatted_text = docx2txt.process(formatted)
+    
     
     print("Process has started...")
 
     test_text = """
     Extract data from this text:
 
-    \"""" + re.sub('\n+','\n', unformated_text) + """\"
+    \"""" + re.sub('\n+','\n', unformatted_text) + """\"
 
     in following JSON format:
     {
@@ -85,25 +110,25 @@ def linum_converter(path,pathoutput,save_path):
     """
 
     result = get_completion(test_text)
-    print ("RESULTS\n\n" )
-    print(result)
-    print('\n\nRS_END')
+  
     
     
     dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
-    print('DICTIONARY\n\n')
-    print(dc)
-    print('\n\nDC_END')
+  
     
     
     # Open the existing document
     doc = docx.Document(formatted)
-
+    
     # Get the first paragraph
     for i,p in enumerate(doc.paragraphs):
+        
+        doc.paragraphs[i].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+        
         if p.text.strip(' :\n').lower() == 'summary':
             try:
                 doc.paragraphs[i+2].add_run(dc['Summary']).bold = False
+#                 doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
         if p.text.strip(' :\n').lower() == 'skills':
@@ -256,3 +281,4 @@ def linum_converter(path,pathoutput,save_path):
     doc.save(save_path)
 
     print("Conversion Completed...")
+

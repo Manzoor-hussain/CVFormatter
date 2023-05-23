@@ -17,6 +17,14 @@ from .services.Sang_Zarrin import sang_zarrin_converter
 from .services.FMCG import fmcg_converter
 from .services.linum import linum_converter
 from .services.Alxander import alexander_steele_converter
+from .services.Ashpy import ashbys_converter
+from .services.cw_executive import cw_executive_converter
+from .services.E_mobility import e_mobility_converter
+from .services.fair_recruitment import fair_recruitment_converter
+from .services.HBD import hbd_converter
+from .services.M2 import m2_partnership_converter
+from .services.Timber import timber_seed_format_converter
+
 from django.http import FileResponse
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -80,7 +88,10 @@ def perform_services(request):
       
        
         if title:
+            title=title.replace("-"," ")
+           
             service_name = ("_".join(title.split())+"_Converter").lower()
+          
             output_ = ("pdf_output/"+"_".join(title.split())+"_template.docx").lower()
             file_path_output = os.path.join(settings.MEDIA_ROOT, output_)
             (eval(service_name)(file_path,file_path_output,save_path))

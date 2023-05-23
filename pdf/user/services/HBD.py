@@ -9,7 +9,6 @@ from docx.enum.text import WD_UNDERLINE
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from .keys import api_key
 
-
 def get_completion(prompt, model="gpt-3.5-turbo"):
     messages = [{"role": "user", "content": prompt}]
     response = openai.ChatCompletion.create(
@@ -20,7 +19,7 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
     return response.choices[0].message["content"]
 
 
-def edex_converter(path, pathout, path_save):
+def hbd_converter(path, pathout, path_save):
     formatted= pathout
     un_formatted = path
     formated_text = docx2txt.process(formatted)
@@ -46,11 +45,12 @@ def edex_converter(path, pathout, path_save):
 
     print("Process has Started...")
 
+    
     test_text = """
 
     Ectract data from this text:
 
-    \"""" + unformatted_text + """\"
+    \"""" + unformated_text + """\"
 
     in following JSON format:
     {
@@ -58,34 +58,26 @@ def edex_converter(path, pathout, path_save):
     "Profile" : "value",
 
     "Education" : [
-        {"Institute Name" : "Name Of institute",
-        "Duration" : "Studying duration in institute",
-        "Degree Name": "Name of degree",
-        },
-        {"Institute Name" : "Name Of institute",
-        "Duration" : "Studying duration in institute",
-        "Degree Name": "Name of degree",
-        },
+        {"Institute" : ["Studying duration in institute", "Name Of institute", "Name of degree"]},
+        {"Institute" : ["Studying duration in institute", "Name Of institute", "Name of degree"]},
         ...
-    ],
-    "It Literacy" : ["literacy1", "literacy2", ...],
+        ],
     "Certificates" : ["certificate1", "certificate2", ...],
-    "Projects" : ["project1", "project2", ...],
-    "Professional Qualifications" : ["qualification1", "qualification2", ...],
-    "Softwares" : ["software1", "software2", ...],
+    "Achievements" : ["achievement1", "achievement2", ...],
+    "Qualifications" : ["qualification1", "qualification2", ...],
+    "Computer Skills" : ["computer skill1", "computer skill2", ...],
+    "Expertise" : ["expertise1", "expertise2", ...],
     "Languages" : ["language1", "language2", ...],
     "Interests" : ["interest1", "interest2", ...],
     "Trainings" : ["training1", "training2", ...],
     "Skills" : ["skill1", "skill2", ...],
     "Work Experience" : [
-        {"Company Name" : "Name of company",
-        "Duration" :  "Working Duration in Company",
-        "Designation" : "Specific designation in that Company",
+        {"Name of Company" : ["Specific designation in that Company", "Name of Company"],
+        "Duration" : "Working duration in that compnay",
         "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...],
         },
-        {"Company Name" : "Name of company",
-        "Duration" :  "Working Duration in Company",
-        "Designation" : "Specific designation in that Company",
+        {"Name of Company" : ["Specific designation in that Company", "Name of Company"],
+        "Duration" : "Working duration in that compnay",
         "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...],
         },
         ...
@@ -100,18 +92,16 @@ def edex_converter(path, pathout, path_save):
 
     result = get_completion(test_text)
     
-    print(result)
-
-    dc = dict(json.loads(re.sub(',[ \n]*\]',']',re.sub(',[ \n]*\}','}',result.replace('...','')))))
-
+    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
+    
     doc = docx.Document(formatted)
-
     for i,p in enumerate(doc.paragraphs):
-
-        try:
+    
+        try:        
             if p.text.strip(' :\n').lower() == 'name':
                 doc.paragraphs[i].text = ""
-                doc.paragraphs[i].add_run(dc['Name'].strip()).bold = True
+                doc.paragraphs[i].add_run(dc["Name"].strip()).bold = True; doc.paragraphs[i].runs[-1].font.size = Pt(30)
+
         except:
             pass
 
@@ -127,14 +117,14 @@ def edex_converter(path, pathout, path_save):
             if p.text.strip(' :\n').lower() == 'education':
                 for j in dc['Education']:
         #             doc.paragraphs[i+2].add_run(j['Institute Name']).bold = Fals
-                    doc.paragraphs[i+2].add_run(j["Institute Name"].strip() + ' – ' + j["Duration"].strip() + '\n').font.underline = True
-                    doc.paragraphs[i+2].add_run(j['Degree Name'].strip() + '\n\n').bold = True
+                    doc.paragraphs[i+2].add_run('  • ' + j["Institute"][0].strip() + ' – ' + j["Institute"][1].strip() + ' – ' + j["Institute"][2].strip() + '\n' ).bold = False
+
         except:
             pass
 
         try:
-            if p.text.strip(' :\n').lower() == 'it literacy':
-                for j in dc['It Literacy']:
+            if p.text.strip(' :\n').lower() == 'expertise':
+                for j in dc['Expertise']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
@@ -147,8 +137,8 @@ def edex_converter(path, pathout, path_save):
             pass
 
         try:
-            if p.text.strip(' :\n').lower() == 'projects':
-                for j in dc['Projects']:
+            if p.text.strip(' :\n').lower() == 'achievements':
+                for j in dc['Achievements']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
@@ -161,8 +151,8 @@ def edex_converter(path, pathout, path_save):
             pass
 
         try:
-            if p.text.strip(' :\n').lower() == 'professional qualifications':
-                for j in dc['Professional Qualifications']:
+            if p.text.strip(' :\n').lower() == 'computer skills':
+                for j in dc['Computer Skills']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
@@ -205,12 +195,11 @@ def edex_converter(path, pathout, path_save):
         try:
             if p.text.strip(' :\n').lower() == 'work experience':
                 for j in dc['Work Experience']:
-                    doc.paragraphs[i+2].add_run(j['Company Name'].strip() + ' – ' + j['Duration'] + '\n').font.underline = True
-                    doc.paragraphs[i+2].add_run(j['Designation'].strip() + '\n\n').bold = True
-                    doc.paragraphs[i+2].add_run('Responsibilities:' + '\n').bold = True
+                    doc.paragraphs[i+2].add_run(j['Duration'].strip() + '\n').bold = True
+                    doc.paragraphs[i+2].add_run(j['Name of Company'][0].strip() + ' – ' + j['Name of Company'][1] + '\n\n').bold = True
                     for k in j['Responsibilities']:
                         doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
-                    doc.paragraphs[i+2].add_run('\n\n')
+                    doc.paragraphs[i+2].add_run('\n')
         except:
             pass
 

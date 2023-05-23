@@ -1,13 +1,12 @@
 import os
 import openai
 import docx
+from pprint import pprint
 import docx2txt
-import textwrap
+import PyPDF2
 import re
+import json
 from .keys import api_key
-import re
-import textwrap
-
 
 def get_completion(prompt, model="gpt-3.5-turbo"):
     messages = [{"role": "user", "content": prompt}]
@@ -19,187 +18,168 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
     return response.choices[0].message["content"]
 
 
+def aspion_converter(path,pathout,path_save):
+    formatted = pathout
+    un_formatted = path
 
-def aspion_converter(path, pathoutput,save_path):
-    formatted = pathoutput
-    #"formats/Aspion.docx"
-    # un_formatted=os.getcwd() + path
-
-    doc = docx.Document(path)
     formated_text = docx2txt.process(formatted)
-    unformated_text = docx2txt.process(path)
+
+    try:
+        with open(un_formatted, 'rb') as file:
+        # Create a PDF reader object
+            pdf_reader = PyPDF2.PdfReader(file)
+            unformated_text = ""
+            for i in range (len(pdf_reader.pages)):
+                first_page = pdf_reader.pages[i]
+                unformated_text += first_page.extract_text()
+            print('Its PDF')
+    except:
+        try:
+    #         un_formatted.split(".")[-1] == "docx"
+            unformated_text = docx2txt.process(un_formatted)
+            print('Its Docx')
+        except:
+            print('WE DONT SUPPORT THIS TYPE OF FILE')
+
 
     openai.api_key = api_key
     
-    print("Process Started...")
+    print("Process has Started...")
 
-    fields_labels = "Summary, Career History, Education, Training, Skills, Achievements, Languages, Interests"
-    test_text=f"""
+    test_text = """
 
-    Do the following tasks on this text: "{unformated_text}":
+    Ectract data from this text:
 
-    1: Extract the information according to these labels {fields_labels}.
+    \"""" + unformated_text + """\"
 
-    2: Must include all the fields and subfields i.e. fields_labels in the output. 
+    in following JSON format:
+    {
+    "Summary" : "value",
 
-    3: The output must be in key value format.
+    "Education" : [
+        {"Institute" : "Name Of institute",
+        "Duration": "Studying duration in institute",
+        "Location" : "Location of institute,"
+        "Degree title" : "Name of degree completed from that institute",
+        },
+        {"Institute" : "Name Of institute",
+        "Duration": "Studying duration in institute",
+        "Location" : "Location of institute,"
+        "Degree title" : "Name of degree completed from that institute",
+        },
+        ...
+        ],
+    "Achievements" : ["achievement1", "achievement2", ...],
+    "Languages" : ["language1", "language2", ...],
+    "Interests" : ["interest1", "interest2", ...],
+    "Trainings" : ["training1", "training2", ...],
+    "Skills" : ["skill1", "skill2", ...],
+    "Experience" : [
+        {"Designation" : "Specific designation in that Company"
+        "Name of Company" : "Company Name here",
+        "Company locality" : "Location of company"
+        "Duration" : "Time period in whic he the person has worked in that company"
+        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...],
+        },
+        {"Designation" : "Specific designation in that Company"
+        "Name of Company" : "Company Name here",
+        "Company locality" : "Location of company"
+        "Duration" : "Time period in whic he the person has worked in that company"
+        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...],
+        },
+        ...
+        ]
+    }
 
-    4: Do not include any fields or subfields other than the mentioned.
+    Do not include Grade
 
-    5: Do not include email, phone number and personal address.
-
-    6: Do not include Name, Job title, Location, Salary, Notice
-
-    7. Must add one linespace '\n' after job duration in career history.
-
-    8. Do not include ',' between Comapny name and company locality however put '-'.
-
-    9. Add reponsibilities if founded, below the duration in the field of career history line by line and add %- sign before every responsibility and replace every , with % in reponsibilities. 
-    For example
-    %- first reponsibility 
-    %- second responsibility
-    %- third responsibility
-
-
-    10. The template should look like this:
-
-
-
-    Summary:
-
-        Extract only those information which describe the resume. Write them in the form of paragraph.
-
-    Career History:
-
-        Write Working Designation
-        Write Company name, Company Locality/Place (should be in same line and not included "," however put "-")
-        Write Time Period for a particular designation (and put $ before Time Period for a particular designation)
-
-    Education:
-
-        In education field, write name of institue and it's locality in same line, after that just write the title of
-        degree completed form this institute in next line. After compliting this, write the time period of that degree 
-        in next line.
-        For example
-        Oxford University, London 
-        Becholars in Computer Science
-        Oct 2008 - Nov 2010
-
-        If you find comma before time period or title degree that was completed from this institute than replace it
-        with "$".
-
-    Training:
-
-
-    Achievements:
-
-
-    Skills:
-
-
-    Languages:
-
-
-    Interests:
-
-
-    in carreer histroy include all subfields information same as below format if available but without
-    including label or heading and sequence must be same as below.
-    career histroy:
-        Working Designation 
-        Company name, Company Locality/Place (should be in same line and not included "," however put "-")
-        Time Period for a particular designation after time period double line space must be given and replace "," or "-" with "$"
-        if founded before Time Period for a particular designation 
-
-
-        Responsibilities
-    for example
-        career histroy:
-            Data scientist 
-            ABC company,london 
-            2018-2022
-
-
-
-
-
-
+    Do not include Mobile number, Emali and home address 
     """
+
 
     result = get_completion(test_text)
 
-    print(result)
-    txt='\n'+result.replace("\n","\n\n") + '\n'
-    name_pattern = r'(Summary ?:|Career History ?:|Education ?:|Training ?:|Skills ?:|Achievements ?:|Languages ?:|Interests ?:)'
+    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
 
-    try:
-        name = re.split(name_pattern,txt)
-    except:
-        name = ''
-
-    dc = {i:'' for i in ['Summary', 'Career History', 'Education', 'Training', 'Skills', 'Achievements', 'Languages', 'Interests']}
-    for ind,i in enumerate(name):
-        try:
-            if i.strip(' :') in dc and name[ind+1].strip(' :') not in dc:
-                dc[i.strip(' :')] += name[ind+1].strip()
-        except:
-            pass
-        
-     
-    print(dc)
-
-    dc['Skills'] = dc['Skills'].replace("\n","")
-    dc['Languages'] = dc['Languages'].replace("\n\n","\n")
-
-
-
-    # Open the existing document
     doc = docx.Document(formatted)
 
-    # Get the first paragraph
-    for i,p in enumerate(doc.paragraphs):
-        for key in dc:
-            if p.text.strip(' :\n').lower() == key.lower().replace('current ',''):
+    for i,p in enumerate(doc.paragraphs):    
 
-                if key.lower() in ['career history']:
-                    for b in re.split('\n',re.sub('\n? *\n\n *| *\n *','\n',dc[key].replace('%-', '• '))):
-                        if '• ' in b:
-                            doc.paragraphs[i+2].add_run(b.strip()+ '\n')
-                        elif b.startswith("-"):
-                            doc.paragraphs[i+2].add_run(b.strip().replace("-","• ")+ '\n')
-                        else:
-                            doc.paragraphs[i+2].add_run(b.strip().replace('$',"") + '\n').bold = True
+        try:
+            if p.text.strip(' :\n').lower() == 'summary':
+                doc.paragraphs[i+2].add_run(dc['Summary'].strip()).bold = False
+                doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
 
-                elif key.lower() in ['education']:
-                    doc.paragraphs[i+2].text = re.sub('\n? *\n\n *| *\n *','\n',dc[key])
-                elif key.lower() in ['training']:
-                    doc.paragraphs[i+2].text = re.sub('\n? *\n\n *| *\n *','\n',dc[key].replace(',','\n').replace(';','\n'))
-                elif key.lower() in ['languages','interests', 'skills', 'achievements']:
-                    formatted_text = ''
-                    groups = re.split(',|;|%-|\n|-',str(dc[key]))
-                    for group in groups:
-                        if len(groups) == 1:
-                            formatted_text = str(dc[key])
-                            break
-                        wrapper = textwrap.TextWrapper(width=60, initial_indent='• ',
-                                                       subsequent_indent='  ')
-                        formatted_text += wrapper.fill(group.strip()) + '\n'
-    #                     print("dd",formatted_text)
-                    try:  
-                        doc.paragraphs[i+2].text = formatted_text.strip()
-                    except:
+        except:
+            pass
+
+        try:     
+            if p.text.strip(' :\n').lower() == 'education':
+                for j in dc['Education']:
+        #             doc.paragraphs[i+2].add_run(j['Institute Name']).bold = Fals
+                    doc.paragraphs[i+2].add_run(j['Institute'].strip() + ", " + j["Location"].strip() + '\n').bold = True
+                    doc.paragraphs[i+2].add_run(j['Degree title'].strip() + '\n').bold = True
+                    doc.paragraphs[i+2].add_run(j['Duration'].strip() + '\n\n').bold = True
+
+        except:
+            pass
+
+        try:
+            if p.text.strip(' :\n').lower() == 'achievements':
+                for j in dc['Achievements']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+        except:
+            pass
+
+
+        try:
+            if p.text.strip(' :\n').lower() == 'languages':
+                for j in dc['Languages']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+        except:
+            pass
+
+        try:
+            if p.text.strip(' :\n').lower() == 'interests':
+                for j in dc['Interests']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+        except:
+            pass
+
+        try:
+            if p.text.strip(' :\n').lower() == 'trainings':
+                for j in dc['Trainings']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+        except:
+            pass
+
+        try:
+            if p.text.strip(' :\n').lower() == 'skills':
+                for j in dc['Skills']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+        except:
+            pass
+
+        try:
+            if p.text.strip(' :\n').lower() == 'career history':
+                for j in dc['Experience']:
+                    doc.paragraphs[i+2].add_run(j['Designation'].strip() + '\n').bold = True
+                    if j ['Company locality'] != "":
+                        doc.paragraphs[i+2].add_run(j['Company locality'].strip() + '\n').bold = True
+                    else:
+                        j ['Company locality'] == ""
+                        doc.paragraphs[i+2].add_run("N/A" + '\n').bold = True
+                    doc.paragraphs[i+2].add_run(j['Duration'].strip() + '\n\n').bold = True
+                    if len(j["Responsibilities"]) == 0:
                         pass
-                else:
-                    doc.paragraphs[i+2].text = str(dc[key])
+                    else:
+                        j["Responsibilities"] != 0
+                        doc.paragraphs[i+2].add_run("Responsibilities:" + '\n').bold = True
+                        for k in j['Responsibilities']:
+                            doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
+                        doc.paragraphs[i+2].add_run('\n')
+        except:
+            pass
 
-    for table in doc.tables:
-        for row in table.rows:
-            for i,cell in enumerate(row.cells):
-                for key in dc:
-                    if cell.text.strip(' :\n').lower() == key.lower().replace('current ',''):
-                        row.cells[i+1].text = str(dc[key])
-
-    # Save the updated document as a new file
-    doc.save(save_path)
-    print("-------------------------------------------------------------------------------------------------------------------")
-    print("Process Completed...")
+    doc.save(path_save)
+    print("Process has Completed...")

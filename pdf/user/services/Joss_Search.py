@@ -2,261 +2,279 @@ import os
 import openai
 import docx
 import docx2txt
-import textwrap
-import re
 from .keys import api_key
+from pprint import pprint
+import json
+import re
+import textwrap
+import PyPDF2
+import pdfplumber
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
 
-
-
-def get_completion(prompt, model="gpt-3.5-turbo", temperature=0): 
+def get_completion(prompt, model="gpt-3.5-turbo"):
     messages = [{"role": "user", "content": prompt}]
     response = openai.ChatCompletion.create(
         model=model,
         messages=messages,
-        temperature=temperature, 
+        temperature=0, # this is the degree of randomness of the model's output
     )
     return response.choices[0].message["content"]
 
+# Functions to check whether the unformatted file is a docx or pdf
+def read_text_from_docx(file_path):
+    doc = docx.Document(file_path)
+    text = [paragraph.text for paragraph in doc.paragraphs]
+    return '\n'.join(text)
+
+def read_text_from_pdf(file_path):
+    with open(file_path, 'rb') as file:
+        pdf_reader = PyPDF2.PdfReader(file)
+        text = []
+        for page in pdf_reader.pages:
+            text.append(page.extract_text())
+        return '\n'.join(text)
+
+    
 def joss_search_converter(path, pathoutput,save_path):
-
+    
+#     paths to unformatted and formatted files
+#     unformatted = os.getcwd() + "/unformatted_cv_templates/Joss_unformated/TimurSarki.pdf"
     formatted = pathoutput
-    #"formats/Joss_Search.docx"
-    # un_formatted=os.getcwd() + "/cvs_template/Takara_Thomas.docx"
-    # un_formatted = os.getcwd() + "/cvs_template/Barry_Weston_HGV.docx"
-    # un_formatted = os.getcwd() + path
-    # un_formatted=os.getcwd() + "/cvs_template/Nicholas_Eager.docx"
-
-
-    # extract the text from the Word document
-    doc = docx.Document(path)
-    formated_text = docx2txt.process(formatted)
-    unformated_text = docx2txt.process(path)
+    
+    if path.endswith('.docx'):
+        unformatted_text = read_text_from_docx(path)
+    elif path.endswith('.pdf'):
+        unformatted_text = read_text_from_pdf(path)
+    else:
+        error = 'Format not supported.'
+        print(error)
+    
+    formatted_text = docx2txt.process(formatted)
+    
+    
     
     print("Process has started...")
+    
+    # Prompt
+    openai.api_key = api_key
+    
+    test_text = """
 
-    fields_labels = "Name, Notice Period, Holiday Dates, Candidate Overview, Summary, Experience, Education, Courses, Previous Assignments,Professional Qualifications, Areas of Expertise, Key Skills, Computer Skills, Languages, Interests"
-    test_text=f"""
+    Extract data from this text:
 
-    Perform the following tasks on this text: "{unformated_text}":
+    \"""" + unformatted_text + """\"
 
-    1: Extract the information according to these labels {fields_labels}.
+    in following JSON format:
+    {
+    "Name" : "value",
+    "Notice Period" : "value",
+    "Holiday Dates" : "value",
+    "Candidate Overview" : "value",
 
-    2: Must include all the fields and subfields i.e. fields_labels in the output. 
+    "Summary" : "value",
+    "Experience" : [
+        {"Company Name" : "Name of company",
+        "Job Title" : "Title of job",
+        "Duration" : "Working Duration in Company",
+        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...],
+        },
+        {"Company Name" : "Name of company",
+        "Job Title" : "Title of job",
+        "Duration" : "Working Duration in Company",
+        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...],
+        },
+        ...
+        ]
+    }
+    "Education" : [
+        {"Institute Name" : "Name Of institute",
+        "Degree Name": "Name of degree",
+        "Duration" : "Studying duration in institute",
+        },
+        {"Institute Name" : "Name Of institute",
+        "Degree Name": "Name of degree",
+        "Duration" : "Studying duration in institute",
+        },
+        ...
+        ],
+    "Courses" : ["Course1", "Course2", ...],
+    "Previous Assignments" : ["Previous Assignment1", "Previous Assignment2", ...],
+    "Professional Qualifications" : ["Qualification1", "Qualification2", ...],
+    "Areas of Expertise" : ["Area of Expertise1", "Area of Expertise2", ...],
+    "Key Skills" : ["Key Skill1", "Key Skill2", ...],
+    "Computer Skills": ["Computer Skill1", "Computer Skill2"]
+    "Activities" : ["Activity1", "Activity2", ...],
+    "Languages" : ["Language1", "Language2", ...],
+    "Interests" : ["interest1", "interest2", ...],
 
-    3: The output must be in key value format.
-
-    4: Do not include any fields or subfields other than the mentioned.
-
-    5: Do not include email, phone number and personal address.
-
-    6: The following field labels should be in tabular format: Notice Period, Holiday Dates, Candidate Overview.
-
-    7: Format the Key Skills in bullet points.
-
-    8: Format Experience in bullet points
-
-    8: Must mention the proficiency of the language as well if found e.g. English (Native)
-
-    9: Must display Job Title in new line under Company Name in Experience
-
-    10: Summary must be in paragraph format
-
-    11: The template should look like this:
-
-
-    Name
-
-
-
-    Notice Period: 
-
-    Holiday Dates: 
-
-    Candidate Overview:
-
-
-
-
-    Summary
-
-
-
-    Experience
-
-
-    Education (Institution name and duration should be on the same line)
-
-        For example (This is just to give you an example do not display the given lines below)
-        Oxford University, London, March 2014 - May 2016
-        Name of first degree
-        Name of second degree
-        Name of third degree
-
-
-    Courses
-
-
-    Previous Assignments
-
-
-    Professional Qualifications
-
-
-    Areas of Expertise
-
-
-    Key Skills
-        Add - before every key skill
-
-    Computer Skills
-
-
-    Languages
-    Example: English (Native)
-
-    Interests
-
-
-    Experience should look like this:
-
-        Company Name, Duration (Company name and duration should be in same line) 
-        Job Title
-        Responsibilities
+    make it sure to keep the response in JSON format.
     """
-    # text=f"{test_text}"
-    # result=llm(text)
+
     result = get_completion(test_text)
+    
+    #     print(result)
+    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
+    
    
-    txt='\n'+result.replace("\n","\n\n") + '\n'
-    name_pattern = r'(\nName ?:|\nNotice Period ?:|\nHoliday Dates ?:|\nCandidate Overview ?:|\nSummary ?:|\nExperience ?:|\nEducation ?:|\nCourses ?:|\nPrevious Assignments ?:|\nProfessional Qualifications ?:|\nAreas of Expertise ?:|\nKey Skills ?:|\nComputer Skills ?:|\nLanguages ?:|\nInterests ?:)'
-
-    try:
-        name = re.split(name_pattern,txt)
-    except:
-        name = ''
-
-    dc = {i:'' for i in ['Name', 'Notice Period', 'Holiday Dates', 'Candidate Overview', 'Summary', 'Experience', 'Education', 'Courses', 'Previous Assignments', 'Professional Qualifications','Areas of Expertise','Key Skills','Computer Skills','Languages','Interests']}
-    for ind,i in enumerate(name):
-        try:
-            if i.strip(' \n:') in dc and name[ind+1].strip(' :') not in dc:
-                dc[i.strip(' \n:')] += '\n' + name[ind+1].strip()
-
-        except:
-            pass
-   
-    # Open the existing document
+    
     doc = docx.Document(formatted)
-
-    # Get the first paragraph
-    for i,p in enumerate(doc.paragraphs):
-        for key in dc:
-            if p.text.strip(' :\n').lower() == key.lower():
-    #             print(key)
-
-
-
-                if key.lower() in ['experience']:
-                    conv_text = re.sub('[\n ]*\n[\n ]*- *','\n• ',dc[key])
-                    conv_list = re.split('\n',re.sub('\n? *\n\n *| *\n *','\n',conv_text))
-                
-                    for b in conv_list:
-                        if '• ' in b:
-                            doc.paragraphs[i+2].add_run(b.strip()+ '\n')
-                        else:
-                            doc.paragraphs[i+2].add_run(b.strip() + '\n').bold = True
-
-                            
-                elif key.lower() in ['education']:
-                    for c in re.split('\n',re.sub('\n? *\n\n *| *\n *','\n',dc[key].replace(';',',').replace(':','\n• ').replace(' - ', '-').replace('- ', '• ').replace(' -','• '))):
-                        if '• ' in c:
-                            doc.paragraphs[i+2].add_run(c.strip()+ '\n')
-                        elif c.startswith("-"):
-                            doc.paragraphs[i+2].add_run(c.strip()+ '\n')
-                        else:
-                            doc.paragraphs[i+2].add_run(c.strip() + '\n').bold = True
-
-    
-    
-                elif key.lower() in ['key skills']:
-                    formatted_text = ''
-                    conv_text = re.sub(';|-|,','\n', str(dc[key]))
-                    conv_text = re.sub('[ \n]*\n[ \n]*','\n', conv_text)
-                    groups = re.split('\n',conv_text)
-                    for group in groups:
-                        if len(groups) == 1:
-                            formatted_text = str(dc[key])
-                            break
-                        wrapper = textwrap.TextWrapper(width=60, initial_indent='• ',
-                                                       subsequent_indent='  ')
-                        formatted_text += wrapper.fill(group) + '\n'
-                    doc.paragraphs[i+2].text = formatted_text.strip()
-                    
-                    
-
-                elif key.lower() in ['areas of expertise']:
-                    formatted_text = ''
-                    conv_text = re.sub(';|-|,','\n', str(dc[key]))
-                    conv_text = re.sub('[ \n]*\n[ \n]*','\n', conv_text)
-                    groups = re.split('\n',conv_text)
-                    for group in groups:
-                        if len(groups) == 1:
-                            formatted_text = str(dc[key])
-                            break
-                        wrapper = textwrap.TextWrapper(width=60, initial_indent='• ',
-                                                       subsequent_indent='  ')
-                        formatted_text += wrapper.fill(group) + '\n'
-                    doc.paragraphs[i+2].text = formatted_text.strip()
-    #                 doc.paragraphs[i+2].text = dc[key].replace(';',',').replace('\n- ','• ').replace(',','\n• ')
-                
-                elif key.lower() in ['computer skills']:
-                    formatted_text = ''
-                    conv_text = re.sub(';|-|,','\n', str(dc[key]))
-                    conv_text = re.sub('[ \n]*\n[ \n]*','\n', conv_text)
-                    groups = re.split('\n',conv_text)
-                    for group in groups:
-                        if len(groups) == 1:
-                            formatted_text = str(dc[key])
-                            break
-                        wrapper = textwrap.TextWrapper(width=60, initial_indent='• ',
-                                                       subsequent_indent='  ')
-                        formatted_text += wrapper.fill(group) + '\n'
-                    doc.paragraphs[i+2].text = formatted_text.strip()
-                    
-                    
-
-                elif key.lower() in ['languages','interests', 'professional qualifications', 'achievements', 'courses']:
-
-                    formatted_text = ''
-                    groups = re.split(',|;|-',str(dc[key]))
-                    for group in groups:
-    #                     print(groups)
-    #                     break
-
-                        if len(groups) == 1:
-                            formatted_text = str(dc[key])
-                            break
-                        wrapper = textwrap.TextWrapper(width=60, initial_indent='• ',
-                                                       subsequent_indent='  ')
-                        formatted_text += wrapper.fill(group) + '\n'
-                    doc.paragraphs[i+2].text = formatted_text.strip()
-                elif key.lower() in ['Summary']:
-                    doc.paragraphs[i+2].text = dc[key].replace('\n\n\n\n',',')+"\n\n"
-                else:
-                    doc.paragraphs[i+2].text = str(dc[key])
-
-    #             else:
-    #                 doc.paragraphs[i+2].text = str(dc[key])
 
     for table in doc.tables:
         for row in table.rows:
             for i,cell in enumerate(row.cells):
-                for key in dc:
-                    if cell.text.strip(' :\n').lower() == key.lower().replace('current ',''):
-                        row.cells[i+1].text = str(dc[key])
+                
+                doc.paragraphs[i].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+                
+                try:
+                    if cell.text.strip(' :\n').lower() == 'notice period':
+                        row.cells[i+1].text = dc['Notice Period']
+                except:
+                    pass
+                try:
+                    if cell.text.strip(' :\n').lower() == 'holiday dates':
+                        row.cells[i+1].text = dc['Holiday Dates']
+                except:
+                    pass                
+                try:
+                    if cell.text.strip(' :\n').lower() == 'candidate overview':
+                        for j in dc['Candidate Overview']:
+                            row.cells[i+1].text = row.cells[i+1].text + j
+                except:
+                    pass                
 
-    # Save the updated document as a new file
+
+    for i,p in enumerate(doc.paragraphs):
+
+
+        if p.text.strip(' :\n').lower() == 'name':
+            try:
+                name_paragraph = doc.paragraphs[i]
+                name_paragraph.text = str(dc['Name'])
+                name_paragraph.alignment = docx.enum.text.WD_PARAGRAPH_ALIGNMENT.CENTER
+                name_paragraph.runs[0].bold = True
+                name_paragraph.runs[0].font.size = Pt(20)
+            except:
+                pass
+
+
+        if p.text.strip(' :\n').lower() == 'summary':
+            try:
+                doc.paragraphs[i+2].text = str(dc['Summary'])
+            except:
+                pass
+
+
+        if p.text.strip(' :\n').lower() == 'experience':
+            try:
+                for j in dc['Experience']:
+                    company_name = j['Company Name'].strip()
+                    duration = j['Duration'].strip()
+                    job_title = j['Job Title'].strip()
+
+                    doc.paragraphs[i+2].add_run(company_name + ' ').bold = True
+                    doc.paragraphs[i+2].add_run('(' + duration + ')' + '\n').bold = True
+                    doc.paragraphs[i+2].add_run(job_title + '\n\n').bold = False
+    #                 doc.paragraphs[i+2].add_run('Duties:' + '\n\n')
+                for k in j['Responsibilities']:
+                    doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
+                    doc.paragraphs[i+2].add_run('\n')
+                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+            except:
+                pass
+
+
+
+        if p.text.strip(' :\n').lower() == 'education':
+            try:
+                for j in dc['Education']:
+                    institute_name = j['Institute Name'].strip()
+                    duration = j['Duration'].strip()
+                    degree_name = j['Degree Name'].strip()
+
+                    doc.paragraphs[i+2].add_run(institute_name + ' ').bold = True
+                    if duration != "Unknown":
+                        doc.paragraphs[i+2].add_run('(' + duration + ')' + '\n').bold = True
+                    else:
+                        doc.paragraphs[i+2].add_run('(' + "Not mentioned" + ')' + '\n').bold = True
+                    if degree_name:
+                        doc.paragraphs[i+2].add_run(degree_name + '\n\n').bold = False
+                    else:
+                        doc.paragraphs[i+2].add_run("Not mentioned" + '\n\n').bold = False 
+            except:
+                pass
+
+
+
+        if p.text.strip(' :\n').lower() == 'courses':
+            try:
+                for j in dc['Courses']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+            except:
+                pass
+
+
+        if p.text.strip(' :\n').lower() == 'previous assignments':
+            try:
+                for j in dc['Previous Assignments']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+            except:
+                pass        
+
+
+
+        if p.text.strip(' :\n').lower() == 'professional qualifications':
+            try:
+                for j in dc['Professional Qualifications']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+            except:
+                pass
+
+        if p.text.strip(' :\n').lower() == 'area of expertise':
+            try:
+                for j in dc['Area of Expertise']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+            except:
+                pass
+
+        if p.text.strip(' :\n').lower() == 'key skills':
+            try:
+                for j in dc['Key Skills']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+            except:
+                pass
+        if p.text.strip(' :\n').lower() == 'computer skills':
+            try:
+                for j in dc['Computer Skills']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+            except:
+                pass
+
+        if p.text.strip(' :\n').lower() == 'languages':
+            try:
+                for j in dc['Languages']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+            except:
+                pass
+
+        if p.text.strip(' :\n').lower() == 'interests':
+            try:
+                for j in dc['Interests']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+            except:
+                pass
+
+
+
     doc.save(save_path)
-
-    print("Conversion Completed...")
+    print("Conversion has completed !!")
+    
+    
+    

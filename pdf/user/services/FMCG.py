@@ -7,6 +7,8 @@ from pprint import pprint
 import json
 import re
 import textwrap
+import PyPDF2
+import pdfplumber
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
 
@@ -20,16 +22,38 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
     return response.choices[0].message["content"]
 
 
+# Functions to check whether the unformatted file is a docx or pdf
+def read_text_from_docx(file_path):
+    doc = docx.Document(file_path)
+    text = [paragraph.text for paragraph in doc.paragraphs]
+    return '\n'.join(text)
+
+def read_text_from_pdf(file_path):
+    with open(file_path, 'rb') as file:
+        pdf_reader = PyPDF2.PdfReader(file)
+        text = []
+        for page in pdf_reader.pages:
+            text.append(page.extract_text())
+        return '\n'.join(text)
+
+
+
 def fmcg_converter(path, pathoutput,save_path):
     
+    # paths to unformatted and formatted files
     formatted= pathoutput
+    # unformatted = os.getcwd() + path
+    print("path",path)
     
-  
+    if path.endswith('.docx'):
+        unformatted_text = read_text_from_docx(path)
+    elif path.endswith('.pdf'):
+        unformatted_text = read_text_from_pdf(path)
+    else:
+        error = 'Format not supported.'
+        print(error)
     
-    # extract the text from the Word document
-    doc = docx.Document(path)
     formatted_text = docx2txt.process(formatted)
-    unformatted_text = docx2txt.process(path)
     
     
     print("Process has started...")
@@ -70,7 +94,7 @@ def fmcg_converter(path, pathoutput,save_path):
     "Activities" : ["Activity1", "Activity2", ...],
     "Interests" : ["interest1", "interest2", ...],
     "Languages" : ["Language1", "Language2", ...],
-    "Employment Summary" : [
+    "Career History" : [
         {"Company Name" : "Name of company",
         "Job Title" : "Title of job",
         "Duration" : "Working Duration in Company",
@@ -91,6 +115,7 @@ def fmcg_converter(path, pathoutput,save_path):
 #     print(result)
     dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
  
+  
     
     doc = docx.Document(formatted)
 
@@ -128,7 +153,8 @@ def fmcg_converter(path, pathoutput,save_path):
 
     for i,p in enumerate(doc.paragraphs):
 
-
+        doc.paragraphs[i].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+        
         if p.text.strip(' :\n').lower() == 'name':
             try:
                 name_paragraph = doc.paragraphs[i]
@@ -142,7 +168,6 @@ def fmcg_converter(path, pathoutput,save_path):
         if p.text.strip(' :\n').lower() == 'profile':
             try:
                 doc.paragraphs[i+2].text = str(dc['Profile'])
-                doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
 
@@ -179,7 +204,6 @@ def fmcg_converter(path, pathoutput,save_path):
             try:
                 for j in dc['Skills']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
-                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
 
@@ -188,7 +212,6 @@ def fmcg_converter(path, pathoutput,save_path):
             try:
                 for j in dc['IT Skills']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
-                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass        
 
@@ -198,7 +221,6 @@ def fmcg_converter(path, pathoutput,save_path):
             try:
                 for j in dc['Activities']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
-                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
 
@@ -206,7 +228,6 @@ def fmcg_converter(path, pathoutput,save_path):
             try:
                 for j in dc['Interests']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
-                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
 
@@ -217,9 +238,9 @@ def fmcg_converter(path, pathoutput,save_path):
             except:
                 pass
 
-        if p.text.strip(' :\n').lower() == 'employment summary':
+        if p.text.strip(' :\n').lower() == 'career history':
             try:
-                for j in dc['Employment Summary']:
+                for j in dc['Career History']:
                     company_name = j['Company Name'].strip()
                     duration = j['Duration'].strip()
                     job_title = j['Job Title'].strip()
@@ -231,7 +252,6 @@ def fmcg_converter(path, pathoutput,save_path):
                 for k in j['Responsibilities']:
                     doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
                     doc.paragraphs[i+2].add_run('\n')
-                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
 
