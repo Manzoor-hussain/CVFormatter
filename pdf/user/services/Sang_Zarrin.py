@@ -11,6 +11,7 @@ from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from .keys import api_key
 
 
+
 def get_completion(prompt, model="gpt-3.5-turbo"):
     messages = [{"role": "user", "content": prompt}]
     response = openai.ChatCompletion.create(
@@ -74,12 +75,14 @@ def sang_zarrin_converter(path, pathout, path_save):
         ...
         ]
     "Education" : [
-        {"Institute Name" : "Name Of institute and its location if available separated with comma",
-        "Degree Nmae": "Name of degree",
+        {"Institute Name" : "Name Of institute and its location if available separated with comma ",
+        "Institute locality" : "Location of instituion"
+        "Degree Name": "Name of degree",
         "Duration" : "Studying duration in institute",
         },
-        {"Institute Name" : "Name Of institute",
-        "Degree Nmae": "Name of degree",
+        {"Institute Name" : "Name Of institute and its location if available separated with comma ",
+        "Institute locality" : "Location of instituion"
+        "Degree Name": "Name of degree",
         "Duration" : "Studying duration in institute",
         },
         ...
@@ -91,6 +94,9 @@ def sang_zarrin_converter(path, pathout, path_save):
     "Languages" : ["language1", "language2", ...],
     "Interests" : ["interest1", "interest2", ...]
     }
+    
+    Do not return the key if do not find any value against that key.
+    
     """
 
 
@@ -128,7 +134,7 @@ def sang_zarrin_converter(path, pathout, path_save):
         try:
             if p.text.strip(' :\n').lower() == 'education':
                 for j in dc['Education']:
-                    doc.paragraphs[i+2].add_run(j['Institute Name'].strip() + '\n').bold = False
+                    doc.paragraphs[i+2].add_run(j['Institute Name'].strip() +", "+j['Institute locality'] + '\n').bold = False
                     doc.paragraphs[i+2].add_run(j['Degree Nmae'].strip() + '\n').bold = False
                     doc.paragraphs[i+2].add_run(j['Duration'].strip() + '\n\n').bold = False
         except:
@@ -178,4 +184,5 @@ def sang_zarrin_converter(path, pathout, path_save):
 
     doc.save(path_save)
     print("Process has Completed...")
+    
     

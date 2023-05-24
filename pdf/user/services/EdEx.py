@@ -5,6 +5,7 @@ import docx2txt
 import re
 import json
 import PyPDF2
+from docx.shared import Pt
 from docx.enum.text import WD_UNDERLINE
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from .keys import api_key
@@ -93,15 +94,15 @@ def edex_converter(path, pathout, path_save):
     }
 
     Do not include Grade
-
+    
+    Do not return the key if no value against that key will found
+    
     Do not include Mobile number, Emali and home address 
     """
 
 
     result = get_completion(test_text)
     
-    print(result)
-
     dc = dict(json.loads(re.sub(',[ \n]*\]',']',re.sub(',[ \n]*\}','}',result.replace('...','')))))
 
     doc = docx.Document(formatted)
@@ -109,12 +110,13 @@ def edex_converter(path, pathout, path_save):
     for i,p in enumerate(doc.paragraphs):
 
         try:
-            if p.text.strip(' :\n').lower() == 'name':
+            if p.text.strip().lower() == 'name:':
                 doc.paragraphs[i].text = ""
-                doc.paragraphs[i].add_run(dc['Name'].strip()).bold = True
+                run = doc.paragraphs[i].add_run(dc['Name'].strip().title())
+                run.bold = True
+                run.font.size = Pt(14)
         except:
-            pass
-
+               pass
         try:
             if p.text.strip(' :\n').lower() == 'profile':
                 doc.paragraphs[i+2].add_run(dc['Profile'].strip()).bold = False
@@ -128,7 +130,8 @@ def edex_converter(path, pathout, path_save):
                 for j in dc['Education']:
         #             doc.paragraphs[i+2].add_run(j['Institute Name']).bold = Fals
                     doc.paragraphs[i+2].add_run(j["Institute Name"].strip() + ' – ' + j["Duration"].strip() + '\n').font.underline = True
-                    doc.paragraphs[i+2].add_run(j['Degree Name'].strip() + '\n\n').bold = True
+                    doc.paragraphs[i+2].add_run(j['Degree Name'].strip()).bold = True
+                    doc.paragraphs[i+2].add_run("\n\n")
         except:
             pass
 
@@ -206,11 +209,16 @@ def edex_converter(path, pathout, path_save):
             if p.text.strip(' :\n').lower() == 'work experience':
                 for j in dc['Work Experience']:
                     doc.paragraphs[i+2].add_run(j['Company Name'].strip() + ' – ' + j['Duration'] + '\n').font.underline = True
-                    doc.paragraphs[i+2].add_run(j['Designation'].strip() + '\n\n').bold = True
-                    doc.paragraphs[i+2].add_run('Responsibilities:' + '\n').bold = True
-                    for k in j['Responsibilities']:
-                        doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
+                    doc.paragraphs[i+2].add_run(j['Designation'].strip()).bold = True
                     doc.paragraphs[i+2].add_run('\n\n')
+                    if len(j["Responsibilities"]) == 0:
+                        pass
+                    else:
+                        len(j["Responsibilities"]) != 0
+                        doc.paragraphs[i+2].add_run("Responsibilities:" + '\n').bold = True
+                        for k in j['Responsibilities']:
+                            doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
+                    doc.paragraphs[i+2].add_run('\n')
         except:
             pass
 

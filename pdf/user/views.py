@@ -26,6 +26,7 @@ from .services.M2 import m2_partnership_converter
 from .services.Timber import timber_seed_format_converter
 from .services.Advocate import advocate_converter
 from .services.Drayton import drayton_converter
+from .services.True_Method import true_method_converter
 
 from django.http import FileResponse
 from django.contrib.auth.models import User

@@ -10,9 +10,7 @@ import textwrap
 import PyPDF2
 import pdfplumber
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
-
 import openai
-
 openai.api_key = api_key
 
 
@@ -42,7 +40,7 @@ def read_text_from_pdf(file_path):
     
     
 def linum_converter(path,pathoutput,save_path):
-   
+
     # path to formatted file
     formatted= pathoutput
     
@@ -110,12 +108,13 @@ def linum_converter(path,pathoutput,save_path):
     """
 
     result = get_completion(test_text)
-  
+#     print ("RESULTS\n\n" )
+#     print(result)
+#     print('\n\nRS_END')
     
     
     dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
-  
-    
+   
     
     # Open the existing document
     doc = docx.Document(formatted)
@@ -123,12 +122,12 @@ def linum_converter(path,pathoutput,save_path):
     # Get the first paragraph
     for i,p in enumerate(doc.paragraphs):
         
-        doc.paragraphs[i].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+#         doc.paragraphs[i].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
         
         if p.text.strip(' :\n').lower() == 'summary':
             try:
                 doc.paragraphs[i+2].add_run(dc['Summary']).bold = False
-#                 doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+                doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
         if p.text.strip(' :\n').lower() == 'skills':
@@ -281,4 +280,5 @@ def linum_converter(path,pathoutput,save_path):
     doc.save(save_path)
 
     print("Conversion Completed...")
+
 
