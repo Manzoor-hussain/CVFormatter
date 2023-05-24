@@ -34,6 +34,7 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
     )
     return response.choices[0].message["content"]
 
+
 def fair_recruitment_converter(path, pathout, path_save):
     formatted = pathout
     file_path = path
@@ -189,5 +190,5 @@ def fair_recruitment_converter(path, pathout, path_save):
                 pass
 
 
-    doc.save(save_path)
+    doc.save(path_save)
     print("Procees has Completed...")
