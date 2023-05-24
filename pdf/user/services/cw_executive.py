@@ -185,7 +185,6 @@ def cw_executive_converter(path, pathout, path_save):
             try:
                 for j in dc['Skills']:
                     doc.paragraphs[i+1].add_run('•   ' + j.strip() + '\n')
-                    doc.paragraphs[i+1].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
                     change_font_size(doc.paragraphs[i+1], docx.shared.Pt(12)) 
             except:
                 pass
@@ -202,7 +201,6 @@ def cw_executive_converter(path, pathout, path_save):
             try:
                 for j in dc['Interests']:
                     doc.paragraphs[i+1].add_run('•   ' + j.strip() + '\n')
-                    doc.paragraphs[i+1].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
                     change_font_size(doc.paragraphs[i+1], docx.shared.Pt(12)) 
             except:
                 pass
@@ -210,3 +208,4 @@ def cw_executive_converter(path, pathout, path_save):
 
     doc.save(path_save)
     print("Process has Completed...")
+

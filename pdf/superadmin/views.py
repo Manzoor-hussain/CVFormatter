@@ -13,7 +13,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
 from .models import Service, Permission, Myservice, Mypermission
-from .serializer import ServiceSerializer, PermisstionSerializer, MypermissionSerializer, MyserviceSerializer
+from .serializer import MyypermissionSerializer, ServiceSerializer, PermisstionSerializer, MypermissionSerializer, UserDataSerializer
 from django.core import serializers
 
 import pdb
@@ -257,12 +257,14 @@ def add_service(request):
 def get_user_detail(request):
     service = Myservice.objects.only('title')
     permission = Mypermission.objects.all()
-    users = User.objects.filter(is_superuser=False).exclude(username="hussain")
+    users = User.objects.filter(is_superuser=False).exclude(username="hussain").exclude(username="")
     serializers = MypermissionSerializer(permission ,many=True)
+    # user=User.objects.get(id=4)
+    # permission = Mypermission.objects.all()
+    # my=MyypermissionSerializer(permission, many=True)
    
-   
-  
-    return render(request, 'superadmin/user_permission.html', context ={"permission":serializers.data,"users":users,"service":service})
+
+    return render(request, 'superadmin/user_permission.html', context ={"permission":serializers.data,"users":users,"service":service,"final":"sas"})
 
 @api_view(['GET'])
 @login_required

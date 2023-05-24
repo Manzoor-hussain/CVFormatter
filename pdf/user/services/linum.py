@@ -42,7 +42,7 @@ def read_text_from_pdf(file_path):
     
     
 def linum_converter(path,pathoutput,save_path):
-
+   
     # path to formatted file
     formatted= pathoutput
     

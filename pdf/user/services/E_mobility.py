@@ -12,6 +12,7 @@ from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
 
 
+
 def read_text_from_docx(file_path):
     doc = docx.Document(file_path)
     text = [paragraph.text for paragraph in doc.paragraphs]
@@ -37,7 +38,6 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
 
 
 def e_mobility_converter(path, pathout, path_save):
-    print("path",path)
     formatted = pathout
     file_path = path 
 
@@ -102,6 +102,9 @@ def e_mobility_converter(path, pathout, path_save):
     "Languages" : ["Language1", "Language2", ...],
     "Interests" : ["interest1", "interest2", ...]
     }
+    
+    Do not return the key against which no value founded
+    
     """
 
     result = get_completion(test_text)
@@ -179,17 +182,18 @@ def e_mobility_converter(path, pathout, path_save):
                 for j in dc['Experience']:
                     if j['Job Title']:
                         job_title = j['Job Title'].strip()
-                        doc.paragraphs[i+1].add_run(job_title + '\n\n').bold = True
+                        doc.paragraphs[i+1].add_run(job_title + '\n').bold = True
                     if j['Company Name']:
                         company_name = j['Company Name'].strip()
-                        doc.paragraphs[i+1].add_run(company_name + '\n\n').bold = True
+                        doc.paragraphs[i+1].add_run(company_name + '\n').bold = True
                     if j['Duration']:
                         duration = j['Duration'].strip()
-                        doc.paragraphs[i+1].add_run(duration + '\n\n\n').bold = True
+                        doc.paragraphs[i+1].add_run(duration + '\n').bold = True
+                    doc.paragraphs[i+1].add_run('\n')
                     reponsibility = j['Responsibilities']
                     print()
                     if reponsibility:
-                        doc.paragraphs[i+1].add_run('Responsibilities\n\n').bold = True
+                        doc.paragraphs[i+1].add_run('Responsibilities\n').bold = True
                         for r in reponsibility:
                             doc.paragraphs[i+1].add_run('    •   ' + r + '\n')
     #                         doc.paragraphs[i+1].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
@@ -202,13 +206,14 @@ def e_mobility_converter(path, pathout, path_save):
                 for j in dc['Education']:
                     if j['Institute Name']:
                         institute_name = j['Institute Name'].strip()
-                        doc.paragraphs[i+1].add_run(institute_name + '\n\n').bold = False
+                        doc.paragraphs[i+1].add_run(institute_name + '\n').bold = False
                     if j['Degree Name']:
                         degree_name = j['Degree Name'].strip()
-                        doc.paragraphs[i+1].add_run(degree_name + '\n\n').bold = False
+                        doc.paragraphs[i+1].add_run(degree_name + '\n').bold = False
                     if j['Duration'].strip():
                         duration = j['Duration'].strip()
-                        doc.paragraphs[i+1].add_run(duration + '\n\n').bold = False
+                        doc.paragraphs[i+1].add_run(duration + '\n').bold = False
+                    doc.paragraphs[i+1].add_run("\n")
             except:
                 pass
 
@@ -274,3 +279,4 @@ def e_mobility_converter(path, pathout, path_save):
 
     doc.save(path_save)
     print("Process has Completed...")
+

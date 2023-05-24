@@ -174,8 +174,8 @@ def clarus_converter(path,pathoutput,save_path):
     #                 doc.paragraphs[i+2].add_run('Duties:' + '\n\n')
                 for k in j['Responsibilities']:
                     doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
-                    doc.paragraphs[i+2].add_run('\n')
-                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+#                     doc.paragraphs[i+2].add_run('\n')
+#                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
 
@@ -184,7 +184,7 @@ def clarus_converter(path,pathoutput,save_path):
             try:
                 for j in dc['Other Experience']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
-                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+#                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
 
@@ -193,7 +193,7 @@ def clarus_converter(path,pathoutput,save_path):
             try:
                 for j in dc['Projects and Exhibitions']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
-                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+#                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
 
@@ -209,7 +209,7 @@ def clarus_converter(path,pathoutput,save_path):
             try:
                 for j in dc['Skills and Hobbies']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
-                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+#                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
 
@@ -224,7 +224,7 @@ def clarus_converter(path,pathoutput,save_path):
             try:
                 for j in dc['Leadership']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
-                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+#                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
 
@@ -232,15 +232,13 @@ def clarus_converter(path,pathoutput,save_path):
             try:
                 for j in dc['interests']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
-                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+#                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
 
 
     doc.save(save_path)
     print("Conversion has completed !!")
-    
-    
     
     
     

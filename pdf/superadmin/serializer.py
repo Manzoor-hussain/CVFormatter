@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from .models import Service, Myservice, Mypermission
+from .models import Service, Myservice, Mypermission, User
+
+
 
 
 class ServiceSerializer(serializers.ModelSerializer):
@@ -15,16 +17,34 @@ class MypermissionSerializer(serializers.ModelSerializer):
         model = Mypermission
         fields = '__all__'
 
-class MyserviceSerializer(serializers.ModelSerializer):
-    permissions = MypermissionSerializer(many=True)
 
+
+
+
+
+
+#start here
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email']
+
+class MyserviceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Myservice
-        fields = ['id', 'user', 'title', 'description', 'is_permisstion', 'permissions']
+        fields = ['id', 'title', 'description']
 
-    def create(self, validated_data):
-        permissions_data = validated_data.pop('permissions')
-        myservice = Myservice.objects.create(**validated_data)
-        for permission_data in permissions_data:
-            Mypermission.objects.create(myservice=myservice, **permission_data)
-        return myservice
+class MyypermissionSerializer(serializers.ModelSerializer):
+    user = UserSerializer()  # Nested User serializer
+    service = MyserviceSerializer()  # Nested Myservice serializer
+
+    class Meta:
+        model = Mypermission
+        fields = ['id', 'user', 'service', 'is_check']
+
+class UserDataSerializer(serializers.ModelSerializer):
+    mypermissions = MyypermissionSerializer(many=True)  # Nested Mypermission serializer
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'mypermissions']

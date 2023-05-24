@@ -43,7 +43,6 @@ def fmcg_converter(path, pathoutput,save_path):
     # paths to unformatted and formatted files
     formatted= pathoutput
     # unformatted = os.getcwd() + path
-    print("path",path)
     
     if path.endswith('.docx'):
         unformatted_text = read_text_from_docx(path)
@@ -115,7 +114,6 @@ def fmcg_converter(path, pathoutput,save_path):
 #     print(result)
     dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
  
-  
     
     doc = docx.Document(formatted)
 
@@ -153,7 +151,7 @@ def fmcg_converter(path, pathoutput,save_path):
 
     for i,p in enumerate(doc.paragraphs):
 
-        doc.paragraphs[i].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+#         doc.paragraphs[i].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
         
         if p.text.strip(' :\n').lower() == 'name':
             try:
@@ -168,6 +166,7 @@ def fmcg_converter(path, pathoutput,save_path):
         if p.text.strip(' :\n').lower() == 'profile':
             try:
                 doc.paragraphs[i+2].text = str(dc['Profile'])
+                doc.paragraphs[i].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
 
@@ -251,7 +250,7 @@ def fmcg_converter(path, pathoutput,save_path):
     #                 doc.paragraphs[i+2].add_run('Duties:' + '\n\n')
                 for k in j['Responsibilities']:
                     doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
-                    doc.paragraphs[i+2].add_run('\n')
+#                     doc.paragraphs[i+2].add_run('\n')
             except:
                 pass
 

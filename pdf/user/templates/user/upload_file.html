@@ -85,24 +85,20 @@
         
           
           <div class="col-3">
-
-           
-             
-           
           </div>
           <div class="col-5" style="text-align: center;">
            
             <h1>Convert to {{ service_name }}</h1>
             <p>Format your unformatted Resume by using our AI powered solution with incredible accuracy.
-                Developed by Machine learning 1.</p>
+                Developed by SkoutEx.
+                
+              </p>
 
                 <div class=""  style="display:none" id="download_button">
                     <a href="javascript:downloadFile();" class="btn btn-danger" style="padding: 12PX 74PX;
                     font-size: 20px;
                     text-align: center;">Download</a>
-                   
-                  
-                  </div>
+                </div>
                 <form method="POST" action="" enctype="multipart/form-data" id="upload_form">
                     {% csrf_token %} 
                     <div class="" id="select_button">
@@ -112,15 +108,18 @@
                         border-color: #dc3545;
                         padding: 12PX 74PX;
                         font-size: 20px;
-                        text-align: center;">Select Word File</label>
+                        text-align: center;">Select Word/PDf File</label>
                       
                       </div>
                     
                       <input type="hidden" name="title" id="title" value=" {{ service_name }}">
                       <input type="hidden" name="user" id="user" value=" {{ request.user.id }}">
                     <div>
-                        <input type="file" class="form-control" name="pdf" id="fileInput" accept=".docx" style="display:none">
-                    </div>  
+                        <input type="file" class="form-control" name="pdf" id="fileInput" accept=".pdf,.docx" style="display:none">
+                       
+                    </div>
+                    
+          
                    
                     
                        
@@ -128,15 +127,11 @@
                       
           
                 </form>
-                <div class="loader-container" id="loader_container">
-                  <div class="loader"></div>
-                  <div class="loader-text"></div>
-                  <br>
-              </div>
-              <div class="loader-text" id="loader-text" style="display: none;">Taking time for getting response from api</div>
+            
+              <div class="loader-text" id="loader-text" style="display: none;">Its takes several minutes to convert </div>
               <div id="mybar_main" style="display:none;">
                
-                <div id="myBar"></div>
+                  <div id="myBar"></div>
               </div>
              
                 
@@ -154,9 +149,6 @@
           </div>
         
           <div class="col-3">
-          
-            
-           
           </div>
          
 
@@ -188,6 +180,7 @@
 
         });
     });
+    
   
     
  
@@ -249,7 +242,7 @@
         i = 1;
         var elem = document.getElementById("myBar");
         var width = 1;
-        var id = setInterval(frame, 1800);
+        var id = setInterval(frame, 1900);
         function frame() {
           if (width >= 100) {
             clearInterval(id);

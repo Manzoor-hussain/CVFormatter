@@ -24,6 +24,8 @@ from .services.fair_recruitment import fair_recruitment_converter
 from .services.HBD import hbd_converter
 from .services.M2 import m2_partnership_converter
 from .services.Timber import timber_seed_format_converter
+from .services.Advocate import advocate_converter
+from .services.Drayton import drayton_converter
 
 from django.http import FileResponse
 from django.contrib.auth.models import User
@@ -69,6 +71,7 @@ def perform_services(request):
     data=request.data
     serializer=StorefileSerializer(data=request.data)
     title = request.POST['title']
+    
    
     
  
@@ -91,9 +94,12 @@ def perform_services(request):
             title=title.replace("-"," ")
            
             service_name = ("_".join(title.split())+"_Converter").lower()
+            print("service_name",service_name)
           
             output_ = ("pdf_output/"+"_".join(title.split())+"_template.docx").lower()
+          
             file_path_output = os.path.join(settings.MEDIA_ROOT, output_)
+        
             (eval(service_name)(file_path,file_path_output,save_path))
             
         

@@ -34,7 +34,6 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
     )
     return response.choices[0].message["content"]
 
-
 def fair_recruitment_converter(path, pathout, path_save):
     formatted = pathout
     file_path = path
@@ -95,7 +94,7 @@ def fair_recruitment_converter(path, pathout, path_save):
     """
 
     result = get_completion(test_text)
-
+    print(result)
     dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
 
     doc = docx.Document(formatted)
@@ -169,7 +168,6 @@ def fair_recruitment_converter(path, pathout, path_save):
             try:
                 for j in dc['Skills']:
                     doc.paragraphs[i+2].add_run('     •   ' + j.strip() + '\n')
-                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
 
@@ -185,10 +183,10 @@ def fair_recruitment_converter(path, pathout, path_save):
             try:
                 for j in dc['Interests']:
                     doc.paragraphs[i+2].add_run('     •   ' + j.strip() + '\n')
-                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
 
 
     doc.save(path_save)
     print("Procees has Completed...")
+
