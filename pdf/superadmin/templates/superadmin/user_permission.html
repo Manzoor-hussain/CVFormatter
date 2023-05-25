@@ -15,6 +15,7 @@
             <th>User</th>
             <th>Email</th>
             <th>Give Permission</th>
+            <th>Check Activity</th>
           </tr>
         </thead>
     {% for obj in users %}
@@ -24,7 +25,9 @@
             <td>{{ obj.email }}</td>
             <td><button type="button" onclick="Add('{{obj.username}}');" data-bs-toggle="modal"
                 data-bs-target="#exampleModal" class="btn btn-success">Click for permission</button></td>
-         
+            <td><button type="button" onclick="check_activity('{{obj.username}}');" data-bs-toggle="modal"
+                data-bs-target="#exampleModalactivity" class="btn btn-success">Check Activity</button></td>
+        
            
             </tr>
         </tbody>
@@ -88,6 +91,66 @@
 
                     </div>
                     <div class="col-2"></div>
+
+                </div>
+                <div class="offset-md-3 col-md-6 d-flex align-items-baseline">
+                    <button type="button" class="btn btn-block btn-outline-danger"
+                            data-dismiss="modal"
+                            id="closed">Close
+                    </button>
+                </div>   
+               
+
+
+                 
+               
+            
+
+            </div>
+            <div class="modal-footer">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Block for check activity of user -->
+<div class="modal fade " id="exampleModalactivity" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">User Services</h5>
+                <span id="username" style="font-size: 20px; margin-left: -50px;"></span>
+               
+                <button type="button"
+                        style="width: 50px;"
+                        class="btn btn-block btn-outline-danger" data-dismiss="modal">X
+                </button>
+            </div>
+          
+            <div class="modal-body" id="modalBody">
+                <div class="row">
+                    <div class="col-1"></div>
+                    <div class="col-10">
+                      
+                        <table class="table">
+                            <thead>
+                              <tr>
+                                <th>ID</th>
+                                <th>Service Name</th>
+                                <th>Used count</th>
+                                <th>Used Time</th>
+                              </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                <!-- Table rows will be added dynamically here -->
+                            </tbody>
+                           
+                          </table>
+
+                    </div>
+                    <div class="col-1"></div>
 
                 </div>
                 <div class="offset-md-3 col-md-6 d-flex align-items-baseline">
@@ -339,5 +402,58 @@
                 }
             });
         }
+
+        function check_activity( username ) {
+            console.log("function call",username)
+            $('#username').html(username);
+          //  $(":checkbox").prop("checked", false);
+            $.get("/admin/get-user-activity/?username=" + username)
+           
+
+                
+              
+                    .done(function (data) {
+                    //    var objects = JSON.parse(data);
+                        console.log("activity",data)
+
+                        // Iterate over the objects
+                        const tableBody = document.getElementById("tableBody");
+                        let tableRows = "";
+                        for (var i = 0; i < data.length; i++) {
+
+                        var obj = data[i];
+                        var count = obj.count
+                        if (typeof count === "number")
+                         {
+                      
+                            console.log(obj.count)
+                       
+                        tableRows += `<tr>
+                                <td>${i}</td>
+                                <td>${obj.title}</td>
+                                <td>${obj.count}</td>
+                                <td>${obj.created_at}</td>
+                                </tr>`;
+                      
+                        
+                      
+                        }
+                        }
+                        tableBody.innerHTML = tableRows;
+                   
+        
+                    })
+                    .fail(function (xhr, status, error) {
+                        console.log("error", xhr, status, error);
+                        // handle error case
+                        $('#errorModal').modal('show', {backdrop: 'static'});
+                        
+                    });
+            $('#exampleModalactivity').modal('show', {backdrop: 'static'});
+            $('#saveButton').css('display', 'block');
+            $('#editButton').css('display', 'none');
+        }
+
+
     </script>
 {% endblock %}

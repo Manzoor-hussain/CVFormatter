@@ -109,6 +109,8 @@ def joss_search_converter(path, pathoutput,save_path):
     "Interests" : ["interest1", "interest2", ...],
 
     make it sure to keep the response in JSON format.
+
+    Do not include those kyes against which no values will be founded.
     """
 
     result = get_completion(test_text)

@@ -8,9 +8,10 @@ import json
 import re
 import textwrap
 import PyPDF2
-import pdfplumber
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
+
 import openai
+
 openai.api_key = api_key
 
 
@@ -39,10 +40,10 @@ def read_text_from_pdf(file_path):
         return '\n'.join(text)
     
     
-def linum_converter(path,pathoutput,save_path):
+def linum_converter(path,formatted_path,save_path):
 
     # path to formatted file
-    formatted= pathoutput
+    formatted = formatted_path
     
     if path.endswith('.docx'):
         unformatted_text = read_text_from_docx(path)
@@ -109,12 +110,15 @@ def linum_converter(path,pathoutput,save_path):
 
     result = get_completion(test_text)
 #     print ("RESULTS\n\n" )
-#     print(result)
+    #print(result)
 #     print('\n\nRS_END')
     
     
     dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
-   
+    # print('DICTIONARY\n\n')
+    # print(dc)
+    # print('\n\nDC_END')
+    
     
     # Open the existing document
     doc = docx.Document(formatted)
@@ -167,7 +171,8 @@ def linum_converter(path,pathoutput,save_path):
                         if j['Duration'].strip():
                             doc.paragraphs[i+2].add_run(j['Duration'].strip() + '\n').bold = False
                         else:
-                            doc.paragraphs[i+2].add_run('Duration not mentioned\n').bold = False
+                            doc.paragraphs[i+2].add_run('Duration not mentioned\n').bold = True
+
                     except:
                         doc.paragraphs[i+2].add_run('Duration not mentioned\n').bold = False
                     try:
@@ -280,5 +285,3 @@ def linum_converter(path,pathoutput,save_path):
     doc.save(save_path)
 
     print("Conversion Completed...")
-
-

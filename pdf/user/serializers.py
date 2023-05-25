@@ -21,6 +21,7 @@ class UserSerializerForCount(serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super().to_representation(instance)
         user_ = self.context['request'].user
+       
         is_active = False
         count = ''
         created_at =''

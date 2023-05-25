@@ -5,7 +5,7 @@ from .views import *
 
 urlpatterns = [
   
-     path('index/', index, name='index'),
+     #path('index/', index, name='index'),
      path('dashboard/', get_index_page, name='dashboard'),
      path('upload_file/', upload_file, name='upload_file'),
      path('upload_file/<str:service>/', upload_file, name='upload_file'),

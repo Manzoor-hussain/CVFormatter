@@ -14,6 +14,8 @@ urlpatterns = [
 
     path('get-user-services/', get_user_services, name='get_user_services'),
     path('change-permission/', change_permission, name='change_permission'),
+    path('get-user-activity/', get_user_activity, name='get_user_activity'),
+    
     
     
 

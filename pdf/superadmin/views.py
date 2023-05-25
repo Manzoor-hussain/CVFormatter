@@ -13,7 +13,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
 from .models import Service, Permission, Myservice, Mypermission
-from .serializer import MyypermissionSerializer, ServiceSerializer, PermisstionSerializer, MypermissionSerializer, UserDataSerializer
+from .serializer import MyypermissionSerializer, ServiceSerializer, PermisstionSerializer, MypermissionSerializer, UserDataSerializer,UserSerializerForCountActivity
 from django.core import serializers
 
 import pdb
@@ -291,5 +291,19 @@ def change_permission(request):
         permission.delete()
 
     return Response(status=200)
+@api_view(['GET'])
+@login_required
+def get_user_activity(request):
+    username_ = request.GET.get('username', None)
+    user_= User.objects.get(username=username_)
+    mypermissions = Mypermission.objects.filter(user=user_)
+    
+    myservices = Myservice.objects.filter(mypermission__user=user_,is_permisstion=True)
+    services_ = UserSerializerForCountActivity(myservices, many=True, context={'request':user_})
+    services_ = services_.data
+   # services_ = UserSerializerForCountActivity(myservices, many=True, context={'request': request.user})
+  
+        
+    return Response(status=200, data=services_)
 
     

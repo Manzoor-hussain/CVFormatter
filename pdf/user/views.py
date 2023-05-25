@@ -24,9 +24,12 @@ from .services.fair_recruitment import fair_recruitment_converter
 from .services.HBD import hbd_converter
 from .services.M2 import m2_partnership_converter
 from .services.Timber import timber_seed_format_converter
-from .services.Advocate import advocate_converter
+from .services.Advocate import advocate_group_converter
 from .services.Drayton import drayton_converter
 from .services.True_Method import true_method_converter
+from .services.JLER import jler_converter
+from .services.ScaleGenesis import scale_genesis_converter
+from .services.FDRecruit import fd_recruit_converter
 
 from django.http import FileResponse
 from django.contrib.auth.models import User
@@ -42,22 +45,21 @@ import pdb
 def get_index_page(request):
     mypermissions = Mypermission.objects.filter(user=request.user)
     myservices = Myservice.objects.filter(mypermission__user=request.user,is_permisstion=True)
-    
-
     services_ = UserSerializerForCount(myservices, many=True, context={'request': request})
     services_ = services_.data
  
     if request.user.is_superuser:
+        #username = request.GET.get('username').strip()
         services_ = Myservice.objects.all()
         return render(request, 'superadmin/index.html',context={'service': services_})
     
 
     return render(request, 'user/index.html',context={'service': services_})
 
-@api_view(['GET'])
-def index(request):
-    file=Pdf.objects.get(id=5)
-    return render(request, 'user/index.html', context={"file":file})
+# @api_view(['GET'])
+# def index(request):
+#     file=Pdf.objects.get(id=5)
+#     return render(request, 'user/index.html', context={"file":file})
 
 @api_view(['GET'])
 @login_required
@@ -72,35 +74,25 @@ def perform_services(request):
     data=request.data
     serializer=StorefileSerializer(data=request.data)
     title = request.POST['title']
-    
-   
-    
- 
+     
     if serializer.is_valid():
         serializer.save()
        
         obj=Storefile.objects.filter(user=request.user.id).last()
         path=str(obj.pdf)
         file_path = os.path.join(settings.MEDIA_ROOT, path)
-        #/Users/manzoorhussain/Documents/Services/IlovePDF/pdf/media/pdf_output/Expert_Resource.docx
-        #ouput_file = "pdf_output/Expert_Resource.docx"
         userfile= str(request.user.id)
-        concatenated_str = userfile+"Common_Resource.docx"
-        save_path = "pdf_input/"+concatenated_str
-        save_path =  os.path.join(settings.MEDIA_ROOT, save_path)
-        #file_path_output = os.path.join(settings.MEDIA_ROOT, ouput_file)
-      
-       
         if title:
+
             title=title.replace("-"," ")
-           
+            outputpath = ("_".join(title.split())+".docx").lower()
+            concatenated_str = userfile+outputpath
+            save_path = "pdf_input/"+concatenated_str
+            save_path =  os.path.join(settings.MEDIA_ROOT, save_path)
             service_name = ("_".join(title.split())+"_Converter").lower()
             print("service_name",service_name)
-          
             output_ = ("pdf_output/"+"_".join(title.split())+"_template.docx").lower()
-          
             file_path_output = os.path.join(settings.MEDIA_ROOT, output_)
-        
             (eval(service_name)(file_path,file_path_output,save_path))
             
         
@@ -129,7 +121,9 @@ def download_docx(request):
         input_file_path = os.path.join(settings.MEDIA_ROOT, input_file)
         file_name = "/pdf_input/"
         userfile= str(request.user.id);
-        concatenated_str = userfile+"Common_Resource.docx"
+        title=title.replace("-"," ")
+        outputpath = ("_".join(title.split())+".docx").lower()
+        concatenated_str = userfile+outputpath
         output = "pdf_input/"+concatenated_str
         #output = "pdf_input/Common_Resource.docx"
         file_path = os.path.join(settings.MEDIA_ROOT, output)

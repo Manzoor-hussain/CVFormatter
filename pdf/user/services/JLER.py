@@ -20,8 +20,8 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
     )
     return response.choices[0].message["content"]
 
-def advocate_group_converter(path, pathout, path_save):
-    formatted= pathout
+def jler_converter(path,formatted_path,savepath):
+    formatted= formatted_path
 #     un_formatted=os.getcwd() + path
     
 #     doc = docx.Document(un_formatted)
@@ -45,7 +45,7 @@ def advocate_group_converter(path, pathout, path_save):
     elif path.endswith('.pdf'):
         unformated_text = read_text_from_pdf(path)
     else:
-        print('Unsupported file format')
+        unformated_text = 'Unsupported file format'
         
 
     os.environ["OPEN_API_KEY"] = api_key
@@ -62,48 +62,53 @@ def advocate_group_converter(path, pathout, path_save):
     \"""" + unformated_text + """\"
 
     in following JSON format:
-{
-"Name":"value"
-"Summary" : "value",
+    {
 
-"Experience" : [
-    {"Company Name" : "Name of company",
-    "Company location": "Location of that company",
-    "Duration" : "Working duration in company",
-    "Designation" : "Specific designation in that Company",
-    "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
-    },
-    
-    {"Company Name" : "Name of company",
-    "Company location": "Location of that company",
-    "Duration" : "Working duration in company",
-    "Designation" : "Specific designation in that Company",
-    "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
-    },
-    ...
-    ]
-"Education" : [
-    {"Institute Name":"Name of that institute",
-      "Institute location":"Location of that institute",
-       "Degree":"Name of that degree",
-       "Duration":"duration of that degree,
-    },
-    {"Institute Name":"Name of that institute",
-      "Institute location":"Location of that institute",
-       "Degree":"Name of that degree",
-       "Duration":"duration of that degree,
-    },
-...],
-"Training" : ["training1", "training2", ...],
-"Skills" : ["skill1", "skill2", ...],
-"Qualification" : ["qualification1", "qualification2", ...],
-"Languages" : ["language1", "language2", ...],
-"Interests" : ["interest1", "interest2", ...]
-}
+    "Name":"value"
+    "Career summary" :"summary", ...,
+
+    "Employment History" : [
+        {"Duration" : "Working Duration in Company",
+         "Designation":"Specific designation in that Company",
+         "Company Name" :"Name of company",
+         "Location":"Country",
+         "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
+
+        },
+        {"Duration" : "Working Duration in Company",
+         "Designation":"Specific designation in that Company",
+         "Company Name" :"Name of company",
+         "Location":"Country",
+         "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
+        },
+
+    "Education" : [
+        {"Degree" : "Name of degree",
+         "Duration":"Studying duration in institute",
+         "Institute Name":"Name Of institute",
+         "Location":"location of that institute",
+        },
+        {"Degree" : "Name of degree",
+         "Duration":"Studying duration in institute",
+         "Institute Name":"Name Of institute",
+         "Location":"location of that institute",
+        },
+        ...
+        ],
+    "Trainings" : ["training1", "training2", ...],
+    "Skills" : ["skill1", "skill2", ...],
+    "Interests" : ["interest1", "interest2", ...],
+    "Languages" : ["language1", "language2", ...],
+
+        ...
+        ]
+    }
 
     Do not include Grade
 
     Do not include Mobile number, Emali and home address 
+    
+    Do not return those kyes against which no value will be founded
     """
 
 
@@ -123,27 +128,23 @@ def advocate_group_converter(path, pathout, path_save):
         except:
             pass
         try:
-            if p.text.strip(' :\n').lower() == 'summary':
-                doc.paragraphs[i+2].add_run(dc['Summary'].strip()).bold = False
+            if p.text.strip(' :\n').lower() == 'career summary.':
+                doc.paragraphs[i+2].add_run(dc['Career summary'].strip()).bold = False
                 doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
 
         except:
             pass
-        
-        try:
 
+        try:        
             if p.text.strip(' :\n').lower() == 'education':
                 for j in dc['Education']:
-                    doc.paragraphs[i+2].add_run(j['Institute Name'].strip() + ", " + j['Institute location'].strip() + ", " + j['Degree'].strip() + "\n").bold=False
-                    doc.paragraphs[i+2].add_run(j['Duration'].strip() + "\n\n").bold=False
-
-        except:
-            pass
-        
-        try:
-            if p.text.strip(' :\n').lower() == 'qualification':
-                for j in dc['Qualification']:
-                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+        #             doc.paragraphs[i+2].add_run(j['Institute Name']).bold = Fals
+                    a = len(j['Duration'])*2
+                    print(a)
+                    b = " " * a
+                    
+                    doc.paragraphs[i+2].add_run(j['Duration'].strip() +"\t\t" +j['Degree'].strip() +'\n').bold =True
+                    doc.paragraphs[i+2].add_run(b + "\t\t" + j["Institute Name"].strip() + ' , ' + j["Location"].strip() + '\n\n').bold= False
         except:
             pass
 
@@ -163,7 +164,7 @@ def advocate_group_converter(path, pathout, path_save):
 
         try:
             if p.text.strip(' :\n').lower() == 'training':
-                for j in dc['Training']:
+                for j in dc['Trainings']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
@@ -176,20 +177,16 @@ def advocate_group_converter(path, pathout, path_save):
             pass
 
         try:
-            if p.text.strip(' :\n').lower() == 'experience':
-                for j in dc['Experience']:
-                    doc.paragraphs[i+2].add_run(j['Company Name'].strip() + '\n').bold = True
-                    doc.paragraphs[i+2].add_run(j['Designation'].strip() + '\n').bold = True
-                    doc.paragraphs[i+2].add_run(j['Duration'].strip() + '\n').bold = True
 
-    #                 doc.paragraphs[i+2].add_run('Responsibilities:' + '\n').bold = True
-                    if j['Responsibilities']:
-                        doc.paragraphs[i+2].add_run('\n')
+            if p.text.strip(' :\n').lower() == 'employment history':
+                for j in dc['Employment History']:
+                    doc.paragraphs[i+2].add_run(j['Duration'].strip() +"\t\t"+j['Designation'].strip()+ '\n').bold=True
+                    doc.paragraphs[i+2].add_run(j['Company Name'].strip() + ' – ' + j['Location'] + '\n').bold =True
                     for k in j['Responsibilities']:
                         doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
                     doc.paragraphs[i+2].add_run('\n\n')
         except:
             pass
-
-    doc.save(path_save)
+    
+    doc.save(savepath) 
     print("Process has Completed...")
