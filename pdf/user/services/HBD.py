@@ -2,12 +2,15 @@ import os
 import openai
 import docx
 import docx2txt
-import re
-import json
-import PyPDF2
-from docx.enum.text import WD_UNDERLINE
-from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from .keys import api_key
+from pprint import pprint
+import json
+import re
+import textwrap
+import PyPDF2
+import pdfplumber
+from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
+
 
 def get_completion(prompt, model="gpt-3.5-turbo"):
     messages = [{"role": "user", "content": prompt}]
@@ -19,38 +22,46 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
     return response.choices[0].message["content"]
 
 
-def hbd_converter(path,pathout,path_save):
-    formatted= pathout
-    un_formatted = path
-    formated_text = docx2txt.process(formatted)
+# Functions to check whether the unformatted file is a docx or pdf
+def read_text_from_docx(file_path):
+    doc = docx.Document(file_path)
+    text = [paragraph.text for paragraph in doc.paragraphs]
+    return '\n'.join(text)
 
-    try:
-        with open(un_formatted, 'rb') as file:
-        # Create a PDF reader object
-            pdf_reader = PyPDF2.PdfReader(file)
-            unformatted_text = ""
-            for i in range (len(pdf_reader.pages)):
-                first_page = pdf_reader.pages[i]
-                unformatted_text += first_page.extract_text()
-            print('Its PDF')
-    except:
-        try:
-            unformatted_text = docx2txt.process(un_formatted)
-            print('Its Docx')
-        except:
-            print('WE DONT SUPPORT THIS TYPE OF FILE')
+def read_text_from_pdf(file_path):
+    with open(file_path, 'rb') as file:
+        pdf_reader = PyPDF2.PdfReader(file)
+        text = []
+        for page in pdf_reader.pages:
+            text.append(page.extract_text())
+        return '\n'.join(text)
+    
+def hbd_converter(path_in, path_out, path_save):
+    
+    formatted = path_out
+    
+    # unformatted document
+    if path_in.endswith('.docx'):
+        unformatted_text = read_text_from_docx(path_in)
+    elif path_in.endswith('.pdf'):
+        unformatted_text = read_text_from_pdf(path_in)
+    else:
+        error = 'Format not supported.'
+        print(error)
 
+    # formatted document
+    formatted_text = docx2txt.process(formatted)
+    
+    print("Process has started...")
+    
     os.environ["OPEN_API_KEY"] = api_key
     openai.api_key = api_key
-
-    print("Process has Started...")
-
     
     test_text = """
 
     Ectract data from this text:
 
-    \"""" + unformated_text + """\"
+    \"""" + unformatted_text + """\"
 
     in following JSON format:
     {
@@ -94,13 +105,17 @@ def hbd_converter(path,pathout,path_save):
     
     dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
     
-    doc = docx.Document(formatted)
-    for i,p in enumerate(doc.paragraphs):
     
+    doc = docx.Document(formatted)
+
+    for i,p in enumerate(doc.paragraphs):
+
         try:        
-            if p.text.strip(' :\n').lower() == 'name':
-                doc.paragraphs[i].text = ""
-                doc.paragraphs[i].add_run(dc["Name"].strip()).bold = True; doc.paragraphs[i].runs[-1].font.size = Pt(30)
+            if p.text.strip().lower() == 'name':
+                    doc.paragraphs[i].text = ""
+                    run = doc.paragraphs[i+1].add_run(dc['Name'].strip().title())
+                    run.bold = True
+                    run.font.size = Pt(16)
 
         except:
             pass
@@ -203,5 +218,7 @@ def hbd_converter(path,pathout,path_save):
         except:
             pass
 
+
     doc.save(path_save)
-    print("Process has Completed...")
+    print("Conversion completed !!")    
+    

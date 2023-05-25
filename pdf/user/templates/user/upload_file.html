@@ -232,6 +232,7 @@
                 },
                 error: function (data) {
                     //document.getElementById('save').innerHTML = '';
+                    $('#mybar_main').css('display','none')
                     ShowNotify('Error', data.responseJSON.error, 'error');
                 }
             });

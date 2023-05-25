@@ -19,16 +19,36 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
     return response.choices[0].message["content"]
 
 def alexander_steele_converter(path,pathoutput,save_path):
-    formatted= pathoutput
+    formatted = pathoutput
     # un_formatted=os.getcwd() + "/Unformated_EdEx/Adil Thomas Daraki CV .docx"
     # un_formatted=os.getcwd() + "/Unformated_EdEx/Alice Maynard CV.docx"
-   
+    #un_formatted=os.getcwd() + path
     # un_formatted=os.getcwd() + "/Unformated_EdEx/Amrit Bassan CV.docx"
     
-    doc = docx.Document(path)
-    formated_text = docx2txt.process(formatted)
-    unformated_text = docx2txt.process(path)
+#     doc = docx.Document(un_formatted)
+#     formated_text = docx2txt.process(formatted)
+#     unformated_text = docx2txt.process(un_formatted)
+    def read_text_from_docx(path):
+        doc = docx.Document(path)
+        text = [paragraph.text for paragraph in doc.paragraphs]
+        return '\n'.join(text)
 
+    def read_text_from_pdf(path):
+        with open(path, 'rb') as file:
+            pdf_reader = PyPDF2.PdfReader(file)
+            text = []
+            for page in pdf_reader.pages:
+                text.append(page.extract_text())
+            return '\n'.join(text)
+
+# Example usage
+    if path.endswith('.docx'):
+        unformated_text = read_text_from_docx(path)
+    elif path.endswith('.pdf'):
+        unformated_text = read_text_from_pdf(path)
+    else:
+        print('Unsupported file format')
+    
     os.environ["OPEN_API_KEY"] = api_key
     openai.api_key = api_key
     # llm=OpenAI(temperature=0, max_tokens=1500,openai_api_key=api_key)
@@ -37,31 +57,34 @@ def alexander_steele_converter(path,pathoutput,save_path):
     
     print ("Process has Started...")
     test_text = """
-
-    Ectract data from this text:
+    Extract data from this text:
 
     \"""" + unformated_text + """\"
 
     in following JSON format:
     {
-    "Profile" : "value",
+    "Profile Summary" : "value",
     "Experience/Employment History" : [
-        {"Company Name" : ["Name of company", "Working Duration in Company"],
+        {"Company Name" : "Name of company",
+        "Duration" : "Working Duration in Company",
         "Designation" : "Specific designation in that Company",
         "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...],
         },
-        {"Company Name" : ["Name of company", "Working Duration in Company"],
+        {"Company Name" : "Name of company",
+        "Duration" : "Working Duration in Company",
         "Designation" : "Specific designation in that Company",
         "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...],
         },
         ...
-        ]
+        ],
     "Education" : [
-        {"Institute Name" : ["Name Of institute","Studying duration in institute"],
-        "Degree Name": "Name of degree",
+        {"Institute Name" : "Name Of institute",
+        "Duration" : "Studying duration in institute",
+        "Degree title" : "Name or title of Degree",
         },
-        {"Institute Name" : ["Name Of institute", "Studying duration in institute"],
-        "Degree Name": "Name of degree", 
+        {"Institute Name" : "Name Of institute",
+        "Duration" : "Studying duration in institute",
+        "Degree title" : "Name or title of Degree",
         },
         ...
         ],
@@ -76,11 +99,13 @@ def alexander_steele_converter(path,pathoutput,save_path):
 
     Do not include Grade
 
-    Do not include Mobile number, Emali and home address 
+    Do not return those keys against which no value will be founded
+
+    Do not include Mobile number, Emali and home address
     """
 
-
     result = get_completion(test_text)
+
     print(result)
     dc = dict(json.loads(re.sub(',[ \n]*\]',']',re.sub(',[ \n]*\}','}',result.replace('...','')))))
 
@@ -99,8 +124,7 @@ def alexander_steele_converter(path,pathoutput,save_path):
             if p.text.strip(' :\n').lower() == 'education':
                 for j in dc['Education']:
         #             doc.paragraphs[i+2].add_run(j['Institute Name']).bold = Fals
-                    doc.paragraphs[i+2].add_run(j["Institute Name"][0].strip() + ' – ' + j["Institute Name"][1].strip() + '\n').font.underline = False
-                    doc.paragraphs[i+2].add_run(j['Degree Name'].strip() + '\n\n').bold = True
+                    doc.paragraphs[i+2].add_run('  • ' + j["Duration"].strip() + ' – ' + j["Institute Name"].strip() + ', ' + j["Degree title"].strip() + '\n')
         except:
             pass
 
@@ -155,21 +179,38 @@ def alexander_steele_converter(path,pathoutput,save_path):
         except:
             pass
 
-        try:
-            if p.text.strip(' :\n').lower() == 'experience':
-                for j in dc['Experience/Employment History']:
-                    doc.paragraphs[i+2].add_run(j['Company Name'][0].strip() + ' – ' + j['Company Name'][1] + '\n').font.underline = False
-                    doc.paragraphs[i+2].add_run(j['Designation'].strip() + '\n\n').bold = True
-                    doc.paragraphs[i+2].add_run('Responsibilities:' + '\n').bold = True
-                    for k in j['Responsibilities']:
-                        doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
-                    doc.paragraphs[i+2].add_run('\n\n')
-        except:
-            pass
 
-        doc.save(save_path)
+        if p.text.strip(' :\n').lower() == 'experience':
+            for j in dc['Experience/Employment History']:
+
+                a = ceil(len(j["Duration"]) * 1.75)
+                print(a)
+                b = " " * a
+    #             c = floor(a / 4)
+    #             if a % 4 == 3:
+    #                 b = " " * 1 
+    #             elif a % 4 == 2:
+    #                 b = " " * 2
+    #             else:
+    #                 a % 4 == 1
+    #                 b = " " * 3
+
+                run = doc.paragraphs[i + 2].add_run(j["Duration"].strip()+ '\t\t')
+                run.font.bold = False  # Unbold the first company name
+
+                run = doc.paragraphs[i + 2].add_run(j['Company Name'] + '\n')
+                run.font.bold = True
+    #             doc.paragraphs[i+2].add_run(j["Duration"].strip() +"\t\t" + j["Company Name"].strip() + "\n")
+                doc.paragraphs[i+2].add_run(b + "\t\t" + j["Designation"].strip() + "\n").bold=True
+                for k in j["Responsibilities"]:
+                    doc.paragraphs[i+2].add_run('  • ' + k.strip() + "\n")
+                doc.paragraphs[i+2].add_run('\n\n')
+
+    #     except:
+    #         pass
+
+    doc.save(save_path)
     print("\n")
     print("---------------------------------------------------------------------------------------------------------------------")
     print("\n")
     print("Process has Completed...")
-path = "/Unformated_Fair/Alex Betts CV Ashbys.docx"

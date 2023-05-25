@@ -30,6 +30,7 @@ from .services.True_Method import true_method_converter
 from .services.JLER import jler_converter
 from .services.ScaleGenesis import scale_genesis_converter
 from .services.FDRecruit import fd_recruit_converter
+from .services.Scienta import scienta_converter
 
 from django.http import FileResponse
 from django.contrib.auth.models import User
