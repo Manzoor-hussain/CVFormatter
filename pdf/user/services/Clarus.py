@@ -9,7 +9,6 @@ import re
 import textwrap
 import PyPDF2
 import pdfplumber
-
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
 
@@ -38,17 +37,15 @@ def read_text_from_pdf(file_path):
         return '\n'.join(text)
 
 
-def clarus_converter(path,pathoutput,save_path):
+def clarus_converter(path_in, path_out, path_save):
     
-    # paths to unformatted and formatted files
-    formatted= pathoutput
-    # unformatted= os.getcwd() + path
+    formatted = path_out
     
     
-    if path.endswith('.docx'):
-        unformatted_text = read_text_from_docx(path)
-    elif path.endswith('.pdf'):
-        unformatted_text = read_text_from_pdf(path)
+    if path_in.endswith('.docx'):
+        unformatted_text = read_text_from_docx(path_in)
+    elif path_in.endswith('.pdf'):
+        unformatted_text = read_text_from_pdf(path_in)
     else:
         error = 'Format not supported.'
         print(error)
@@ -65,7 +62,7 @@ def clarus_converter(path,pathoutput,save_path):
 
     test_text = """
 
-    Ectract data from this text:
+    Extract data from this text:
 
     \"""" + unformatted_text + """\"
 
@@ -111,11 +108,12 @@ def clarus_converter(path,pathoutput,save_path):
     # Prompt result
     result = get_completion(test_text)
     
+   
+    
     dc = dict(json.loads(re.sub(',[ \n]*\]',']',re.sub(',[ \n]*\}','}',result.replace('...','')))))
     
-#     print("Dictttttt")
-#     print(dc)
-#     print("Dictttttt")
+   
+    
     
     doc = docx.Document(formatted)
     
@@ -172,8 +170,9 @@ def clarus_converter(path,pathoutput,save_path):
                     doc.paragraphs[i+2].add_run('(' + duration + ')' + '\n').bold = True
                     doc.paragraphs[i+2].add_run(job_title + '\n\n').bold = False
     #                 doc.paragraphs[i+2].add_run('Duties:' + '\n\n')
-                for k in j['Responsibilities']:
-                    doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
+                    for k in j['Responsibilities']:
+                        doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
+                    doc.paragraphs[i+2].add_run("\n\n")
 #                     doc.paragraphs[i+2].add_run('\n')
 #                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
@@ -237,9 +236,8 @@ def clarus_converter(path,pathoutput,save_path):
                 pass
 
 
-    doc.save(save_path)
+    doc.save(path_save)
     print("Conversion has completed !!")
-    
     
     
     

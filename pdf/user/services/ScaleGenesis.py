@@ -37,7 +37,7 @@ def read_text_from_pdf(file_path):
         return '\n'.join(text)
     
 
-def scale_genesis_converter(path_in,path_out,path_save):
+def scale_genesis_converter(path_in, path_out, path_save):
     
     formatted = path_out
     
@@ -69,9 +69,9 @@ def scale_genesis_converter(path_in,path_out,path_save):
     "Position" : "value",
     "Availability" : "value",
     "Summary of skills" : ["Key Skill1", "Key Skill2", ...],
-    "Salary Expectations/Rate" : ["value"],
-    "Location" : ["value"],
-    "Summary" : ["value"],
+    "Salary Expectations/Rate" : "value",
+    "Location" : "value",
+    "Summary" : "value",
 
     "Work Experience" : [
         {"Company Name" : "Name of company",
@@ -108,8 +108,17 @@ def scale_genesis_converter(path_in,path_out,path_save):
     """
     result = get_completion(test_text)
     
-    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
+#     print("----------------------------------------------------------------")
+#     print("                          Result                            ")
+#     print("----------------------------------------------------------------")
+#     print(result)
     
+    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Uu]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
+    
+#     print("----------------------------------------------------------------")
+#     print("                          Dictionary                            ")
+#     print("----------------------------------------------------------------")
+#     print(dc)
     
     doc = docx.Document(formatted)
 
@@ -164,12 +173,10 @@ def scale_genesis_converter(path_in,path_out,path_save):
     #         doc.paragraphs[i].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
 
         if p.text.strip(' :\n').lower() == 'summary':
-            try:
-                name_paragraph = doc.paragraphs[i+2]
-                name_paragraph.text = str(dc['Summary'] + '\n')
-    #             name_paragraph.runs[0].bold = True
-            except:
-                pass
+          
+            doc.paragraphs[i+2].add_run(dc['Summary'])
+#             name_paragraph.runs[0].bold = True
+            
 
         if p.text.strip(' :\n').lower() == 'work experience':
             try:
@@ -188,8 +195,9 @@ def scale_genesis_converter(path_in,path_out,path_save):
                     job_title_run.bold = False
 
     #                 doc.paragraphs[i+2].add_run('Duties:' + '\n\n')
-                for k in j['Responsibilities']:
-                    respo = doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
+                    for k in j['Responsibilities']:
+                        respo = doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
+                    doc.paragraphs[i+2].add_run("\n\n")
 
             except:
                 pass
@@ -242,10 +250,4 @@ def scale_genesis_converter(path_in,path_out,path_save):
 
     doc.save(path_save)
     print("Conversion completed !!")
-    
-    
-    
-    
-    
-    
     

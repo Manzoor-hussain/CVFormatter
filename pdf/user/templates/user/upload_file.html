@@ -275,20 +275,7 @@
             title='output'+title+'.docx'
             link.download =title
     
-           
-
-            // if (title.includes("Expert")) {
-            //  link.download = 'output_expert_resource.docx';
-            // }
-            // if (title.includes("Joss")) {
-            //   link.download = 'output_joss_search.docx';
-            // }
-            // if (title.includes("ASPION")) {
-            //   link.download = 'output_aspion_search.docx';
-            // }
-            // if (title.includes("Clarus")) {
-            //   link.download = 'output_clarus.docx';
-            // }
+      
             
             link.click();
             window.URL.revokeObjectURL(url);
@@ -296,6 +283,7 @@
             $('#download_button').css('display','none');
           },
           error: function(xhr, status, error) {
+            $('#select_button').css('display','block');
             console.log("error");
           }
         });

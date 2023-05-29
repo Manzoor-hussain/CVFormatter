@@ -38,16 +38,14 @@ def read_text_from_pdf(file_path):
 
 
 
-def fmcg_converter(path, pathoutput,save_path):
+def fmcg_converter(path_in, path_out, path_save):
     
-    # paths to unformatted and formatted files
-    formatted= pathoutput
-    # unformatted = os.getcwd() + path
+    formatted = path_out 
     
-    if path.endswith('.docx'):
-        unformatted_text = read_text_from_docx(path)
-    elif path.endswith('.pdf'):
-        unformatted_text = read_text_from_pdf(path)
+    if path_in.endswith('.docx'):
+        unformatted_text = read_text_from_docx(path_in)
+    elif path_in.endswith('.pdf'):
+        unformatted_text = read_text_from_pdf(path_in)
     else:
         error = 'Format not supported.'
         print(error)
@@ -108,11 +106,22 @@ def fmcg_converter(path, pathoutput,save_path):
         ]
     }
     make it sure to keep the response in JSON format.
+    If value not found then leave it empty/blank.
     """
 
     result = get_completion(test_text)
+    
+#     print("----------------------------------------------------------------")
+#     print("                          Result                            ")
+#     print("----------------------------------------------------------------")
 #     print(result)
-    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
+    
+    dc = dict(json.loads(re.sub(',[ \n]*\]',']',re.sub(',[ \n]*\}','}',result.replace('...','')))))
+    
+#     print("----------------------------------------------------------------")
+#     print("                          Dictionary                            ")
+#     print("----------------------------------------------------------------")
+#     print(dc)
  
     
     doc = docx.Document(formatted)
@@ -172,24 +181,22 @@ def fmcg_converter(path, pathoutput,save_path):
 
 
         if p.text.strip(' :\n').lower() == 'education':
-            try:
-                for j in dc['Education']:
-                    institute_name = j['Institute Name'].strip()
-                    duration = j['Duration'].strip()
-                    degree_name = j['Degree Name'].strip()
+            
+            for j in dc['Education']:
+                institute_name = j['Institute Name'].strip()
+                duration = j['Duration'].strip()
+                degree_name = j['Degree Name'].strip()
 
-                    doc.paragraphs[i+2].add_run(institute_name + ' ').bold = True
-                    if duration:
-                        doc.paragraphs[i+2].add_run('(' + duration + ')' + '\n').bold = True
-                    else:
-                        doc.paragraphs[i+2].add_run('(' + "Not mentioned" + ')' + '\n').bold = True
-                    if degree_name:
-                        doc.paragraphs[i+2].add_run(degree_name + '\n\n').bold = False
-                    else:
-                        doc.paragraphs[i+2].add_run("Not mentioned" + '\n\n').bold = False 
-            except:
-                pass
-
+                doc.paragraphs[i+2].add_run(institute_name + ' ').bold = True
+                if duration:
+                    doc.paragraphs[i+2].add_run('(' + duration + ')' + '\n').bold = True
+                else:
+                    doc.paragraphs[i+2].add_run('(' + "Not mentioned" + ')' + '\n').bold = True
+                if degree_name:
+                    doc.paragraphs[i+2].add_run(degree_name + '\n\n').bold = False
+                else:
+                    doc.paragraphs[i+2].add_run("Not mentioned" + '\n\n').bold = False 
+            
 
         if p.text.strip(' :\n').lower() == 'professional qualifications':
             try:
@@ -248,12 +255,13 @@ def fmcg_converter(path, pathoutput,save_path):
                     doc.paragraphs[i+2].add_run('(' + duration + ')' + '\n').bold = True
                     doc.paragraphs[i+2].add_run(job_title + '\n\n').bold = False
     #                 doc.paragraphs[i+2].add_run('Duties:' + '\n\n')
-                for k in j['Responsibilities']:
-                    doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
+                    for k in j['Responsibilities']:
+                        doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
+                    doc.paragraphs[i+2].add_run("\n\n")
 #                     doc.paragraphs[i+2].add_run('\n')
             except:
                 pass
 
 
-    doc.save(save_path)
+    doc.save(path_save)
     print("Conversion has completed !!")

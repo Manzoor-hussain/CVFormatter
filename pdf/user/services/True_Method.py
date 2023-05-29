@@ -40,7 +40,7 @@ def read_text_from_pdf(file_path):
     
 def true_method_converter(path_in, path_out, path_save):
     
-    formatted =  path_out
+    formatted = path_out
     
     # unformatted document
     if path_in.endswith('.docx'):
@@ -101,11 +101,22 @@ def true_method_converter(path_in, path_out, path_save):
 
     }
     make it sure to keep the response in JSON format.
+    If value not found then leave it empty/blank.
     """
     result = get_completion(test_text)
     
+#     print("----------------------------------------------------------------")
+#     print("                          Result                            ")
+#     print("----------------------------------------------------------------")
+#     print(result)
+
     dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
     
+#     print("----------------------------------------------------------------")
+#     print("                          Dictionary                            ")
+#     print("----------------------------------------------------------------")
+#     print(dc)
+     
     
     doc = docx.Document(formatted)
 
@@ -136,7 +147,7 @@ def true_method_converter(path_in, path_out, path_save):
         if p.text.strip(' :\n').lower() == 'profile':
             try:
                 doc.paragraphs[i+2].text = str(dc['Profile'] + '\n')
-                doc.paragraphs[i].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+                # doc.paragraphs[i].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
 
             except:
                 pass
@@ -169,9 +180,10 @@ def true_method_converter(path_in, path_out, path_save):
                     job_title_run.bold = False
                     job_title_run.font.size = Pt(font_size)
     #                 doc.paragraphs[i+2].add_run('Duties:' + '\n\n')
-                for k in j['Responsibilities']:
-                    respo = doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
-                    respo.font.size = Pt(font_size)
+                    for k in j['Responsibilities']:
+                        respo = doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
+                        respo.font.size = Pt(font_size)
+                    doc.paragraphs[i+2].add_run("\n\n")
             except:
                 pass
 
