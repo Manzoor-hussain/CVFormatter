@@ -35,6 +35,8 @@ from .services.Adway import adway_converter
 from .services.FeatherBank import feather_bank_converter
 from .services.William import william_blake_converter
 from .services.LEO import leo_partner_converter
+from .services.Harrington_Morris import harrington_morris_converter
+from .services.Mallory import mallory_converter
 
 from django.http import FileResponse
 from django.contrib.auth.models import User

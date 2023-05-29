@@ -39,7 +39,7 @@ def read_text_from_pdf(file_path):
  
 
 def fd_recruit_converter(path_in, path_out, path_save):
-
+    
     formatted = path_out
     
     # unformatted document
@@ -68,7 +68,7 @@ def fd_recruit_converter(path_in, path_out, path_save):
     "Name" : "value",
     "Resides" : "value",
     "Education" : "value",
-    "Profile" : ["value"],
+    "Profile" : "value",
 
     "Career History" : [
         {"Company Name" : "Name of company",
@@ -95,7 +95,18 @@ def fd_recruit_converter(path_in, path_out, path_save):
     result = get_completion(test_text)
     
     
-    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
+#     print("----------------------------------------------------------------")
+#     print("                          Result                            ")
+#     print("----------------------------------------------------------------")
+#     print(result)
+    
+    dc = dict(json.loads(re.sub(',[ \n]*\]',']',re.sub(',[ \n]*\}','}',result.replace('...','')))))
+    
+#     print("----------------------------------------------------------------")
+#     print("                          Dictionary                            ")
+#     print("----------------------------------------------------------------")
+#     print(dc)
+    
     
     doc = docx.Document(formatted)
 
@@ -127,13 +138,10 @@ def fd_recruit_converter(path_in, path_out, path_save):
 
 
     for i,p in enumerate(doc.paragraphs):
-
-    #         doc.paragraphs[i].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
-
+    
         if p.text.strip(' :\n').lower() == 'profile':
             try:
-                name_paragraph = doc.paragraphs[i+2]
-                name_paragraph.text = str(dc['Profile'] + '\n')
+                doc.paragraphs[i+2].add_run(dc['Profile'].strip())
     #             name_paragraph.runs[0].bold = True
             except:
                 pass
@@ -155,8 +163,9 @@ def fd_recruit_converter(path_in, path_out, path_save):
                     job_title_run.bold = False
 
     #                 doc.paragraphs[i+2].add_run('Duties:' + '\n\n')
-                for k in j['Responsibilities']:
-                    respo = doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
+                    for k in j['Responsibilities']:
+                        doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
+                    doc.paragraphs[i+2].add_run("\n\n")
 
             except:
                 pass

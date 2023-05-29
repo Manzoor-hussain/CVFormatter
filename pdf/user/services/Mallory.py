@@ -10,7 +10,8 @@ from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.shared import Pt
 import PyPDF2
 import pdfplumber
-
+from docx.shared import Pt
+from docx.shared import RGBColor
 
 
 def get_completion(prompt, model="gpt-3.5-turbo"):
@@ -22,7 +23,7 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
     )
     return response.choices[0].message["content"]
 
-def william_blake_converter(path, formatted_path,save_path):
+def mallory_converter(path ,formatted_path,save_path):
     formatted= formatted_path
 #     un_formatted=os.getcwd() + path
     
@@ -66,40 +67,36 @@ def william_blake_converter(path, formatted_path,save_path):
     in following JSON format:
 {
 "Name":"candidate name",
-"Summary" : "value",
+"Profile" : "value",
 
-"Work Experience" : [
-    {"Duration" : "Working duration in company",
-     "Company Name" : "Name of company",
-     "Location":"location of that company"
+"Employment History" : [
+    {"Company Name" : "Name of company",
+     "Duration" : "Working duration in company",
      "Designation" : "Specific designation in that Company",
      "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
     },
     
-    {"Duration" : "Working duration in company",
-     "Company Name" : "Name of company",
-     "Location":"location of that company"
+    {"Company Name" : "Name of company",
+     "Duration" : "Working duration in company",
      "Designation" : "Specific designation in that Company",
      "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
     },
     ...
     ]
 "Education" : [
-    {"Duration":"duration of that degree,
-     "Institute Name":"Name of that institute",
-     "Location":"Location of that institute "
+    {"Institute Name":"Name of that institute",
+     "Duration":"duration of that degree,
      "Degree":"Name of that degree",
     },
     
-    {"Duration":"duration of that degree,
-     "Institute Name":"Name of that institute",
-     "Location":"Location of that institute "
+    {"Institute Name":"Name of that institute",
+     "Duration":"duration of that degree,
      "Degree":"Name of that degree",
     },
-...],
-"Skills" : ["skill1", "skill2", ...],
+   ...],
+"Trainings" : ["trainings1", "trainings2", ...],
+"Skills" : ["skills1", "skills2", ...],
 "Qualifications" : ["qualifications1", "qualifications2", ...],
-"Certifications":["certifications1","certifications2",...]
 "Language":["language1","language2",...]
 "Interests":["interests1","interests2",...]
 
@@ -137,23 +134,26 @@ def william_blake_converter(path, formatted_path,save_path):
     #     except:
     #         pass
         try:
-            if p.text.strip(' :\n').lower() == 'summary':
-                doc.paragraphs[i].text = ""
-                run1=doc.paragraphs[i].add_run(dc['Summary'].strip().title())
+            if p.text.strip(' :\n').lower() == 'profile':
+    #             doc.paragraphs[i].text = ""
+                run1=doc.paragraphs[i+2].add_run(dc['Profile'].strip())
                 run1.bold=False
-                run1=doc.paragraphs[i].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+                run1=doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
 
         except:
             pass
 
         if p.text.strip(' :\n').lower() == 'education':
             for j in dc['Education']:
-                run1 = doc.paragraphs[i+2].add_run(j['Duration'].strip()+"\n")
-                run1.bold=True
-                run2 = doc.paragraphs[i+2].add_run("\t\t\t\t"+j['Institute Name'].strip()+"\n").bold=True
-    #             run2 = doc.paragraphs[i+2].add_run("\t\t\t\t\t\t\t"+j['Location'].strip()+"\n").bold=True
-                run4 = doc.paragraphs[i+2].add_run("\t\t\t\t"+j['Degree'].strip()+"\n")
-                run4.bold=False
+                run1 = doc.paragraphs[i+2].add_run(j['Institute Name'].strip()+"\n")
+                run1.font.color.rgb = RGBColor(145, 148, 146)  # Red color
+                run2 = doc.paragraphs[i+2].add_run(j['Duration'].strip()+"\n")
+                run2.bold=False
+                run2.font.color.rgb = RGBColor(145, 148, 146)  # Red color
+                run3 = doc.paragraphs[i+2].add_run(j['Degree'].strip()+"\n")
+                run3.bold=False
+                run3.font.color.rgb = RGBColor(145, 148, 146)  # Red color
+
     #             run4.italic=True
 
     #             doc.paragraphs[i+2].add_run(j['Duration'].strip()+"\n").bold=False
@@ -174,6 +174,13 @@ def william_blake_converter(path, formatted_path,save_path):
             pass
 
         try:
+            if p.text.strip(' :\n').lower() == 'qualifications':
+                for j in dc['Qualifications']:
+                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+        except:
+            pass
+
+        try:
             if p.text.strip(' :\n').lower() == 'language':
                 for j in dc['Language']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
@@ -188,8 +195,8 @@ def william_blake_converter(path, formatted_path,save_path):
             pass
 
         try:
-            if p.text.strip(' :\n').lower() == 'training':
-                for j in dc['Training']:
+            if p.text.strip(' :\n').lower() == 'trainings':
+                for j in dc['Trainings']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
@@ -202,12 +209,15 @@ def william_blake_converter(path, formatted_path,save_path):
             pass
 
         try:
-            if p.text.strip(' :\n').lower() == 'work experience':
-                for j in dc['Work Experience']:
-                    run1=doc.paragraphs[i+2].add_run(j['Duration'].strip() + "\n").bold=True
-                    run2=doc.paragraphs[i+2].add_run("\t\t\t\t\t"+j['Company Name'].strip()+"\n").bold=True
-                    run3=doc.paragraphs[i+2].add_run("\t\t\t\t\t"+j['Designation'].strip() + "\n\n")
-                    run3.bold=True
+            if p.text.strip(' :\n').lower() == 'employment history':
+                for j in dc['Employment History']:
+                    run1=doc.paragraphs[i+2].add_run(j['Company Name'].strip()+"\n")
+                    run1.font.color.rgb = RGBColor(145, 148, 146)  # Red color
+                    run2=doc.paragraphs[i+2].add_run(j['Duration'].strip() + "\n")
+                    run2.font.color.rgb = RGBColor(145, 148, 146)  # Red color
+                    run3=doc.paragraphs[i+2].add_run(j['Designation'].strip() + "\n\n")
+                    run3.font.color.rgb = RGBColor(145, 148, 146)  # Red color
+                    run3.bold=False
     #                 run3.italic=True
     #                 run4=doc.paragraphs[i+2].add_run("\t\t\t\t\t\t"+j['Location'].strip()+"\n\n")
     #                 run4.bold=False

@@ -152,9 +152,9 @@ def adway_converter(path ,formatted_path,save_path):
             for j in dc['Education']:
                 run1 = doc.paragraphs[i+2].add_run(j['Duration'].strip()+"\n")
                 run1.bold=False
-                run2 = doc.paragraphs[i+2].add_run("\t\t\t\t\t\t\t"+j['Institute Name'].strip()+"\n").bold=True
+                run2 = doc.paragraphs[i+2].add_run("\t\t\t\t\t"+j['Institute Name'].strip()+"\n").bold=True
     #             run2 = doc.paragraphs[i+2].add_run("\t\t\t\t\t\t\t"+j['Location'].strip()+"\n").bold=True
-                run4 = doc.paragraphs[i+2].add_run("\t\t\t\t\t\t\t"+j['Degree'].strip()+"\n")
+                run4 = doc.paragraphs[i+2].add_run("\t\t\t\t\t"+j['Degree'].strip()+"\n")
                 run4.bold=True
     #             run4.italic=True
 
@@ -207,8 +207,8 @@ def adway_converter(path ,formatted_path,save_path):
             if p.text.strip(' :\n').lower() == 'employment history':
                 for j in dc['Employment History']:
                     run1=doc.paragraphs[i+2].add_run(j['Duration'].strip() + "\n").bold=True
-                    run2=doc.paragraphs[i+2].add_run("\t\t\t\t\t\t"+j['Company Name'].strip()+"\n").bold=True
-                    run3=doc.paragraphs[i+2].add_run("\t\t\t\t\t\t"+j['Designation'].strip() + "\n\n")
+                    run2=doc.paragraphs[i+2].add_run("\t\t\t\t\t"+j['Company Name'].strip()+"\n").bold=True
+                    run3=doc.paragraphs[i+2].add_run("\t\t\t\t\t"+j['Designation'].strip() + "\n\n")
                     run3.bold=True
     #                 run3.italic=True
     #                 run4=doc.paragraphs[i+2].add_run("\t\t\t\t\t\t"+j['Location'].strip()+"\n\n")
