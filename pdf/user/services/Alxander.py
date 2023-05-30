@@ -97,12 +97,11 @@ def alexander_steele_converter(path,pathoutput,save_path):
 
     }
 
-    Please keep the following points in considration while extracting data from text:
-        1. Do not summarize or rephrase Responsibilities. Extract each Responsibility completely from text.
+    You must keep the following points in considration while extracting data from text:
+        1. Do NOT split, rephrase or summarize list of Responsibilities. Extract each Responsibility as a complete sentence from text.
         2. Make it sure to keep the response in JSON format.
         3. If value not found then leave it empty/blank.
-        4. Do not include Mobile number, Email and Home address.
-        5. Do not include Grade  
+        4. Do not include Mobile number, Email and Home address. 
     """
 
     result = get_completion(test_text)
