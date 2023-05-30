@@ -106,7 +106,7 @@ def aspion_converter(path,pathout,path_save):
 
         try:
             if p.text.strip(' :\n').lower() == 'summary':
-                doc.paragraphs[i+2].add_run(dc['Summary'].strip()).bold = False
+                doc.paragraphs[i+2].add_run(dc['Profile Summary'].strip()).bold = False
                 doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
 
         except:
