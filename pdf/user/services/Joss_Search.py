@@ -184,8 +184,8 @@ def joss_search_converter(path, pathoutput,save_path):
                     doc.paragraphs[i+2].add_run('(' + duration + ')' + '\n').bold = True
                     doc.paragraphs[i+2].add_run(job_title + '\n\n').bold = False
     #                 doc.paragraphs[i+2].add_run('Duties:' + '\n\n')
-                for k in j['Responsibilities']:
-                    doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
+                    for k in j['Responsibilities']:
+                        doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
 #                     doc.paragraphs[i+2].add_run('\n')
 #                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
