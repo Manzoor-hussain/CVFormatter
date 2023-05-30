@@ -62,47 +62,49 @@ def scienta_converter(path,formatted_path,save_path):
     \"""" + unformated_text + """\"
 
     in following JSON format:
-{
-"Name":"value"
-"Profile" : "value",
+    {
+    "Name":"value",
+    "Profile" : "value",
+    "Professional Experience" : [
+        {"Company Name" : "Name of company",
+        "Company location": "Location of that company",
+        "Duration" : "Working duration in company",
+        "Designation" : "Specific designation in that Company",
+        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
+        },
+        
+        {"Company Name" : "Name of company",
+        "Company location": "Location of that company",
+        "Duration" : "Working duration in company",
+        "Designation" : "Specific designation in that Company",
+        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
+        },
+        ...
+        ],
+    "Education" : [
+        {"Institute" : "Name Of institute",
+        "Duration" : "Studying duration in institute",
+        "Degree": "Name of degree",
+        },
+        {"Institute" : "Name Of institute",
+        "Duration" : "Studying duration in institute",
+        "Degree": "Name of degree",
+        },
+        ...
+        ],
+    "Training" : ["training1", "training2", ...],
+    "Skills" : ["skill1", "skill2", ...],
+    "Certificates" : ["certificate1", "certificate2", ...],
+    "Languages" : ["language1", "language2", ...],
+    "Interests" : ["interest1", "interest2", ...]
+    }
 
-"Professional Experience" : [
-    {"Company Name" : "Name of company",
-    "Company location": "Location of that company",
-    "Duration" : "Working duration in company",
-    "Designation" : "Specific designation in that Company",
-    "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
-    },
-    
-    {"Company Name" : "Name of company",
-    "Company location": "Location of that company",
-    "Duration" : "Working duration in company",
-    "Designation" : "Specific designation in that Company",
-    "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
-    },
-    ...
-    ]
-"Education" : [
-    {"Institute" : "Name Of institute",
-    "Duration" : "Studying duration in institute",
-    "Degree": "Name of degree",
-    },
-    {"Institute" : "Name Of institute",
-    "Duration" : "Studying duration in institute",
-    "Degree": "Name of degree",
-    },
-    ...
-    ],
-"Training" : ["training1", "training2", ...],
-"Skills" : ["skill1", "skill2", ...],
-"Certificates" : ["certificate1", "certificate2", ...],
-"Languages" : ["language1", "language2", ...],
-"Interests" : ["interest1", "interest2", ...]
-}
-
-    Do not include Grade
-
-    Do not include Mobile number, Emali and home address 
+    Please keep the following points in considration while extracting data from text:
+        1. Do not summarize or rephrase Responsibilities. Extract each Responsibility completely from text.
+        2. Make it sure to keep the response in JSON format.
+        3. If value not found then leave it empty/blank.
+        4. Do not include Mobile number, Email and Home address.
+        5. Do not include Grade
     """
 
 

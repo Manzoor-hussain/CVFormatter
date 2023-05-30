@@ -8,8 +8,8 @@ from .keys import api_key
 from docx.enum.text import WD_UNDERLINE
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.shared import Pt
+from math import ceil
 import PyPDF2
-import pdfplumber
 
 
 def get_completion(prompt, model="gpt-3.5-turbo"):
@@ -21,8 +21,8 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
     )
     return response.choices[0].message["content"]
 
-def leo_partner_converter(path, formatted_path,save_path):
-    formatted= formatted_path
+def leo_partner_converter(path, path_out, path_save):
+    formatted= path_out
 #     un_formatted=os.getcwd() + path
     
 #     doc = docx.Document(un_formatted)
@@ -51,9 +51,7 @@ def leo_partner_converter(path, formatted_path,save_path):
 
     os.environ["OPEN_API_KEY"] = api_key
     openai.api_key = api_key
-    # llm=OpenAI(temperature=0, max_tokens=1500,openai_api_key=api_key)
-    fields_labels = "Name, PROFILE, EDUCATION, IT LITERACY, CERTIFICATES, PROJECTS, PROFESSIONAL QUALIFICATIONS, SOFTWARES, languages, Interests, TRAININGS, skills, WORK EXPERIENCE"
-
+    
     
     print ("Process has Started...")
     test_text = """
@@ -63,57 +61,59 @@ def leo_partner_converter(path, formatted_path,save_path):
     \"""" + unformated_text + """\"
 
     in following JSON format:
-{
-"Name":"candidate name",
-"Profile" : "value",
+    {
+    "Name":"candidate name",
+    "Profile" : "value",
 
-"Professional Experiennce" : [
-    {"Company Name" : "Name of company",
-     "Location":"Location of that company"
-     "Designation" : "Specific designation in that Company",
-     "Duration" : "Working duration in company",
-     "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
-    },
-    
-    {"Company Name" : "Name of company",
-     "Location":"Location of that company"
-     "Designation" : "Specific designation in that Company",
-     "Duration" : "Working duration in company",
-     "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
-    },
-    ...
-    ]
-"Education" : [
-    {"Institute Name":"Name of that institute",
-     "Location":"Location of that institute "
-     "Degree":"Name of that degree",
-     "Duration":"duration of that degree,
-    },
-    {"Institute Name":"Name of that institute",
-     "Location":"Location of that institute "
-     "Degree":"Name of that degree",
-     "Duration":"duration of that degree,
-    },
-...],
-"Skills" : ["skill1", "skill2", ...],
-"Relevant Qualifications" : ["relevant Qualifications1", "relevant qualifications2", ...],
-"Certification":["certification1","certification2",...]
-"Languages":["languages1","languages2",...]
-"Interests":["interests1","interests2",...]
+    "Professional Experiennce" : [
+        {"Company Name" : "Name of company",
+        "Location":"Location of that company",
+        "Designation" : "Specific designation in that Company",
+        "Duration" : "Working duration in company",
+        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
+        },
+        
+        {"Company Name" : "Name of company",
+        "Location":"Location of that company",
+        "Designation" : "Specific designation in that Company",
+        "Duration" : "Working duration in company",
+        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
+        },
+        ...
+        ],
+    "Education" : [
+        {"Institute Name":"Name of that institute",
+        "Location":"Location of that institute ",
+        "Degree":"Name of that degree",
+        "Duration":"duration of that degree"
+        },
+        {"Institute Name":"Name of that institute",
+        "Location":"Location of that institute ",
+        "Degree":"Name of that degree",
+        "Duration":"duration of that degree"
+        },
+        ...
+        ],
+    "Skills" : ["skill1", "skill2", ...],
+    "Relevant Qualifications" : ["relevant Qualifications1", "relevant qualifications2", ...],
+    "Certification":["certification1","certification2",...],
+    "Languages":["languages1","languages2",...],
+    "Interests":["interests1","interests2",...]
+    }
 
-}
-
-    Do not include Grade
-
-    Do not include Mobile number, Emali and home address 
-    """
+    Please keep the following points in considration while extracting data from text:
+        1. Do not summarize or rephrase Responsibilities. Extract each Responsibility completely from text.
+        2. Make it sure to keep the response in JSON format.
+        3. If value not found then leave it empty/blank.
+        4. Do not include Mobile number, Email and Home address.
+        5. Do not include Grade
+        """
 
 
     result = get_completion(test_text)
-    print(result)
+   
 
     dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
-    print(dc)
 
     doc = docx.Document(formatted)
 
@@ -142,26 +142,36 @@ def leo_partner_converter(path, formatted_path,save_path):
         except:
             pass
 
-        if p.text.strip(' :\n').lower() == 'education':
-            for j in dc['Education']:
-                run1 = doc.paragraphs[i+2].add_run(j['Institute Name'].strip()+"\n").bold=True
-                run2 = doc.paragraphs[i+2].add_run("\t\t\t\t\t\t\t\t"+j['Location'].strip()+"\n").bold=True
-    #             doc.paragraphs[i+2].add_run(j['Location'].strip()+"\n").bold=True
-                run3 = doc.paragraphs[i+2].add_run(j['Degree'].strip()+"\n")
-                run3.bold=True
-                run3.italic=True
-                run4 = doc.paragraphs[i+2].add_run("\t\t\t\t\t\t\t\t"+j['Duration'].strip()+"\n")
-                run4.bold=False
+        try:
+            if p.text.strip(' :\n').lower() == 'education':
+                for j in dc['Education']:
+                    j["Institute Name"] = j["Institute Name"].title()
+                    a = len(j['Institute Name'])
+                  
+                    b = len(j['Degree'])
+                  
+                    c = "\t\t\t"
+                    spc = " "
+                    spec = " "
 
-    #             doc.paragraphs[i+2].add_run(j['Duration'].strip()+"\n").bold=False
+                    if a > b:
+                        d = ceil((a - b) * 1.8)
+                      
 
-
-    #             doc.paragraphs[i+2].add_run(j['Thesis'].strip() + "\n\n").bold=False
-
-    #               + j['Institute'].strip() + "–" + j['Duration'].strip()).bold = False
-    #               doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
-
-
+                        spc += " " * d
+                    else:
+                        a < b
+                        e = ceil((b - a)*1.8)
+                       
+                        spec += " " * e
+                    run1 = doc.paragraphs[i+2].add_run(j['Institute Name'].strip()+ spec +c + j['Location'].strip()+"\n").bold=True
+    #                 run2 = doc.paragraphs[i+2].add_run().bold=True
+        #             doc.paragraphs[i+2].add_run(j['Location'].strip()+"\n").bold=True
+                    run3 = doc.paragraphs[i+2].add_run(j['Degree'].strip()+ spc + c + j['Duration'].strip()+"\n\n")
+                    run3.bold=False
+                    run3.italic=True
+        except:
+            pass
 
         try:
             if p.text.strip(' :\n').lower() == 'certification':
@@ -198,27 +208,47 @@ def leo_partner_converter(path, formatted_path,save_path):
         except:
             pass
 
-        try:
-            if p.text.strip(' :\n').lower() == 'professional experience':
-                for j in dc['Professional Experience']:
-                    run1=doc.paragraphs[i+2].add_run(j['Company Name'].strip() + "\n").bold=True
-                    run2=doc.paragraphs[i+2].add_run("\t\t\t\t\t\t"+j['Location'].strip()+"\n").bold=True
-                    run3=doc.paragraphs[i+2].add_run(j['Designation'].strip() + "\n")
-                    run3.bold=True
-                    run3.italic=True
-                    run4=doc.paragraphs[i+2].add_run("\t\t\t\t\t\t"+j['Duration'].strip()+"\n\n")
-                    run4.bold=False    #                 doc.paragraphs[i+2].add_run(j['Duration'].strip()+'\t\t'+j['Company Name'].strip()+ "\n").bold = True
-    #                 doc.paragraphs[i+2].add_run('Responsibilities:' + '\n').bold = True
-    #                 if j['Responsibilities']:
-    #                     doc.paragraphs[i+2].add_run('\n')
-                    for k in j['Responsibilities']:
-                        doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
-                    doc.paragraphs[i+2].add_run('\n\n')
-        except:
-            pass
+        if p.text.strip(' :\n').lower() == 'professional experience':
+            for j in dc['Professional Experience']:
+                j['Company Name'] = j["Company Name"].title()
+                a = len(j['Company Name'])
+              
+                b = len(j['Designation'])
+              
+                c = "\t\t\t"
+                spc = " "
+                spec = " "
 
-    doc.save(save_path)
-    print("\n")
-    print("---------------------------------------------------------------------------------------------------------------------")
-    print("\n")
+                if a > b:
+                    d = ceil((a - b) * 2)
+                  
+                    spc += " " * d
+                else:
+                    a < b
+                    e = ceil((b - a)*1.75)
+                   
+                    spec += " " * e
+    #             if a <= 7:
+    #                 spec += " " * e
+
+
+                run1=doc.paragraphs[i+2].add_run(j['Company Name'].strip()+ spec + c + j['Location'].strip()+"\n").bold=True
+    #                 run3=doc.paragraphs[i+2].add_run(j['Designation'].strip()+ spc + c + j['Duration'].strip()+"\n\n")
+                run = doc.paragraphs[i + 2].add_run(j['Designation'].strip()+ spc + c )
+                run.font.bold = True  # Unbold the first company name
+                run = doc.paragraphs[i + 2].add_run(j['Duration'].strip()+"\n\n")
+                run.font.bold = False
+
+    #                 run3.bold=False
+    #                 run3.italic=False
+    #                     
+                for k in j['Responsibilities']:
+                    doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
+                doc.paragraphs[i+2].add_run('\n\n')
+
+
+
+    doc.save(path_save)
+    
     print("Process has Completed...")
+

@@ -79,15 +79,15 @@ def linum_converter(path,formatted_path,save_path):
         {"Company Name" : "Name of company",
         "Company Location" : "Location of company",
         "Duration" : "Working Duration in Company",
-        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...],
+        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
         },
         {"Company Name" : "Name of company",
         "Company Location" : "Location of company",
         "Duration" : "Working Duration in Company",
-        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...],
+        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
         },
         ...
-        ]
+        ],
     "Education" : [
         {"Institute Name" : "Name Of institute",
         "Degree Name": "Name of degree",
@@ -99,13 +99,20 @@ def linum_converter(path,formatted_path,save_path):
         },
         ...
         ],
-    "Achievements" : ["achievement 1", "achievement 2", ...]
+    "Achievements" : ["achievement 1", "achievement 2", ...],
     "Qualifications" : ["qualification 1", "qualification 2", ...],
     "Skills" : ["skill 1", "skill 2", ...],
     "Attributes" : ["attribute 1", "attribute 2", ...],
     "Languages" : ["language 1", "language 2", ...],
     "Interests" : ["interest 1", "interest 2", ...]
     }
+
+    Please keep the following points in considration while extracting data from text:
+        1. Do not summarize or rephrase Responsibilities. Extract each Responsibility completely from text.
+        2. Make it sure to keep the response in JSON format.
+        3. If value not found then leave it empty/blank.
+        4. Do not include Mobile number, Email and Home address.
+        5. Do not include Grade
     """
 
     result = get_completion(test_text)

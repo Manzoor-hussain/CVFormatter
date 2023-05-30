@@ -77,16 +77,15 @@ def joss_search_converter(path, pathoutput,save_path):
         {"Company Name" : "Name of company",
         "Job Title" : "Title of job",
         "Duration" : "Working Duration in Company",
-        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...],
+        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
         },
         {"Company Name" : "Name of company",
         "Job Title" : "Title of job",
         "Duration" : "Working Duration in Company",
-        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...],
+        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
         },
         ...
-        ]
-    }
+        ],
     "Education" : [
         {"Institute Name" : "Name Of institute",
         "Degree Name": "Name of degree",
@@ -103,14 +102,18 @@ def joss_search_converter(path, pathoutput,save_path):
     "Professional Qualifications" : ["Qualification1", "Qualification2", ...],
     "Areas of Expertise" : ["Area of Expertise1", "Area of Expertise2", ...],
     "Key Skills" : ["Key Skill1", "Key Skill2", ...],
-    "Computer Skills": ["Computer Skill1", "Computer Skill2"]
+    "Computer Skills": ["Computer Skill1", "Computer Skill2", ...],
     "Activities" : ["Activity1", "Activity2", ...],
     "Languages" : ["Language1", "Language2", ...],
-    "Interests" : ["interest1", "interest2", ...],
+    "Interests" : ["interest1", "interest2", ...]
+    }
 
-    make it sure to keep the response in JSON format.
-
-    Do not include those kyes against which no values will be founded.
+    Please keep the following points in considration while extracting data from text:
+        1. Do not summarize or rephrase Responsibilities. Extract each Responsibility completely from text.
+        2. Make it sure to keep the response in JSON format.
+        3. If value not found then leave it empty/blank.
+        4. Do not include Mobile number, Email and Home address.
+        5. Do not include Grade
     """
 
     result = get_completion(test_text)

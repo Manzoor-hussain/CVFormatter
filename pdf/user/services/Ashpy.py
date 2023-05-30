@@ -101,9 +101,12 @@ def ashbys_converter(path, pathout, path_save):
     "Interests" : ["interest1", "interest2", ...]
     }
     
-    Do not include Grade
-
-    Do not include Mobile number, Emali and home address 
+    Please keep the following points in considration while extracting data from text:
+        1. Do not summarize or rephrase Responsibilities. Extract each Responsibility completely from text.
+        2. Make it sure to keep the response in JSON format.
+        3. If value not found then leave it empty/blank.
+        4. Do not include Mobile number, Email and Home address.
+        5. Do not include Grade  
     """
 
     result = get_completion(test_text)

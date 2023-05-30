@@ -38,9 +38,8 @@ def read_text_from_pdf(file_path):
     
     
 def harrington_morris_converter(path_in, path_out, path_save):
-   
     
-    formatted =  path_out
+    formatted = path_out
     
     # unformatted document
     if path_in.endswith('.docx'):
@@ -66,7 +65,7 @@ def harrington_morris_converter(path_in, path_out, path_save):
 
     in following JSON format:
     {
-    "Name" : "value"
+    "Name" : "value",
     "Education" : [
             {"Institute Name" : "Name Of institute",
             "Degree Name": "Name of degree",
@@ -96,16 +95,29 @@ def harrington_morris_converter(path_in, path_out, path_save):
         "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...],
         },
         ...
-        ],
+        ]
     }
-    make it sure to keep the response in JSON format.
+    
+    Please keep the following points in considration while extracting data from text:
+        1. Do not summarize or rephrase Responsibilities. Extract each Responsibility completely from text.
+        2. Make it sure to keep the response in JSON format.
+        3. If value not found then leave it empty/blank.
+        4. Do not include Mobile number, Email and Home address.
+        5. Do not include Grade  
     """
     result = get_completion(test_text)
-   
+    
+#     print("----------------------------------------------------------------")
+#     print("                          Result                            ")
+#     print("----------------------------------------------------------------")
+#     print(result)
 
     dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
     
-    
+#     print("----------------------------------------------------------------")
+#     print("                          Dictionary                            ")
+#     print("----------------------------------------------------------------")
+#     print(dc)
 
     
     doc = docx.Document(formatted)
@@ -183,7 +195,7 @@ def harrington_morris_converter(path_in, path_out, path_save):
             try:
                 name_paragraph = doc.paragraphs[i]
                 name_paragraph.text = str(dc['Name'] + '\n')
-    #             name_paragraph.runs[0].bold = True
+                name_paragraph.runs[0].bold = True
                 name_paragraph.alignment = docx.enum.text.WD_PARAGRAPH_ALIGNMENT.CENTER
             except:
                 pass

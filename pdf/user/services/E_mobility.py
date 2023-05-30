@@ -61,7 +61,7 @@ def e_mobility_converter(path, pathout, path_save):
     in following JSON format:
     {
     "Name" : "value",
-    "Current Company" : "value"
+    "Current Company" : "value",
     "Position applied" : "value",
     "Location" : "value",
     "Notice period" : "value",
@@ -103,7 +103,12 @@ def e_mobility_converter(path, pathout, path_save):
     "Interests" : ["interest1", "interest2", ...]
     }
     
-    Do not return the key against which no value founded
+    Please keep the following points in considration while extracting data from text:
+        1. Do not summarize or rephrase Responsibilities. Extract each Responsibility completely from text.
+        2. Make it sure to keep the response in JSON format.
+        3. If value not found then leave it empty/blank.
+        4. Do not include Mobile number, Email and Home address.
+        5. Do not include Grade  
     
     """
 

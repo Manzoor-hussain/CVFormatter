@@ -100,11 +100,16 @@ def scale_genesis_converter(path_in, path_out, path_save):
             ],
     "Professional Qualifications" : ["Professional Qualification1", "Professional Qualification2", ...],
     "Languages" : ["Language1", "Language2", ...],
-    "Interests" : ["Interest1", "Interest2", ...],
+    "Interests" : ["Interest1", "Interest2", ...]
 
     }
-    make it sure to keep the response in JSON format.
-    If value not found then leave it empty/blank.
+
+    Please keep the following points in considration while extracting data from text:
+        1. Do not summarize or rephrase Responsibilities. Extract each Responsibility completely from text.
+        2. Make it sure to keep the response in JSON format.
+        3. If value not found then leave it empty/blank.
+        4. Do not include Mobile number, Email and Home address.
+        5. Do not include Grade
     """
     result = get_completion(test_text)
     

@@ -63,42 +63,45 @@ def feather_bank_converter(path ,formatted_path,save_path):
     \"""" + unformated_text + """\"
 
     in following JSON format:
-{
-"Name":"candidate name",
-"Location":"location of candidate",
-"Profile" : "value",
+    {
+    "Name":"candidate name",
+    "Location":"location of candidate",
+    "Profile" : "value",
 
-"Employment History" : [
-    {"Duration" : "Working duration in company",
-    "Company Name" : "Name of company",
-    "Designation" : "Specific designation in that Company",
-    "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
-    },
-    
-    {"Duration" : "Working duration in company",
-    "Company Name" : "Name of company",
-    "Designation" : "Specific designation in that Company",
-    "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
-    },
-    ...
-    ]
-"Education" : [
-    {"Duration":"duration of that degree,
-    "Institute Name":"Name of that institute",
-    "Degree":"Name of that degree",
-    },
-    {"Duration":"duration of that degree,
-    "Institute Name":"Name of that institute",
-    "Degree":"Name of that degree",
-    },
-...],
-"Skills" : ["skill1", "skill2", ...],
-"Relevant Qualifications" : ["relevant Qualifications1", "relevant qualifications2", ...],
-}
+    "Employment History" : [
+        {"Duration" : "Working duration in company",
+        "Company Name" : "Name of company",
+        "Designation" : "Specific designation in that Company",
+        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
+        },
+        
+        {"Duration" : "Working duration in company",
+        "Company Name" : "Name of company",
+        "Designation" : "Specific designation in that Company",
+        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
+        },
+        ...
+        ],
+    "Education" : [
+        {"Duration":"duration of that degree",
+        "Institute Name":"Name of that institute",
+        "Degree":"Name of that degree"
+        },
+        {"Duration":"duration of that degree",
+        "Institute Name":"Name of that institute",
+        "Degree":"Name of that degree"
+        },
+    ...],
+    "Skills" : ["skill1", "skill2", ...],
+    "Relevant Qualifications" : ["relevant Qualifications1", "relevant qualifications2", ...],
+    }
 
-    Do not include Grade
-
-    Do not include Mobile number, Emali and home address 
+    Please keep the following points in considration while extracting data from text:
+        1. Do not summarize or rephrase Responsibilities. Extract each Responsibility completely from text.
+        2. Make it sure to keep the response in JSON format.
+        3. If value not found then leave it empty/blank.
+        4. Do not include Mobile number, Email and Home address.
+        5. Do not include Grade  
     """
 
 

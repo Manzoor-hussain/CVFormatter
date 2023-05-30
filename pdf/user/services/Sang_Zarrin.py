@@ -64,26 +64,26 @@ def sang_zarrin_converter(path, pathout, path_save):
         "Company Name" : "Name of company",
         "Location" : "Location of company",
         "Duration" : "Working Duration in Company",
-        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...],
+        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
         },
         {"Designation" : "The specific designation or position on which he works in this company",
         "Company Name" : "Name of company",
         "Location" : "Location of company",
         "Duration" : "Working Duration in Company",
-        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...],
+        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
         },
         ...
-        ]
+        ],
     "Education" : [
         {"Institute Name" : "Name Of institute and its location if available separated with comma ",
-        "Institute locality" : "Location of instituion"
+        "Institute locality" : "Location of instituion",
         "Degree Name": "Name of degree",
-        "Duration" : "Studying duration in institute",
+        "Duration" : "Studying duration in institute"
         },
         {"Institute Name" : "Name Of institute and its location if available separated with comma ",
-        "Institute locality" : "Location of instituion"
+        "Institute locality" : "Location of instituion",
         "Degree Name": "Name of degree",
-        "Duration" : "Studying duration in institute",
+        "Duration" : "Studying duration in institute"
         },
         ...
         ],
@@ -95,7 +95,12 @@ def sang_zarrin_converter(path, pathout, path_save):
     "Interests" : ["interest1", "interest2", ...]
     }
     
-    Do not return the key if do not find any value against that key.
+    Please keep the following points in considration while extracting data from text:
+        1. Do not summarize or rephrase Responsibilities. Extract each Responsibility completely from text.
+        2. Make it sure to keep the response in JSON format.
+        3. If value not found then leave it empty/blank.
+        4. Do not include Mobile number, Email and Home address.
+        5. Do not include Grade
     
     """
 

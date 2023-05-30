@@ -64,9 +64,8 @@ def jler_converter(path,formatted_path,savepath):
     in following JSON format:
     {
 
-    "Name":"value"
-    "Career summary" :"summary", ...,
-
+    "Name":"value",
+    "Career summary" :"summary",
     "Employment History" : [
         {"Duration" : "Working Duration in Company",
          "Designation":"Specific designation in that Company",
@@ -81,7 +80,7 @@ def jler_converter(path,formatted_path,savepath):
          "Location":"Country",
          "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
         },
-
+        ],
     "Education" : [
         {"Degree" : "Name of degree",
          "Duration":"Studying duration in institute",
@@ -98,17 +97,15 @@ def jler_converter(path,formatted_path,savepath):
     "Trainings" : ["training1", "training2", ...],
     "Skills" : ["skill1", "skill2", ...],
     "Interests" : ["interest1", "interest2", ...],
-    "Languages" : ["language1", "language2", ...],
-
-        ...
-        ]
+    "Languages" : ["language1", "language2", ...]
     }
 
-    Do not include Grade
-
-    Do not include Mobile number, Emali and home address 
-    
-    Do not return those kyes against which no value will be founded
+    Please keep the following points in considration while extracting data from text:
+        1. Do not summarize or rephrase Responsibilities. Extract each Responsibility completely from text.
+        2. Make it sure to keep the response in JSON format.
+        3. If value not found then leave it empty/blank.
+        4. Do not include Mobile number, Email and Home address.
+        5. Do not include Grade  
     """
 
 
