@@ -9,6 +9,7 @@ from docx.enum.text import WD_UNDERLINE
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.shared import Pt
 import PyPDF2
+import pdfplumber
 
 
 def get_completion(prompt, model="gpt-3.5-turbo"):
@@ -64,8 +65,9 @@ def jler_converter(path,formatted_path,savepath):
     in following JSON format:
     {
 
-    "Name":"value",
-    "Career summary" :"summary",
+    "Name":"value"
+    "Career summary" :"summary", ...,
+
     "Employment History" : [
         {"Duration" : "Working Duration in Company",
          "Designation":"Specific designation in that Company",
@@ -80,7 +82,7 @@ def jler_converter(path,formatted_path,savepath):
          "Location":"Country",
          "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
         },
-        ],
+
     "Education" : [
         {"Degree" : "Name of degree",
          "Duration":"Studying duration in institute",
@@ -97,14 +99,19 @@ def jler_converter(path,formatted_path,savepath):
     "Trainings" : ["training1", "training2", ...],
     "Skills" : ["skill1", "skill2", ...],
     "Interests" : ["interest1", "interest2", ...],
-    "Languages" : ["language1", "language2", ...]
+    "Languages" : ["language1", "language2", ...],
+
+        ...
+        ]
     }
 
-    You must keep the following points in considration while extracting data from text:
-        1. Do NOT split, rephrase or summarize list of Responsibilities. Extract each Responsibility as a complete sentence from text.
-        2. Make it sure to keep the response in JSON format.
-        3. If value not found then leave it empty/blank.
-        4. Do not include Mobile number, Email and Home address. 
+     You must keep the following points in considration while extracting data from text:
+     1. Do NOT split, rephrase or summarize list of Responsibilities. Extract each Responsibility as a complete sentence from text.
+     2. Make it sure to keep the response in JSON format.
+     3. If value not found then leave it empty/blank.
+     4. Do not include Mobile number, Email and Home address
+
+
     """
 
 
@@ -135,12 +142,8 @@ def jler_converter(path,formatted_path,savepath):
             if p.text.strip(' :\n').lower() == 'education':
                 for j in dc['Education']:
         #             doc.paragraphs[i+2].add_run(j['Institute Name']).bold = Fals
-                    a = len(j['Duration'])*2
-                    print(a)
-                    b = " " * a
-                    
-                    doc.paragraphs[i+2].add_run(j['Duration'].strip() +"\t\t" +j['Degree'].strip() +'\n').bold =True
-                    doc.paragraphs[i+2].add_run(b + "\t\t" + j["Institute Name"].strip() + ' , ' + j["Location"].strip() + '\n\n').bold= False
+                    doc.paragraphs[i+2].add_run(j['Duration'].strip() +"                   "+j['Degree'].strip() +'\n').bold =True
+                    doc.paragraphs[i+2].add_run(j["Institute Name"].strip() + ' , ' + j["Location"].strip() + '\n\n').bold= False
         except:
             pass
 
@@ -176,7 +179,7 @@ def jler_converter(path,formatted_path,savepath):
 
             if p.text.strip(' :\n').lower() == 'employment history':
                 for j in dc['Employment History']:
-                    doc.paragraphs[i+2].add_run(j['Duration'].strip() +"\t\t"+j['Designation'].strip()+ '\n').bold=True
+                    doc.paragraphs[i+2].add_run(j['Duration'].strip() +"                  "+j['Designation'].strip()+ '\n').bold=True
                     doc.paragraphs[i+2].add_run(j['Company Name'].strip() + ' – ' + j['Location'] + '\n').bold =True
                     for k in j['Responsibilities']:
                         doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
