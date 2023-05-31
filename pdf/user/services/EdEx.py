@@ -8,7 +8,7 @@ import PyPDF2
 from docx.shared import Pt
 from docx.enum.text import WD_UNDERLINE
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
-from keys import api_key
+from .keys import api_key
 
 
 def get_completion(prompt, model="gpt-3.5-turbo"):
