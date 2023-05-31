@@ -49,11 +49,8 @@ def timber_seed_format_converter(path, pathout, path_save):
     
     print("Process has Started...")
     test_text = """
-
     Ectract data from this text:
-
     \"""" + unformated_text + """\"
-
     in following JSON format:
     {"Name" : "value",
     "Summary" : "value",
@@ -91,7 +88,6 @@ def timber_seed_format_converter(path, pathout, path_save):
     "Languages" : ["language1", "language2", ...],
     "Interests" : ["interest1", "interest2", ...],
     }
-
     You must keep the following points in considration while extracting data from text:
         1. Do NOT split, rephrase or summarize list of Responsibilities. Extract each Responsibility as a complete sentence from text.
         2. Make it sure to keep the response in JSON format.
@@ -148,8 +144,8 @@ def timber_seed_format_converter(path, pathout, path_save):
 
 
         try:
-            if p.text.strip(' :\n').lower() == 'languages/ awards':
-                for j in dc['Languages/ Awards']:
+            if p.text.strip(' :\n').lower() == 'languages':
+                for j in dc['Languages']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
