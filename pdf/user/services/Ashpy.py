@@ -109,9 +109,19 @@ def ashbys_converter(path, pathout, path_save):
     """
 
     result = get_completion(test_text)
-    print(result)
+    
+    #     print("----------------------------------------------------------------")
+#     print("                          Result                            ")
+#     print("----------------------------------------------------------------")
+#     print(result)
+    
     dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
 
+#     print("----------------------------------------------------------------")
+#     print("                          Dictionary                            ")
+#     print("----------------------------------------------------------------")
+#     print(dc)
+    
     doc = docx.Document(formatted)
 
     for i,p in enumerate(doc.paragraphs):
