@@ -40,7 +40,7 @@ def read_text_from_pdf(file_path):
 
 def fmcg_converter(path_in, path_out, path_save):
     
-    formatted = path_out 
+    formatted= os.getcwd() + "/" + path_out 
     
     if path_in.endswith('.docx'):
         unformatted_text = read_text_from_docx(path_in)
@@ -105,11 +105,8 @@ def fmcg_converter(path_in, path_out, path_save):
         ...
         ]
     }
-    You must keep the following points in considration while extracting data from text:
-        1. Do NOT split, rephrase or summarize list of Responsibilities. Extract each Responsibility as a complete sentence from text.
-        2. Make it sure to keep the response in JSON format.
-        3. If value not found then leave it empty/blank.
-        4. Do not include Mobile number, Email and Home address.
+    make it sure to keep the response in JSON format.
+    If value not found then leave it empty/blank.
     """
 
     result = get_completion(test_text)
@@ -119,7 +116,7 @@ def fmcg_converter(path_in, path_out, path_save):
 #     print("----------------------------------------------------------------")
 #     print(result)
     
-    dc = dict(json.loads(re.sub(',[ \n]*\]',']',re.sub(',[ \n]*\}','}',result.replace('...','')))))
+    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Uu]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
     
 #     print("----------------------------------------------------------------")
 #     print("                          Dictionary                            ")
@@ -253,10 +250,20 @@ def fmcg_converter(path_in, path_out, path_save):
                     company_name = j['Company Name'].strip()
                     duration = j['Duration'].strip()
                     job_title = j['Job Title'].strip()
-
-                    doc.paragraphs[i+2].add_run(company_name + ' ').bold = True
-                    doc.paragraphs[i+2].add_run('(' + duration + ')' + '\n').bold = True
-                    doc.paragraphs[i+2].add_run(job_title + '\n\n').bold = False
+                    if company_name:
+                        doc.paragraphs[i+2].add_run(company_name + ' ').bold = True
+                    else:
+                        doc.paragraphs[i+2].add_run("Company Name not mentioned" + ' ').bold = True
+                    
+                    if duration:
+                        doc.paragraphs[i+2].add_run('(' + duration + ')' + '\n').bold = True
+                    else:
+                        doc.paragraphs[i+2].add_run('(' + "Duration not mentioned" + ')' + '\n').bold = True
+                    if job_title:
+                        doc.paragraphs[i+2].add_run(job_title + '\n\n').bold = False
+                    else:
+                        doc.paragraphs[i+2].add_run("Job Title not mentioned" + '\n\n').bold = False
+                        
     #                 doc.paragraphs[i+2].add_run('Duties:' + '\n\n')
                     for k in j['Responsibilities']:
                         doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
