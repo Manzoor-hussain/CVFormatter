@@ -2,14 +2,16 @@ import os
 import openai
 import docx
 import docx2txt
-import re
-import json
 from .keys import api_key
-from docx.enum.text import WD_UNDERLINE
-from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
+from pprint import pprint
+import json
+import re
+import textwrap
+import PyPDF2
+import pdfplumber
 from docx.shared import Pt
 from math import ceil
-import PyPDF2
+from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
 
 def get_completion(prompt, model="gpt-3.5-turbo"):
@@ -21,44 +23,48 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
     )
     return response.choices[0].message["content"]
 
-def leo_partner_converter(path, path_out, path_save):
-    formatted= path_out
-#     un_formatted=os.getcwd() + path
-    
-#     doc = docx.Document(un_formatted)
-#     formated_text = docx2txt.process(formatted)
-#     unformated_text = docx2txt.process(un_formatted)
-    def read_text_from_docx(path):
-        doc = docx.Document(path)
-        text = [paragraph.text for paragraph in doc.paragraphs]
+
+# Functions to check whether the unformatted file is a docx or pdf
+def read_text_from_docx(file_path):
+    doc = docx.Document(file_path)
+    text = [paragraph.text for paragraph in doc.paragraphs]
+    return '\n'.join(text)
+
+def read_text_from_pdf(file_path):
+    with open(file_path, 'rb') as file:
+        pdf_reader = PyPDF2.PdfReader(file)
+        text = []
+        for page in pdf_reader.pages:
+            text.append(page.extract_text())
         return '\n'.join(text)
 
-    def read_text_from_pdf(path):
-        with open(path, 'rb') as file:
-            pdf_reader = PyPDF2.PdfReader(file)
-            text = []
-            for page in pdf_reader.pages:
-                text.append(page.extract_text())
-            return '\n'.join(text)
-
-    if path.endswith('.docx'):
-        unformated_text = read_text_from_docx(path)
-    elif path.endswith('.pdf'):
-        unformated_text = read_text_from_pdf(path)
+def leo_partner_converter(path_in, path_out, path_save):
+    formatted= os.getcwd() + "/" + path_out
+    
+    
+    if path_in.endswith('.docx'):
+        unformatted_text = read_text_from_docx(path_in)
+    elif path_in.endswith('.pdf'):
+        unformatted_text = read_text_from_pdf(path_in)
     else:
-        unformated_text = 'Unsupported file format'
-        
-
+        error = 'Format not supported.'
+        print(error)
+    
+    formatted_text = docx2txt.process(formatted)
+    
+    
+    
+    print("Process has started...")
+    
+        # Prompt
     os.environ["OPEN_API_KEY"] = api_key
     openai.api_key = api_key
     
-    
-    print ("Process has Started...")
     test_text = """
 
     Ectract data from this text:
 
-    \"""" + unformated_text + """\"
+    \"""" + unformatted_text + """\"
 
     in following JSON format:
     {
@@ -109,11 +115,22 @@ def leo_partner_converter(path, path_out, path_save):
         """
 
 
+    # Prompt result
     result = get_completion(test_text)
-   
-
-    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
-
+    
+#     print("----------------------------------------------------------------")
+#     print("                          Result                            ")
+#     print("----------------------------------------------------------------")
+#     print(result)
+    
+    dc = dict(json.loads(re.sub(',[ \n]*\]',']',re.sub(',[ \n]*\}','}',result.replace('...','')))))
+    
+#     print("----------------------------------------------------------------")
+#     print("                          Dictionary                            ")
+#     print("----------------------------------------------------------------")
+#     print(dc)
+    
+    
     doc = docx.Document(formatted)
 
     for i,p in enumerate(doc.paragraphs):
@@ -250,4 +267,3 @@ def leo_partner_converter(path, path_out, path_save):
     doc.save(path_save)
     
     print("Process has Completed...")
-
