@@ -39,7 +39,7 @@ def read_text_from_pdf(file_path):
     
 def harrington_morris_converter(path_in, path_out, path_save):
     
-    formatted = path_out
+    formatted = os.getcwd() + "/" + path_out
     
     # unformatted document
     if path_in.endswith('.docx'):
@@ -95,14 +95,14 @@ def harrington_morris_converter(path_in, path_out, path_save):
         "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...],
         },
         ...
-        ]
+        ],
     }
-    
     You must keep the following points in considration while extracting data from text:
         1. Do NOT split, rephrase or summarize list of Responsibilities. Extract each Responsibility as a complete sentence from text.
         2. Make it sure to keep the response in JSON format.
         3. If value not found then leave it empty/blank.
         4. Do not include Mobile number, Email and Home address.
+    
     """
     result = get_completion(test_text)
     
@@ -174,7 +174,8 @@ def harrington_morris_converter(path_in, path_out, path_save):
                 
                 try:
                     if cell.text.strip(' :\n').lower() == 'languages':
-                        row.cells[i+1].text = dc['Languages']
+                        for j in dc['Languages']:
+                            row.cells[i+1].paragraphs[0].add_run('  • ' + j.strip() + '\n')
                 except:
                     pass
                 
@@ -184,18 +185,20 @@ def harrington_morris_converter(path_in, path_out, path_save):
                 except:
                     pass
 
-
+    
+    font_size = 14
     for i,p in enumerate(doc.paragraphs):
 
     #         doc.paragraphs[i].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
 
-    
+        
         if p.text.strip(' :\n').lower() == 'name':
             try:
                 name_paragraph = doc.paragraphs[i]
                 name_paragraph.text = str(dc['Name'] + '\n')
                 name_paragraph.runs[0].bold = True
                 name_paragraph.alignment = docx.enum.text.WD_PARAGRAPH_ALIGNMENT.CENTER
+                name_paragraph.runs[0].font.size = Pt(font_size)
             except:
                 pass
             
@@ -203,6 +206,8 @@ def harrington_morris_converter(path_in, path_out, path_save):
         if p.text.strip(' :\n').lower() == 'professional experience':
 
                 for j in dc['Professional Experience']:
+                    
+                    doc.paragraphs[i+1].add_run("\n")
                     company_name = j['Company Name'].strip()
                     duration = j['Duration'].strip()
                     job_title = j['Job Title'].strip()
