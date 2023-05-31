@@ -65,56 +65,56 @@ def mallory_converter(path ,formatted_path,save_path):
     \"""" + unformated_text + """\"
 
     in following JSON format:
-    {
-    "Name":"candidate name",
-    "Profile" : "value",
+{
+"Name":"candidate name",
+"Profile" : "value",
 
-    "Employment History" : [
-        {"Company Name" : "Name of company",
-        "Duration" : "Working duration in company",
-        "Designation" : "Specific designation in that Company",
-        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
-        },
-        
-        {"Company Name" : "Name of company",
-        "Duration" : "Working duration in company",
-        "Designation" : "Specific designation in that Company",
-        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
-        },
-        ...
-        ]
-    "Education" : [
-        {"Institute Name":"Name of that institute",
-        "Duration":"duration of that degree,
-        "Degree":"Name of that degree",
-        },
-        
-        {"Institute Name":"Name of that institute",
-        "Duration":"duration of that degree,
-        "Degree":"Name of that degree",
-        },
-    ...],
-    "Trainings" : ["trainings1", "trainings2", ...],
-    "Skills" : ["skills1", "skills2", ...],
-    "Qualifications" : ["qualifications1", "qualifications2", ...],
-    "Language":["language1","language2",...]
-    "Interests":["interests1","interests2",...]
-
-    }
+"Employment History" : [
+    {"Company Name" : "Name of company",
+     "Duration" : "Working duration in company",
+     "Designation" : "Specific designation in that Company",
+     "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
+    },
     
-    You must keep the following points in considration while extracting data from text:
-        1. Do NOT split, rephrase or summarize list of Responsibilities. Extract each Responsibility as a complete sentence from text.
-        2. Make it sure to keep the response in JSON format.
-        3. If value not found then leave it empty/blank.
-        4. Do not include Mobile number, Email and Home address.
+    {"Company Name" : "Name of company",
+     "Duration" : "Working duration in company",
+     "Designation" : "Specific designation in that Company",
+     "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
+    },
+    ...
+    ]
+"Education" : [
+    {"Institute Name":"Name of that institute",
+     "Duration":"duration of that degree,
+     "Degree":"Name of that degree",
+    },
+    
+    {"Institute Name":"Name of that institute",
+     "Duration":"duration of that degree,
+     "Degree":"Name of that degree",
+    },
+   ...],
+"Trainings" : ["trainings1", "trainings2", ...],
+"Skills" : ["skills1", "skills2", ...],
+"Qualifications" : ["qualifications1", "qualifications2", ...],
+"Language":["language1","language2",...],
+"Interests":["interests1","interests2",...]
+
+}
+
+     1. Do NOT split, rephrase or summarize list of Responsibilities. Extract each Responsibility as a complete sentence from text.
+     2. Make it sure to keep the response in JSON format.
+     3. If value not found then leave it empty/blank.
+     4. Do not include Mobile number, Email and Home address.
+
     """
 
 
     result = get_completion(test_text)
-    print(result)
+#     print(result)
 
     dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
-    print(dc)
+#     print(dc)
 
     doc = docx.Document(formatted)
 
@@ -124,7 +124,8 @@ def mallory_converter(path ,formatted_path,save_path):
                     doc.paragraphs[i].text = ""
                     run = doc.paragraphs[i].add_run(dc['Name'].strip().title())
                     run.bold = True
-    #                 run.font.size = Pt(16.5)
+                    run.font.color.rgb = RGBColor(72,0,0)  # Red color
+                    run.font.size = Pt(23.5)
         except:
             pass
     #     try:
@@ -152,7 +153,7 @@ def mallory_converter(path ,formatted_path,save_path):
                 run2 = doc.paragraphs[i+2].add_run(j['Duration'].strip()+"\n")
                 run2.bold=False
                 run2.font.color.rgb = RGBColor(145, 148, 146)  # Red color
-                run3 = doc.paragraphs[i+2].add_run(j['Degree'].strip()+"\n")
+                run3 = doc.paragraphs[i+2].add_run(j['Degree'].strip()+"\n\n")
                 run3.bold=False
                 run3.font.color.rgb = RGBColor(145, 148, 146)  # Red color
 
