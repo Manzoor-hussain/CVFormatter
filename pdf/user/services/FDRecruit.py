@@ -2,7 +2,7 @@ import os
 import openai
 import docx
 import docx2txt
-from .keys import api_key
+from keys import api_key
 from pprint import pprint
 import json
 import re
@@ -40,7 +40,7 @@ def read_text_from_pdf(file_path):
 
 def fd_recruit_converter(path_in, path_out, path_save):
     
-    formatted = path_out
+    formatted = os.getcwd() + "/" + path_out
     
     # unformatted document
     if path_in.endswith('.docx'):
@@ -89,8 +89,7 @@ def fd_recruit_converter(path_in, path_out, path_save):
     "Interests" : ["Interest1", "Interest2", ...],
 
     }
-    
-    You must keep the following points in considration while extracting data from text:
+        You must keep the following points in considration while extracting data from text:
         1. Do NOT split, rephrase or summarize list of Responsibilities. Extract each Responsibility as a complete sentence from text.
         2. Make it sure to keep the response in JSON format.
         3. If value not found then leave it empty/blank.
@@ -197,7 +196,8 @@ def fd_recruit_converter(path_in, path_out, path_save):
         if p.text.strip(' :\n').lower() == 'interests':
             try:
                 for j in dc['Interests']:
-                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                    doc.paragraphs[i+1].add_run("\n")
+                    doc.paragraphs[i+1].add_run('  • ' + j.strip())
             except:
                 pass
 
