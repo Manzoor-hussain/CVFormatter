@@ -63,52 +63,52 @@ def adway_converter(path ,formatted_path,save_path):
     \"""" + unformated_text + """\"
 
     in following JSON format:
-    {
-    "Name":"candidate name",
-    "Right to work":"value",
-    "Resides":"location of candidiate",
-    "Summary" : "value",
+{
+"Name":"candidate name",
+"Right to work":"value",
+"Resides":"location of candidiate",
+"Summary" : "value",
 
-    "Employment History" : [
-        {"Duration" : "Working duration in company",
-        "Company Name" : "Name of company",
-        "Designation" : "Specific designation in that Company",
-        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
-        },
-        
-        {"Duration" : "Working duration in company",
-        "Company Name" : "Name of company",
-        "Designation" : "Specific designation in that Company",
-        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
-        },
-        ...
-        ],
-    "Education" : [
-        {"Duration":"duration of that degree",
-        "Institute Name":"Name of that institute",
-        "Location":"Location of that institute ",
-        "Degree":"Name of that degree"
-        },
-        
-        {"Duration":"duration of that degree",
-        "Institute Name":"Name of that institute",
-        "Location":"Location of that institute ",
-        "Degree":"Name of that degree"
-        },
-    ...],
-    "Skills" : ["skill1", "skill2", ...],
-    "Qualifications" : ["qualifications1", "qualifications2", ...],
-    "Certifications":["certifications1","certifications2",...],
-    "Languages":["languages1","languages2",...],
-    "Interests":["interests1","interests2",...]
-
-    }
+"Employment History" : [
+    {"Duration" : "Working duration in company",
+     "Company Name" : "Name of company",
+     "Designation" : "Specific designation in that Company",
+     "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
+    },
     
-    You must keep the following points in considration while extracting data from text:
-        1. Do NOT split, rephrase or summarize list of Responsibilities. Extract each Responsibility as a complete sentence from text.
-        2. Make it sure to keep the response in JSON format.
-        3. If value not found then leave it empty/blank.
-        4. Do not include Mobile number, Email and Home address.
+    {"Duration" : "Working duration in company",
+     "Company Name" : "Name of company",
+     "Designation" : "Specific designation in that Company",
+     "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
+    },
+    ...
+    ]
+"Education" : [
+    {"Duration":"duration of that degree,
+     "Institute Name":"Name of that institute",
+     "Location":"Location of that institute "
+     "Degree":"Name of that degree",
+    },
+    
+    {"Duration":"duration of that degree,
+     "Institute Name":"Name of that institute",
+     "Location":"Location of that institute "
+     "Degree":"Name of that degree",
+    },
+...],
+"Skills" : ["skill1", "skill2", ...],
+"Qualifications" : ["qualifications1", "qualifications2", ...],
+"Certifications":["certifications1","certifications2",...],
+"Languages":["languages1","languages2",...],
+"Interests":["interests1","interests2",...]
+
+}
+
+      1. Do NOT split, rephrase or summarize list of Responsibilities. Extract each Responsibility as a complete sentence from text.
+      2. Make it sure to keep the response in JSON format.
+      3. If value not found then leave it empty/blank.
+      4. Do not include Mobile number, Email and Home address.
+
     """
 
 
@@ -154,9 +154,9 @@ def adway_converter(path ,formatted_path,save_path):
             for j in dc['Education']:
                 run1 = doc.paragraphs[i+2].add_run(j['Duration'].strip()+"\n")
                 run1.bold=False
-                run2 = doc.paragraphs[i+2].add_run("\t\t\t\t\t"+j['Institute Name'].strip()+"\n").bold=True
+                run2 = doc.paragraphs[i+2].add_run(j['Institute Name'].strip()+"\n").bold=True
     #             run2 = doc.paragraphs[i+2].add_run("\t\t\t\t\t\t\t"+j['Location'].strip()+"\n").bold=True
-                run4 = doc.paragraphs[i+2].add_run("\t\t\t\t\t"+j['Degree'].strip()+"\n")
+                run4 = doc.paragraphs[i+2].add_run(j['Degree'].strip()+"\n\n")
                 run4.bold=True
     #             run4.italic=True
 
@@ -209,8 +209,8 @@ def adway_converter(path ,formatted_path,save_path):
             if p.text.strip(' :\n').lower() == 'employment history':
                 for j in dc['Employment History']:
                     run1=doc.paragraphs[i+2].add_run(j['Duration'].strip() + "\n").bold=True
-                    run2=doc.paragraphs[i+2].add_run("\t\t\t\t\t"+j['Company Name'].strip()+"\n").bold=True
-                    run3=doc.paragraphs[i+2].add_run("\t\t\t\t\t"+j['Designation'].strip() + "\n\n")
+                    run2=doc.paragraphs[i+2].add_run("\t\t\t\t\t\t"+j['Company Name'].strip()+"\n").bold=True
+                    run3=doc.paragraphs[i+2].add_run("\t\t\t\t\t\t"+j['Designation'].strip() + "\n\n")
                     run3.bold=True
     #                 run3.italic=True
     #                 run4=doc.paragraphs[i+2].add_run("\t\t\t\t\t\t"+j['Location'].strip()+"\n\n")
@@ -230,5 +230,3 @@ def adway_converter(path ,formatted_path,save_path):
     print("---------------------------------------------------------------------------------------------------------------------")
     print("\n")
     print("Process has Completed...")
-
-
