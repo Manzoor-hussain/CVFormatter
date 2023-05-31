@@ -40,7 +40,7 @@ def read_text_from_pdf(file_path):
     
 def true_method_converter(path_in, path_out, path_save):
     
-    formatted = path_out
+    formatted = os.getcwd() + "/" + path_out
     
     # unformatted document
     if path_in.endswith('.docx'):
@@ -100,7 +100,6 @@ def true_method_converter(path_in, path_out, path_save):
     "Interests" : ["Interest1", "Interest2", ...],
 
     }
-    
     You must keep the following points in considration while extracting data from text:
         1. Do NOT split, rephrase or summarize list of Responsibilities. Extract each Responsibility as a complete sentence from text.
         2. Make it sure to keep the response in JSON format.
@@ -151,7 +150,7 @@ def true_method_converter(path_in, path_out, path_save):
         if p.text.strip(' :\n').lower() == 'profile':
             try:
                 doc.paragraphs[i+2].text = str(dc['Profile'] + '\n')
-                # doc.paragraphs[i].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+                doc.paragraphs[i].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
 
             except:
                 pass
@@ -238,7 +237,8 @@ def true_method_converter(path_in, path_out, path_save):
         if p.text.strip(' :\n').lower() == 'interests':
             try:
                 for j in dc['Interests']:
-                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                    doc.paragraphs[i+1].add_run("\n")
+                    doc.paragraphs[i+1].add_run('  • ' + j.strip())
             except:
                 pass
 
