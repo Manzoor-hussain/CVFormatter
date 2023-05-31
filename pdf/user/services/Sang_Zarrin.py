@@ -21,39 +21,52 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
     )
     return response.choices[0].message["content"]
 
-def sang_zarrin_converter(path, pathout, path_save):
-    formatted = pathout
-    un_formatted = path
-    formated_text = docx2txt.process(formatted)
 
-    try:
-        with open(un_formatted, 'rb') as file:
-        # Create a PDF reader object
-            pdf_reader = PyPDF2.PdfReader(file)
-            unformated_text = ""
-            for i in range (len(pdf_reader.pages)):
-                first_page = pdf_reader.pages[i]
-                unformated_text += first_page.extract_text()
-            print('Its PDF')
-    except:
-        try:
-    #         un_formatted.split(".")[-1] == "docx"
-            unformated_text = docx2txt.process(un_formatted)
-            print('Its Docx')
-        except:
-            print('WE DONT SUPPORT THIS TYPE OF FILE')
+# Functions to check whether the unformatted file is a docx or pdf
+def read_text_from_docx(file_path):
+    doc = docx.Document(file_path)
+    text = [paragraph.text for paragraph in doc.paragraphs]
+    return '\n'.join(text)
+
+def read_text_from_pdf(file_path):
+    with open(file_path, 'rb') as file:
+        pdf_reader = PyPDF2.PdfReader(file)
+        text = []
+        for page in pdf_reader.pages:
+            text.append(page.extract_text())
+        return '\n'.join(text)
 
 
+def sang_zarrin_converter(path_in, path_out, path_save):
+    
+    formatted= os.getcwd() + "/" + path_out
+    
+    
+    if path_in.endswith('.docx'):
+        unformatted_text = read_text_from_docx(path_in)
+    elif path_in.endswith('.pdf'):
+        unformatted_text = read_text_from_pdf(path_in)
+    else:
+        error = 'Format not supported.'
+        print(error)
+    
+    formatted_text = docx2txt.process(formatted)
+    
+    
+    
+    print("Process has started...")
+
+    
+    # Prompt
     os.environ["OPEN_API_KEY"] = api_key
     openai.api_key = api_key
     
-    print("Process has Started...")
-
+    
     test_text = """
 
     Ectract data from this text:
 
-    \"""" + unformated_text + """\"
+    \"""" + unformatted_text + """\"
 
     in following JSON format:
     {
@@ -75,15 +88,15 @@ def sang_zarrin_converter(path, pathout, path_save):
         ...
         ],
     "Education" : [
-        {"Institute Name" : "Name Of institute and its location if available separated with comma ",
-        "Institute locality" : "Location of instituion",
+        {"Institute Name" : "Name Of institute",
         "Degree Name": "Name of degree",
-        "Duration" : "Studying duration in institute"
+        "Institute Location" : "Location of Institute",
+        "Duration" : "Studying duration in institute",
         },
-        {"Institute Name" : "Name Of institute and its location if available separated with comma ",
-        "Institute locality" : "Location of instituion",
+        {"Institute Name" : "Name Of institute",
         "Degree Name": "Name of degree",
-        "Duration" : "Studying duration in institute"
+        "Institute Location" : "Location of Institute",
+        "Duration" : "Studying duration in institute",
         },
         ...
         ],
@@ -103,10 +116,21 @@ def sang_zarrin_converter(path, pathout, path_save):
     """
 
 
+    # Prompt result
     result = get_completion(test_text)
-
+    
+    print("----------------------------------------------------------------")
+    print("                          Result                            ")
+    print("----------------------------------------------------------------")
+    print(result)
+    
     dc = dict(json.loads(re.sub(',[ \n]*\]',']',re.sub(',[ \n]*\}','}',result.replace('...','')))))
-
+    
+    print("----------------------------------------------------------------")
+    print("                          Dictionary                            ")
+    print("----------------------------------------------------------------")
+    print(dc)
+    
     doc = docx.Document(formatted)
 
     for i,p in enumerate(doc.paragraphs):
@@ -137,9 +161,25 @@ def sang_zarrin_converter(path, pathout, path_save):
         try:
             if p.text.strip(' :\n').lower() == 'education':
                 for j in dc['Education']:
-                    doc.paragraphs[i+2].add_run(j['Institute Name'].strip() +", "+j['Institute locality'] + '\n').bold = False
-                    doc.paragraphs[i+2].add_run(j['Degree Nmae'].strip() + '\n').bold = False
-                    doc.paragraphs[i+2].add_run(j['Duration'].strip() + '\n\n').bold = False
+                    if j['Institute Name']:
+                        doc.paragraphs[i+2].add_run(j['Institute Name'].strip() + '\n').bold = False
+                    else:
+                        doc.paragraphs[i+2].add_run(j['Institute Name not available'].strip() + '\n').bold = False
+                    
+                    if j['Degree Name']:
+                        doc.paragraphs[i+2].add_run(j['Degree Name'].strip() + '\n').bold = False
+                    else:
+                        doc.paragraphs[i+2].add_run(j['Degree Name not available'].strip() + '\n').bold = False
+                    
+                    if j['Institute Location']:
+                        doc.paragraphs[i+2].add_run(j['Institute Location'].strip() + '\n').bold = False
+                    else:
+                        doc.paragraphs[i+2].add_run("Institute Location not available\n").bold = False
+                   
+                    if j['Duration']:
+                        doc.paragraphs[i+2].add_run(j['Duration'].strip() + '\n\n').bold = False
+                    else:
+                        doc.paragraphs[i+2].add_run("Duration not available\n").bold = False
         except:
             pass
 
