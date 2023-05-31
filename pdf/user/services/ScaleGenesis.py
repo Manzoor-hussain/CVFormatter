@@ -39,7 +39,7 @@ def read_text_from_pdf(file_path):
 
 def scale_genesis_converter(path_in, path_out, path_save):
     
-    formatted = path_out
+    formatted = os.getcwd() + "/" + path_out
     
     # unformatted document
     if path_in.endswith('.docx'):
@@ -99,16 +99,17 @@ def scale_genesis_converter(path_in, path_out, path_save):
             ...
             ],
     "Professional Qualifications" : ["Professional Qualification1", "Professional Qualification2", ...],
+    "Skills" : ["Skill1", "Skill2", ...],
     "Languages" : ["Language1", "Language2", ...],
-    "Interests" : ["Interest1", "Interest2", ...]
+    "Interests" : ["Interest1", "Interest2", ...],
 
     }
-
     You must keep the following points in considration while extracting data from text:
         1. Do NOT split, rephrase or summarize list of Responsibilities. Extract each Responsibility as a complete sentence from text.
         2. Make it sure to keep the response in JSON format.
         3. If value not found then leave it empty/blank.
         4. Do not include Mobile number, Email and Home address.
+        
     """
     result = get_completion(test_text)
     
@@ -200,7 +201,7 @@ def scale_genesis_converter(path_in, path_out, path_save):
 
     #                 doc.paragraphs[i+2].add_run('Duties:' + '\n\n')
                     for k in j['Responsibilities']:
-                        respo = doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
+                        respo = doc.paragraphs[i+2].add_run('  - ' + k.strip() + '\n')
                     doc.paragraphs[i+2].add_run("\n\n")
 
             except:
@@ -230,7 +231,15 @@ def scale_genesis_converter(path_in, path_out, path_save):
         if p.text.strip(' :\n').lower() == 'professional qualifications':
             try:
                 for j in dc['Professional Qualifications']:
-                    language_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                    language_run = doc.paragraphs[i+2].add_run('  - ' + j.strip() + '\n')
+
+            except:
+                pass
+            
+        if p.text.strip(' :\n').lower() == 'skills':
+            try:
+                for j in dc['Skills']:
+                    language_run = doc.paragraphs[i+2].add_run('  - ' + j.strip() + '\n')
 
             except:
                 pass
@@ -238,17 +247,17 @@ def scale_genesis_converter(path_in, path_out, path_save):
         if p.text.strip(' :\n').lower() == 'languages':
             try:
                 for j in dc['Languages']:
-                    language_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                    language_run = doc.paragraphs[i+2].add_run('  - ' + j.strip() + '\n')
 
             except:
                 pass
 
 
-
         if p.text.strip(' :\n').lower() == 'interests':
             try:
                 for j in dc['Interests']:
-                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                    doc.paragraphs[i+1].add_run("\n")
+                    doc.paragraphs[i+1].add_run('  - ' + j.strip())
             except:
                 pass
 
