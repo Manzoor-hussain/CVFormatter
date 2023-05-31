@@ -12,7 +12,6 @@ import PyPDF2
 import pdfplumber
 
 
-
 def get_completion(prompt, model="gpt-3.5-turbo"):
     messages = [{"role": "user", "content": prompt}]
     response = openai.ChatCompletion.create(
@@ -64,51 +63,52 @@ def william_blake_converter(path, formatted_path,save_path):
     \"""" + unformated_text + """\"
 
     in following JSON format:
-    {
-    "Name":"candidate name",
-    "Summary" : "value",
+{
+"Name":"candidate name",
+"Summary" : "value",
 
-    "Work Experience" : [
-        {"Duration" : "Working duration in company",
-        "Company Name" : "Name of company",
-        "Location":"location of that company",
-        "Designation" : "Specific designation in that Company",
-        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
-        },
-        
-        {"Duration" : "Working duration in company",
-        "Company Name" : "Name of company",
-        "Location":"location of that company",
-        "Designation" : "Specific designation in that Company",
-        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
-        },
-        ...
-        ],
-    "Education" : [
-        {"Duration" : "duration of that degree",
-        "Institute Name":"Name of that institute",
-        "Location":"Location of that institute ",
-        "Degree":"Name of that degree"
-        },
-        
-        {"Duration" : "duration of that degree",
-        "Institute Name":"Name of that institute",
-        "Location":"Location of that institute ",
-        "Degree":"Name of that degree"
-        },
-    ...],
-    "Skills" : ["skill1", "skill2", ...],
-    "Qualifications" : ["qualifications1", "qualifications2", ...],
-    "Certifications":["certifications1","certifications2",...],
-    "Language":["language1","language2",...],
-    "Interests":["interests1","interests2",...]
-    }
+"Work Experience" : [
+    {"Duration" : "Working duration in company",
+     "Company Name" : "Name of company",
+     "Location":"location of that company"
+     "Designation" : "Specific designation in that Company",
+     "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
+    },
+    
+    {"Duration" : "Working duration in company",
+     "Company Name" : "Name of company",
+     "Location":"location of that company"
+     "Designation" : "Specific designation in that Company",
+     "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
+    },
+    ...
+    ]
+"Education" : [
+    {"Duration":"duration of that degree,
+     "Institute Name":"Name of that institute",
+     "Location":"Location of that institute "
+     "Degree":"Name of that degree",
+    },
+    
+    {"Duration":"duration of that degree,
+     "Institute Name":"Name of that institute",
+     "Location":"Location of that institute "
+     "Degree":"Name of that degree",
+    },
+...],
+"Skills" : ["skill1", "skill2", ...],
+"Qualifications" : ["qualifications1", "qualifications2", ...],
+"Certifications":["certifications1","certifications2",...]
+"Language":["language1","language2",...]
+"Interests":["interests1","interests2",...]
+
+}
 
     You must keep the following points in considration while extracting data from text:
-        1. Do NOT split, rephrase or summarize list of Responsibilities. Extract each Responsibility as a complete sentence from text.
-        2. Make it sure to keep the response in JSON format.
-        3. If value not found then leave it empty/blank.
-        4. Do not include Mobile number, Email and Home address.
+    1. Do NOT split, rephrase or summarize list of Responsibilities. Extract each Responsibility as a complete sentence from text.
+    2. Make it sure to keep the response in JSON format.
+    3. If value not found then leave it empty/blank.
+    4. Do not include Mobile number, Email and Home address.
     """
 
 
@@ -227,3 +227,5 @@ def william_blake_converter(path, formatted_path,save_path):
     print("---------------------------------------------------------------------------------------------------------------------")
     print("\n")
     print("Process has Completed...")
+# path = ''
+# EdEx_Converter(path)
