@@ -8,7 +8,7 @@ import PyPDF2
 from docx.shared import Pt
 from docx.enum.text import WD_UNDERLINE
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
-from .keys import api_key
+from keys import api_key
 
 
 def get_completion(prompt, model="gpt-3.5-turbo"):
@@ -62,10 +62,12 @@ def edex_converter(path, pathout, path_save):
         {"Institute Name" : "Name Of institute",
         "Duration" : "Studying duration in institute",
         "Degree Name": "Name of degree",
+        "Details" : ["Detail 1", "Detail 2", ...]
         },
         {"Institute Name" : "Name Of institute",
         "Duration" : "Studying duration in institute",
         "Degree Name": "Name of degree",
+        "Details" : ["Detail 1", "Detail 2", ...]
         },
         ...
     ],
@@ -103,7 +105,17 @@ def edex_converter(path, pathout, path_save):
 
     result = get_completion(test_text)
     
+    print("----------------------------------------------------------------")
+    print("                          Result                            ")
+    print("----------------------------------------------------------------")
+    print(result)
+    
     dc = dict(json.loads(re.sub(',[ \n]*\]',']',re.sub(',[ \n]*\}','}',result.replace('...','')))))
+    
+    print("----------------------------------------------------------------")
+    print("                          Dictionary                            ")
+    print("----------------------------------------------------------------")
+    print(dc)
 
     doc = docx.Document(formatted)
 
@@ -132,6 +144,14 @@ def edex_converter(path, pathout, path_save):
                     doc.paragraphs[i+2].add_run(j["Institute Name"].strip() + ' – ' + j["Duration"].strip() + '\n').font.underline = True
                     doc.paragraphs[i+2].add_run(j['Degree Name'].strip()).bold = True
                     doc.paragraphs[i+2].add_run("\n\n")
+                    if len(j["Details"]) == 0:
+                        pass
+                    else:
+                        len(j["Details"]) != 0
+#                         doc.paragraphs[i+2].add_run("Details:" + '\n').bold = True
+                        for k in j['Details']:
+                            doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
+                    doc.paragraphs[i+2].add_run('\n')
         except:
             pass
 
