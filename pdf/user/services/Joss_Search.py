@@ -9,6 +9,7 @@ import re
 import textwrap
 import PyPDF2
 import pdfplumber
+from docx.shared import Pt
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
 
@@ -36,16 +37,15 @@ def read_text_from_pdf(file_path):
         return '\n'.join(text)
 
     
-def joss_search_converter(path, pathoutput,save_path):
+def joss_converter(path_in, path_out, path_save):
     
-#     paths to unformatted and formatted files
-#     unformatted = os.getcwd() + "/unformatted_cv_templates/Joss_unformated/TimurSarki.pdf"
-    formatted = pathoutput
+    formatted = os.getcwd() + "/" + path_out
     
-    if path.endswith('.docx'):
-        unformatted_text = read_text_from_docx(path)
-    elif path.endswith('.pdf'):
-        unformatted_text = read_text_from_pdf(path)
+    # unformatted document
+    if path_in.endswith('.docx'):
+        unformatted_text = read_text_from_docx(path_in)
+    elif path_in.endswith('.pdf'):
+        unformatted_text = read_text_from_pdf(path_in)
     else:
         error = 'Format not supported.'
         print(error)
@@ -77,15 +77,16 @@ def joss_search_converter(path, pathoutput,save_path):
         {"Company Name" : "Name of company",
         "Job Title" : "Title of job",
         "Duration" : "Working Duration in Company",
-        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
+        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...],
         },
         {"Company Name" : "Name of company",
         "Job Title" : "Title of job",
         "Duration" : "Working Duration in Company",
-        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
+        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...],
         },
         ...
-        ],
+        ]
+    }
     "Education" : [
         {"Institute Name" : "Name Of institute",
         "Degree Name": "Name of degree",
@@ -102,11 +103,10 @@ def joss_search_converter(path, pathoutput,save_path):
     "Professional Qualifications" : ["Qualification1", "Qualification2", ...],
     "Areas of Expertise" : ["Area of Expertise1", "Area of Expertise2", ...],
     "Key Skills" : ["Key Skill1", "Key Skill2", ...],
-    "Computer Skills": ["Computer Skill1", "Computer Skill2", ...],
+    "Computer Skills": ["Computer Skill1", "Computer Skill2"]
     "Activities" : ["Activity1", "Activity2", ...],
     "Languages" : ["Language1", "Language2", ...],
-    "Interests" : ["interest1", "interest2", ...]
-    }
+    "Interests" : ["interest1", "interest2", ...],
 
     You must keep the following points in considration while extracting data from text:
         1. Do NOT split, rephrase or summarize list of Responsibilities. Extract each Responsibility as a complete sentence from text.
@@ -117,14 +117,22 @@ def joss_search_converter(path, pathoutput,save_path):
 
     result = get_completion(test_text)
     
-    #     print(result)
-    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
+#     print("----------------------------------------------------------------")
+#     print("                          Result                            ")
+#     print("----------------------------------------------------------------")
+#     print(result)
     
-#     print("Dictttttt")
+    dc = dict(json.loads(re.sub(',[ \n]*\]',']',re.sub(',[ \n]*\}','}',result.replace('...','')))))
+    
+#     print("----------------------------------------------------------------")
+#     print("                          Dictionary                            ")
+#     print("----------------------------------------------------------------")
 #     print(dc)
-#     print("Dictttttt")
-    
+
+
     doc = docx.Document(formatted)
+    
+    font_size = 14
 
     for table in doc.tables:
         for row in table.rows:
@@ -159,7 +167,8 @@ def joss_search_converter(path, pathoutput,save_path):
                 name_paragraph.text = str(dc['Name'])
                 name_paragraph.alignment = docx.enum.text.WD_PARAGRAPH_ALIGNMENT.CENTER
                 name_paragraph.runs[0].bold = True
-                name_paragraph.runs[0].font.size = Pt(20)
+                name_paragraph.runs[0].font.size = Pt(font_size)
+               
             except:
                 pass
 
@@ -280,7 +289,7 @@ def joss_search_converter(path, pathoutput,save_path):
 
 
 
-    doc.save(save_path)
+    doc.save(path_save)
     print("Conversion has completed !!")
     
     
