@@ -9,6 +9,7 @@ from docx.enum.text import WD_UNDERLINE
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.shared import Pt
 import PyPDF2
+import pdfplumber
 
 
 def get_completion(prompt, model="gpt-3.5-turbo"):
@@ -62,47 +63,49 @@ def scienta_converter(path,formatted_path,save_path):
     \"""" + unformated_text + """\"
 
     in following JSON format:
-    {
-    "Name":"value",
-    "Profile" : "value",
-    "Professional Experience" : [
-        {"Company Name" : "Name of company",
-        "Company location": "Location of that company",
-        "Duration" : "Working duration in company",
-        "Designation" : "Specific designation in that Company",
-        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
-        },
-        
-        {"Company Name" : "Name of company",
-        "Company location": "Location of that company",
-        "Duration" : "Working duration in company",
-        "Designation" : "Specific designation in that Company",
-        "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
-        },
-        ...
-        ],
-    "Education" : [
-        {"Institute" : "Name Of institute",
-        "Duration" : "Studying duration in institute",
-        "Degree": "Name of degree",
-        },
-        {"Institute" : "Name Of institute",
-        "Duration" : "Studying duration in institute",
-        "Degree": "Name of degree",
-        },
-        ...
-        ],
-    "Training" : ["training1", "training2", ...],
-    "Skills" : ["skill1", "skill2", ...],
-    "Certificates" : ["certificate1", "certificate2", ...],
-    "Languages" : ["language1", "language2", ...],
-    "Interests" : ["interest1", "interest2", ...]
-    }
-    You must keep the following points in considration while extracting data from text:
-        1. Do NOT split, rephrase or summarize list of Responsibilities. Extract each Responsibility as a complete sentence from text.
-        2. Make it sure to keep the response in JSON format.
-        3. If value not found then leave it empty/blank.
-        4. Do not include Mobile number, Email and Home address.
+{
+"Name":"value"
+"Profile" : "value",
+
+"Professional Experience" : [
+    {"Company Name" : "Name of company",
+    "Company location": "Location of that company",
+    "Duration" : "Working duration in company",
+    "Designation" : "Specific designation in that Company",
+    "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
+    },
+    
+    {"Company Name" : "Name of company",
+    "Company location": "Location of that company",
+    "Duration" : "Working duration in company",
+    "Designation" : "Specific designation in that Company",
+    "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
+    },
+    ...
+    ]
+"Education" : [
+    {"Institute" : "Name Of institute",
+    "Duration" : "Studying duration in institute",
+    "Degree": "Name of degree",
+    },
+    {"Institute" : "Name Of institute",
+    "Duration" : "Studying duration in institute",
+    "Degree": "Name of degree",
+    },
+    ...
+    ],
+"Training" : ["training1", "training2", ...],
+"Skills" : ["skill1", "skill2", ...],
+"Certificates" : ["certificate1", "certificate2", ...],
+"Languages" : ["language1", "language2", ...],
+"Interests" : ["interest1", "interest2", ...]
+}
+
+   You must keep the following points in considration while extracting data from text:
+   1. Do NOT split, rephrase or summarize list of Responsibilities. Extract each Responsibility as a complete sentence from text.
+   2. Make it sure to keep the response in JSON format.
+   3. If value not found then leave it empty/blank.
+   4. Do not include Mobile number, Email and Home address.
     """
 
 
@@ -131,8 +134,8 @@ def scienta_converter(path,formatted_path,save_path):
 
         if p.text.strip(' :\n').lower() == 'education':
             for j in dc['Education']:
-                doc.paragraphs[i+2].add_run(j['Degree'].strip() +"                 "+j['Duration'].strip() + "\n").bold=True
-                doc.paragraphs[i+2].add_run(j['Institute'].strip() + "\n").bold=True
+                doc.paragraphs[i+2].add_run('  • '+j['Degree'].strip() +"                 "+j['Duration'].strip() + "\n").bold=False
+                doc.paragraphs[i+2].add_run('  • '+j['Institute'].strip() + "\n\n").bold=False
     #             doc.paragraphs[i+2].add_run(j['Thesis'].strip() + "\n\n").bold=False
 
     #               + j['Institute'].strip() + "–" + j['Duration'].strip()).bold = False
@@ -178,7 +181,7 @@ def scienta_converter(path,formatted_path,save_path):
         try:
             if p.text.strip(' :\n').lower() == 'professional experience':
                 for j in dc['Professional Experience']:
-                    doc.paragraphs[i+2].add_run(j['Company Name'].strip() + '\t\t'+ j['Duration'].strip() + '\n').bold = True
+                    doc.paragraphs[i+2].add_run(j['Company Name'].strip() + '                        '+ j['Duration'].strip() + '\n').bold = True
     #                 doc.paragraphs[i+2].add_run(j['Duration'].strip() + '\n').bold = True
                     doc.paragraphs[i+2].add_run(j['Designation'].strip() + '\n\n').bold = True
     #                 doc.paragraphs[i+2].add_run('Responsibilities:' + '\n').bold = True
@@ -187,7 +190,5 @@ def scienta_converter(path,formatted_path,save_path):
                     doc.paragraphs[i+2].add_run('\n\n')
         except:
             pass
-    
     doc.save(save_path)
-    
     print("Process has Completed...")
