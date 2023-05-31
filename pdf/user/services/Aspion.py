@@ -97,82 +97,118 @@ def aspion_converter(path,pathout,path_save):
 
 
     result = get_completion(test_text)
-
+    print('\n\n\n')
+    print(result)
     dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
-
+    print('\n\n\n')
+    print(dc)
     doc = docx.Document(formatted)
 
     for i,p in enumerate(doc.paragraphs):    
 
         try:
             if p.text.strip(' :\n').lower() == 'summary':
-                doc.paragraphs[i+2].add_run(dc['Profile Summary'].strip()).bold = False
-                doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
-
+                if dc['Profile Summary'].lower().strip() != 'value':
+                    doc.paragraphs[i+2].add_run(dc['Profile Summary'].strip()).bold = False
+                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
         except:
             pass
 
         try:     
             if p.text.strip(' :\n').lower() == 'education':
                 for j in dc['Education']:
-        #             doc.paragraphs[i+2].add_run(j['Institute Name']).bold = Fals
-                    doc.paragraphs[i+2].add_run(j['Institute'].strip() + ", " + j["Location"].strip() + '\n').bold = True
-                    doc.paragraphs[i+2].add_run(j['Degree title'].strip() + '\n').bold = True
-                    doc.paragraphs[i+2].add_run(j['Duration'].strip() + '\n\n').bold = True
+                    if j['Institute'].strip().lower() == "name of institute":
+                        continue
+                    if j['Institute'].strip():
+                        doc.paragraphs[i+2].add_run(j['Institute'].strip()).bold = True
+                    else:
+                        doc.paragraphs[i+2].add_run('Institute not mentioned').bold = True    
+                        
+                    if j['Location'].strip():
+                        doc.paragraphs[i+2].add_run(', ' + j['Location'].strip()).bold = True
+                    else:
+                        doc.paragraphs[i+2].add_run('\n').bold = True
+                        
+                    if j['Degree title'].strip():
+                        doc.paragraphs[i+2].add_run(j['Degree title'].strip() + '\n').bold = True
+                    else:
+                        doc.paragraphs[i+2].add_run('Degree not mentioned\n').bold = True
+                        
+                    if j['Duration'].strip():
+                        doc.paragraphs[i+2].add_run(j['Duration'].strip() + '\n\n').bold = True
+                    else:
+                        doc.paragraphs[i+2].add_run('Duration not mentioned\n\n').bold = True
 
         except:
             pass
 
         try:
             if p.text.strip(' :\n').lower() == 'achievements':
-                for j in dc['Achievements']:
-                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                if dc['Achievements'][0].lower().strip() != 'achievement1':
+                    for j in dc['Achievements']:
+                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
 
         try:
             if p.text.strip(' :\n').lower() == 'languages':
-                for j in dc['Languages']:
-                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                if dc['Languages'][0].lower().strip() != 'language1':
+                    for j in dc['Languages']:
+                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
         try:
             if p.text.strip(' :\n').lower() == 'interests':
-                for j in dc['Interests']:
-                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                if dc['Interests'][0].lower().strip() != 'interest1':
+                    for j in dc['Interests']:
+                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
         try:
-            if p.text.strip(' :\n').lower() == 'trainings':
-                for j in dc['Trainings']:
-                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+            if p.text.strip(' :\n').lower() == 'training':
+                if dc['Trainings'][0].lower().strip() != 'training1':
+                    for j in dc['Trainings']:
+                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
         try:
             if p.text.strip(' :\n').lower() == 'skills':
-                for j in dc['Skills']:
-                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                if dc['Skills'][0].lower().strip() != 'skill1':
+                    for j in dc['Skills']:
+                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
         try:
             if p.text.strip(' :\n').lower() == 'career history':
                 for j in dc['Experience']:
-                    doc.paragraphs[i+2].add_run(j['Designation'].strip() + '\n').bold = True
-                    if j ['Company locality'] != "":
-                        doc.paragraphs[i+2].add_run(j['Company locality'].strip() + '\n').bold = True
+                    if j['Name of Company'].strip().lower() == "company name here":
+                        continue                    
+                    if j['Designation'].strip():
+                        doc.paragraphs[i+2].add_run(j['Designation'].strip() + '\n').bold = True
                     else:
-                        j ['Company locality'] == ""
-                        doc.paragraphs[i+2].add_run("N/A" + '\n').bold = True
-                    doc.paragraphs[i+2].add_run(j['Duration'].strip() + '\n\n').bold = True
-                    if len(j["Responsibilities"]) == 0:
-                        pass
+                        doc.paragraphs[i+2].add_run('Designation not mentioned' + '\n').bold = True
+                    
+                    if j['Name of Company'].strip():
+                        doc.paragraphs[i+2].add_run(j['Name of Company'].strip()).bold = True
                     else:
-                        j["Responsibilities"] != 0
+                        doc.paragraphs[i+2].add_run('Company Name not mentioned').bold = True                    
+
+                    if j['Company locality'].strip():
+                        doc.paragraphs[i+2].add_run(', ' + j['Company locality'].strip() + '\n').bold = True
+                    else:
+                        doc.paragraphs[i+2].add_run('\n').bold = True
+
+                    if j['Duration'].strip():
+                        doc.paragraphs[i+2].add_run(j['Duration'].strip() + '\n\n').bold = True
+                    else:
+                        doc.paragraphs[i+2].add_run('Duration not mentioned' + '\n\n').bold = True                        
+                        
+                    if j["Responsibilities"]:
                         doc.paragraphs[i+2].add_run("Responsibilities:" + '\n').bold = True
                         for k in j['Responsibilities']:
                             doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
