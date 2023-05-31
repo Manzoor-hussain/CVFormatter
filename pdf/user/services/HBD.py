@@ -9,6 +9,7 @@ import re
 import textwrap
 import PyPDF2
 import pdfplumber
+from docx.shared import Pt
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
 
@@ -38,7 +39,7 @@ def read_text_from_pdf(file_path):
     
 def hbd_converter(path_in, path_out, path_save):
     
-    formatted = path_out
+    formatted = os.getcwd() + "/" + path_out
     
     # unformatted document
     if path_in.endswith('.docx'):
@@ -99,14 +100,23 @@ def hbd_converter(path_in, path_out, path_save):
         1. Do NOT split, rephrase or summarize list of Responsibilities. Extract each Responsibility as a complete sentence from text.
         2. Make it sure to keep the response in JSON format.
         3. If value not found then leave it empty/blank.
-        4. Do not include Mobile number, Email and Home address.
+        4. Do not include Mobile number, Email and Home address. 
     """
 
 
     result = get_completion(test_text)
     
+#     print("----------------------------------------------------------------")
+#     print("                          Result                            ")
+#     print("----------------------------------------------------------------")
+#     print(result)
+    
     dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
     
+#     print("----------------------------------------------------------------")
+#     print("                          Dictionary                            ")
+#     print("----------------------------------------------------------------")
+#     print(dc) 
     
     doc = docx.Document(formatted)
 
@@ -216,7 +226,7 @@ def hbd_converter(path_in, path_out, path_save):
                     doc.paragraphs[i+2].add_run(j['Name of Company'][0].strip() + ' – ' + j['Name of Company'][1] + '\n\n').bold = True
                     for k in j['Responsibilities']:
                         doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
-                    doc.paragraphs[i+2].add_run('\n')
+                    doc.paragraphs[i+2].add_run('\n\n')
         except:
             pass
 
