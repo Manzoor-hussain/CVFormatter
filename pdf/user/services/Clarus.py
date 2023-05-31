@@ -9,6 +9,7 @@ import re
 import textwrap
 import PyPDF2
 import pdfplumber
+from docx.shared import Pt
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
 
@@ -39,7 +40,7 @@ def read_text_from_pdf(file_path):
 
 def clarus_converter(path_in, path_out, path_save):
     
-    formatted = path_out
+    formatted= os.getcwd() + "/" + path_out
     
     
     if path_in.endswith('.docx'):
@@ -63,9 +64,7 @@ def clarus_converter(path_in, path_out, path_save):
     test_text = """
 
     Extract data from this text:
-
     \"""" + unformatted_text + """\"
-
     in following JSON format:
     {
     "Name" : "value",
@@ -98,7 +97,7 @@ def clarus_converter(path_in, path_out, path_save):
     "Other Experience" : ["Other Experience1", "Other Experience2", ...],
     "Projects and Exhibitions" : ["Projects and Exhibitions1", "Projects and Exhibitions2", ...],
     "Voluntary Experience/Work" : ["Voluntary Experience/Work1", "Voluntary Experience/Work2", ...],
-    "Skills and Hobbies" : ["Skills and Hobbies1", "Skills and Hobbies2", ...],
+    "Skills" : ["Skills1", "Skills2", ...],
     "Languages" : ["Language1", "Language2", ...],
     "Leadership" : ["Leadership1", "Leadership2", ...],
     "Interests" : ["interest1", "interest2", ...]
@@ -109,27 +108,35 @@ def clarus_converter(path_in, path_out, path_save):
         2. Make it sure to keep the response in JSON format.
         3. If value not found then leave it empty/blank.
         4. Do not include Mobile number, Email and Home address.
+
     """
     # Prompt result
     result = get_completion(test_text)
     
-   
+#     print("----------------------------------------------------------------")
+#     print("                          Result                            ")
+#     print("----------------------------------------------------------------")
+#     print(result)
     
     dc = dict(json.loads(re.sub(',[ \n]*\]',']',re.sub(',[ \n]*\}','}',result.replace('...','')))))
     
-   
+#     print("----------------------------------------------------------------")
+#     print("                          Dictionary                            ")
+#     print("----------------------------------------------------------------")
+#     print(dc)
     
     
     doc = docx.Document(formatted)
-    
+    font_size = 16
     for i,p in enumerate(doc.paragraphs):
 
 
         if p.text.strip(' :\n').lower() == 'name':
             try:
-                name_paragraph = doc.paragraphs[i+2]
+                name_paragraph = doc.paragraphs[i]
                 name_paragraph.text = str(dc['Name'])
                 name_paragraph.alignment = docx.enum.text.WD_PARAGRAPH_ALIGNMENT.CENTER
+                name_paragraph.runs[0].font.size = Pt(font_size)
             except:
                 pass
 
@@ -205,13 +212,13 @@ def clarus_converter(path_in, path_out, path_save):
             try:
                 for j in dc['Voluntary Experience/Work']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
-                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+#                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
 
-        if p.text.strip(' :\n').lower() == 'skills and hobbies':
+        if p.text.strip(' :\n').lower() == 'skills':
             try:
-                for j in dc['Skills and Hobbies']:
+                for j in dc['Skills']:
                     doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
 #                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
@@ -232,10 +239,11 @@ def clarus_converter(path_in, path_out, path_save):
             except:
                 pass
 
-        if p.text.strip(' :\n').lower() == 'Interests':
+        if p.text.strip(' :\n').lower() == 'interests':
             try:
-                for j in dc['interests']:
-                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                for j in dc['Interests']:
+                    doc.paragraphs[i+1].add_run("\n")
+                    doc.paragraphs[i+1].add_run('  • ' + j.strip())
 #                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
