@@ -95,7 +95,7 @@ def m2_partnership_converter(path,pathout,path_save):
     openai.api_key = api_key
     result = get_completion(test_text)
 
-    dc = dict(json.loads(re.sub(',[ \n]*\]',']',re.sub(',[ \n]*\}','}',result.replace('...','')))))
+    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
 
     # Open the existing document
     doc = docx.Document(formatted)
