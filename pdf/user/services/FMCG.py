@@ -40,7 +40,7 @@ def read_text_from_pdf(file_path):
 
 def fmcg_converter(path_in, path_out, path_save):
     
-    formatted= os.getcwd() + "/" + path_out 
+    formatted= path_out 
     
     if path_in.endswith('.docx'):
         unformatted_text = read_text_from_docx(path_in)
