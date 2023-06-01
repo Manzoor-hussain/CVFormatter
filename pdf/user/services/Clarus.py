@@ -40,7 +40,7 @@ def read_text_from_pdf(file_path):
 
 def clarus_converter(path_in, path_out, path_save):
     
-    formatted= os.getcwd() + "/" + path_out
+    formatted= path_out
     
     
     if path_in.endswith('.docx'):
