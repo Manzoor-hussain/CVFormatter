@@ -37,7 +37,7 @@ def read_text_from_pdf(file_path):
         return '\n'.join(text)
 
     
-def joss_converter(path_in, path_out, path_save):
+def joss_search_converter(path_in, path_out, path_save):
     
     formatted = os.getcwd() + "/" + path_out
     
