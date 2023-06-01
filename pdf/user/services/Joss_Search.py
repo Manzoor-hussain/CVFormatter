@@ -39,7 +39,7 @@ def read_text_from_pdf(file_path):
     
 def joss_search_converter(path_in, path_out, path_save):
     
-    formatted = os.getcwd() + "/" + path_out
+    formatted = path_out
     
     # unformatted document
     if path_in.endswith('.docx'):
@@ -194,8 +194,7 @@ def joss_search_converter(path_in, path_out, path_save):
     #                 doc.paragraphs[i+2].add_run('Duties:' + '\n\n')
                     for k in j['Responsibilities']:
                         doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
-#                     doc.paragraphs[i+2].add_run('\n')
-#                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+                    doc.paragraphs[i+2].add_run('\n')
             except:
                 pass
 
