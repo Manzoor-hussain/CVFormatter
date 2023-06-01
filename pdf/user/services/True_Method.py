@@ -40,7 +40,7 @@ def read_text_from_pdf(file_path):
     
 def true_method_converter(path_in, path_out, path_save):
     
-    formatted = os.getcwd() + "/" + path_out
+    formatted = path_out
     
     # unformatted document
     if path_in.endswith('.docx'):
