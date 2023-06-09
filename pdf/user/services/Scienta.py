@@ -155,7 +155,7 @@ def scienta_converter(path,formatted_path,save_path):
 
         try:
             if p.text.strip(' :\n').lower() == 'certificates':
-                if dc['Certificates'][0].lower().replace(' ','') != 'certificates1':
+                if dc['Certificates'][0].lower().replace(' ','') != 'certificate1':
                     for j in dc['Certificates']:
                         if j.strip():
                             doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
@@ -164,7 +164,7 @@ def scienta_converter(path,formatted_path,save_path):
 
         try:
             if p.text.strip(' :\n').lower() == 'languages':
-                if dc['Languages'][0].lower().replace(' ','') != 'languages1':
+                if dc['Languages'][0].lower().replace(' ','') != 'language1':
                     for j in dc['Languages']:
                         if j.strip():
                             doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
@@ -173,7 +173,7 @@ def scienta_converter(path,formatted_path,save_path):
 
         try:
             if p.text.strip(' :\n').lower() == 'interests':
-                if dc['Interests'][0].lower().replace(' ','') != 'interests1':
+                if dc['Interests'][0].lower().replace(' ','') != 'interest1':
                     for j in dc['Interests']:
                         if j.strip():
                             doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
@@ -191,7 +191,7 @@ def scienta_converter(path,formatted_path,save_path):
 
         try:
             if p.text.strip(' :\n').lower() == 'skills':
-                if dc['Skills'][0].lower().replace(' ','') != 'skills1':
+                if dc['Skills'][0].lower().replace(' ','') != 'skill1':
                     for j in dc['Skills']:
                         if j.strip():
                             doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
