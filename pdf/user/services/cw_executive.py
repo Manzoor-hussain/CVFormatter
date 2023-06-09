@@ -2,8 +2,8 @@ import os
 import openai
 import docx
 import docx2txt
+from keys import api_key
 from .keys import api_key
-from pprint import pprint
 import json
 import re
 import textwrap
@@ -64,12 +64,12 @@ def cw_executive_converter(path, pathout, path_save):
         {"Duration" : "Working Duration in Company",
         "Job Title" : "Title of job",
         "Company Name" : "Name of Company",
-        "Responsibilities" : ["Responsiblility1, Responsibility2", ...]
+        "Responsibilities" : ["Responsiblility1, Responsibility2", ...],
         },
         {"Duration" : "Working Duration in Company",
         "Job Title" : "Title of job",
         "Company Name" : "Name of Company",
-        "Responsibilities" : ["Responsiblility1, Responsibility2", ...]
+        "Responsibilities" : ["Responsiblility1, Responsibility2", ...],
         },
         ...
         ],
@@ -88,7 +88,7 @@ def cw_executive_converter(path, pathout, path_save):
     "Qualifications" : ["Qualification1", "Qualification2", ...],
     "Skills" : ["Skill1", "Skill2", ...],
     "Languages" : ["Language1", "Language2", ...],
-    "Interests" : ["Interest1", "Interest2", ...]
+    "Interests" : ["Interest1", "Interest2", ...],
     }
 
     You must keep the following points in considration while extracting data from text:
@@ -96,19 +96,16 @@ def cw_executive_converter(path, pathout, path_save):
         2. Make it sure to keep the response in JSON format.
         3. If value not found then leave it empty/blank.
         4. Do not include Mobile number, Email and Home address.
-    """
+        5. Summary/Personal Statement should be complete without being rephrased.
+        
+        """
 
     result = get_completion(test_text)
 
 
 
 
-    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
-    dc
-
-
-
-
+    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"|\"[Nn]ot [Mm]entioned\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
 
     doc = docx.Document(formatted)
 
@@ -121,8 +118,9 @@ def cw_executive_converter(path, pathout, path_save):
         if p.text.strip(' :\n').lower() == 'name':
             try:
                 name = doc.paragraphs[i]
-                name.text = dc['Name']
-                name.alignment = docx.enum.text.WD_PARAGRAPH_ALIGNMENT.CENTER
+                if dc['Name'].lower().replace(' ','') != 'value':
+                    name.text = dc['Name']
+                    name.alignment = docx.enum.text.WD_PARAGRAPH_ALIGNMENT.CENTER
                 for run in name.runs:
                     run.bold = True
                     run.font.size = docx.shared.Pt(16) 
@@ -132,86 +130,112 @@ def cw_executive_converter(path, pathout, path_save):
         if p.text.strip(' :\n').lower() == 'professional profile':
             try:
                 summary = doc.paragraphs[i+1] 
-                summary.text = str(dc['Professional Profile'])
-                doc.paragraphs[i+1].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
-                change_font_size(summary, docx.shared.Pt(12)) 
+                if dc['Professional Profile'][0].lower().replace(' ','') != 'professionalprofile1':
+                    summary.text = str(dc['Professional Profile'])
+                    doc.paragraphs[i+1].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+                    change_font_size(summary, docx.shared.Pt(12)) 
             except:
                 pass
 
         if p.text.strip(' :\n').lower() == 'career history':
             try:
                 for j in dc['Career History']:
-                    if j['Duration']:
-                        doc.paragraphs[i+1].add_run(j['Duration'].strip() + '\n').bold = True
-                    if j['Job Title']:
-                        doc.paragraphs[i+1].add_run(j['Job Title'].strip() + '\n').bold = True
-                    if j['Company Name']:
-                        doc.paragraphs[i+1].add_run(j['Company Name'].strip() + '\n\n').bold = True
-                    if j['Responsibilities']:
-                        for k in j['Responsibilities']:
-                            doc.paragraphs[i+1].add_run('•   ' + k.strip() + '\n').bold = False
-                    doc.paragraphs[i+1].add_run('\n')
+                    if j['Job Title'].strip() and j['Job Title'].lower().replace(' ','') !='titleofjob' or (j['Company Name'].strip() and j['Company Name'].lower().replace(' ','') !='nameofcompany'):
+                        if j['Duration'].strip():
+                            doc.paragraphs[i+1].add_run(j['Duration'].strip() + '\n').bold = True
+                        else:
+                            doc.paragraphs[i+1].add_run("Duration not mentioned"+ '\n').bold = True                          
+                        if j['Job Title'].strip():
+                            doc.paragraphs[i+1].add_run(j['Job Title'].strip() + '\n').bold = True
+                        else:
+                            doc.paragraphs[i+1].add_run("Job Title not mentioned"+ '\n').bold = True                          
+                        if j['Company Name'].strip():
+                            doc.paragraphs[i+1].add_run(j['Company Name'].strip() + '\n\n').bold = True
+                        else:
+                            doc.paragraphs[i+1].add_run("Company Name not mentioned"+ '\n\n').bold = True                          
+                        if j['Responsibilities'] and j['Responsibilities'][0].lower().replace(' ','') != 'responsibility1':
+                            for k in j['Responsibilities']:
+                                doc.paragraphs[i+1].add_run('•   ' + k.strip() + '\n').bold = False
+                            doc.paragraphs[i+1].add_run('\n')
             except:
                 pass
 
         if p.text.strip(' :\n').lower() == 'education':
             try:
                 for j in dc['Education']:
-                    if j['Duration']:
-                        duration = j['Duration'].strip()
-                        doc.paragraphs[i+1].add_run(duration + '\n').bold = True
-                    if j['Degree Name']:
-                        degree_name = j['Degree Name'].strip()
-                        doc.paragraphs[i+1].add_run(degree_name + '\n').bold = True
-                    if j['Institute Name']:
-                        institute_name = j['Institute Name'].strip()
-                        doc.paragraphs[i+1].add_run(institute_name + '\n').bold = True
-                        doc.paragraphs[i+1].add_run('\n')
-                    change_font_size(doc.paragraphs[i+1], docx.shared.Pt(12))
+                    if j['Degree Name'].strip() and j['Degree Name'].lower().replace(' ','') != "nameofthatdegree":
+                        if j['Duration'].strip():
+                            duration = j['Duration'].strip()
+                            doc.paragraphs[i+1].add_run(duration + '\n').bold = True
+                        else:
+                            doc.paragraphs[i+1].add_run("Duration not mentioned"+'\n')
+                            
+                        if j['Degree Name'].strip():
+                            degree_name = j['Degree Name'].strip()
+                            doc.paragraphs[i+1].add_run(degree_name + '\n').bold = True
+                        else:
+                            doc.paragraphs[i+1].add_run("Degree Name not mentioned"+'\n')
+
+                        if j['Institute Name'].strip():
+                            institute_name = j['Institute Name'].strip()
+                            doc.paragraphs[i+1].add_run(institute_name + '\n').bold = True
+                            doc.paragraphs[i+1].add_run('\n')
+                        change_font_size(doc.paragraphs[i+1], docx.shared.Pt(12))
+#                         else:
+#                             doc.paragraphs[i+1].add_run("Institute Name not mentioned"+'\n')                            
             except:
                 pass
 
         if p.text.strip(' :\n').lower() == 'achievements':
             try:
-                for j in dc['Achievements']:
-                    doc.paragraphs[i+1].add_run('•   ' + j.strip() + '\n')
-                    change_font_size(doc.paragraphs[i+1], docx.shared.Pt(12)) 
+                if dc['Achievements'][0].lower().replace(' ','') != 'achievements1':
+                    for j in dc['Achievements']:
+                        if j.strip():
+                            doc.paragraphs[i+1].add_run('•   ' + j.strip() + '\n')
+                            change_font_size(doc.paragraphs[i+1], docx.shared.Pt(12)) 
             except:
                 pass
 
         if p.text.strip(' :\n').lower() == 'qualifications':
             try:
-                for j in dc['Qualifications']:
-                    doc.paragraphs[i+1].add_run('•   ' + j.strip() + '\n')
-                    change_font_size(doc.paragraphs[i+1], docx.shared.Pt(12)) 
+                if dc['Qualifications'][0].lower().replace(' ','') != 'qualifications1':
+                    for j in dc['Qualifications']:
+                        if j.strip():
+                            doc.paragraphs[i+1].add_run('•   ' + j.strip() + '\n')
+                            change_font_size(doc.paragraphs[i+1], docx.shared.Pt(12)) 
             except:
                 pass
 
         if p.text.strip(' :\n').lower() == 'skills':
             try:
-                for j in dc['Skills']:
-                    doc.paragraphs[i+1].add_run('•   ' + j.strip() + '\n')
-                    change_font_size(doc.paragraphs[i+1], docx.shared.Pt(12)) 
+                if dc['Skills'][0].lower().replace(' ','') != 'skills1':
+                    for j in dc['Skills']:
+                        if j.strip():
+                            doc.paragraphs[i+1].add_run('•   ' + j.strip() + '\n')
+                            change_font_size(doc.paragraphs[i+1], docx.shared.Pt(12)) 
             except:
                 pass
 
         if p.text.strip(' :\n').lower() == 'languages':
             try:
-                for j in dc['Languages']:
-                    doc.paragraphs[i+1].add_run('•   ' + j.strip() + '\n')
-                    change_font_size(doc.paragraphs[i+1], docx.shared.Pt(12)) 
+                if dc['Languages'][0].lower().replace(' ','') != 'languages1':
+                    for j in dc['Languages']:
+                        if j.strip():
+                            doc.paragraphs[i+1].add_run('•   ' + j.strip() + '\n')
+                            change_font_size(doc.paragraphs[i+1], docx.shared.Pt(12)) 
             except:
                 pass
 
         if p.text.strip(' :\n').lower() == 'interests':
             try:
-                for j in dc['Interests']:
-                    doc.paragraphs[i+1].add_run('•   ' + j.strip() + '\n')
-                    change_font_size(doc.paragraphs[i+1], docx.shared.Pt(12)) 
+                if dc['Interests'][0].lower().replace(' ','') != 'interests1':
+                    for j in dc['Interests']:
+                        if j.strip():
+                            doc.paragraphs[i+1].add_run('•   ' + j.strip() + '\n')
+                            change_font_size(doc.paragraphs[i+1], docx.shared.Pt(12)) 
             except:
                 pass
 
 
     doc.save(path_save)
     print("Process has Completed...")
-
