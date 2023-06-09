@@ -2,7 +2,6 @@ import os
 import openai
 import docx
 import docx2txt
-from keys import api_key
 from .keys import api_key
 import json
 import re
