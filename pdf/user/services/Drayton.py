@@ -8,7 +8,6 @@ import json
 import re
 import textwrap
 import PyPDF2
-import pdfplumber
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.shared import Pt
 
@@ -54,6 +53,12 @@ def drayton_converter(path_in, path_out, path_save):
     # formatted document
     formatted_text = docx2txt.process(formatted)
     
+    print("----------------------------------------------------------------")
+    print("                          Unformatted Text                            ")
+    print("----------------------------------------------------------------")
+    print(unformatted_text)
+    
+    
     print("Process has started...")
         
     # Prompt
@@ -68,7 +73,7 @@ def drayton_converter(path_in, path_out, path_save):
     {
     "Name" : "value",
     "Location" : "value",
-    "Academic Qualification" : "value",
+    "Academic Qualification" : "value in string",
     "Personal Profile" : "value",
 
     "Career Experience" : [
@@ -96,49 +101,54 @@ def drayton_converter(path_in, path_out, path_save):
         2. Make it sure to keep the response in JSON format.
         3. If value not found then leave it empty/blank.
         4. Do not include Mobile number, Email and Home address. 
+        5. Summary/Personal Statement should be as it is. Do not change or rephrase it.
     """
     result = get_completion(test_text)
     
-#     print("----------------------------------------------------------------")
-#     print("                          Result                            ")
-#     print("----------------------------------------------------------------")
-#     print(result)
+    print("----------------------------------------------------------------")
+    print("                          Result                            ")
+    print("----------------------------------------------------------------")
+    print(result)
     
-    dc = dict(json.loads(re.sub(',[ \n]*\]',']',re.sub(',[ \n]*\}','}',result.replace('...','')))))
+    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"|\"[Nn]ot [Mm]entioned\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
     
-#     print("----------------------------------------------------------------")
-#     print("                          Dictionary                            ")
-#     print("----------------------------------------------------------------")
-#     print(dc)
+    print("----------------------------------------------------------------")
+    print("                          Dictionary                            ")
+    print("----------------------------------------------------------------")
+    print(dc)
     
     doc = docx.Document(formatted)
-
+    
     for table in doc.tables:
         for row in table.rows:
             for i,cell in enumerate(row.cells):
                 try:
                     if cell.text.strip(' :\n').lower() == 'name':
-                        row.cells[i+1].text = dc['Name']
+                        if dc['Name'] and dc['Name'].lower().replace(' ','') != 'value':
+                            row.cells[i+1].text = dc['Name']
                 except:
                     pass
                 try:
                     if cell.text.strip(' :\n').lower() == 'location':
-                        row.cells[i+1].text = dc['Location']
+                        if dc['Location'] and dc['Location'].lower().replace(' ','') != 'value':
+                            row.cells[i+1].text = dc['Location']
                 except:
                     pass                
                 try:
                     if cell.text.strip(' :\n').lower() == 'academic qualification':
-                        for j in dc['Academic Qualification']:
-                            row.cells[i+1].text = row.cells[i+1].text + j
+                        if dc['Academic Qualification'] and dc['Academic Qualification'].lower().replace(' ','') != 'value':
+                            row.cells[i+1].text = dc['Academic Qualification']
+                        
                 except:
                     pass                
                 try:
                     if cell.text.strip(' :\n').lower() == 'personal profile':
-                        personal_profile = row.cells[i+1]
-                        personal_profile.text = dc['Personal Profile']
-
-                        paragraph = personal_profile.paragraphs[0]
-                        paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+                        if dc['Personal Profile'] and dc['Personal Profile'].lower().replace(' ','') != 'value':
+                            personal_profile = row.cells[i+1]
+                            personal_profile.text = dc['Personal Profile']
+                           
+                            paragraph = personal_profile.paragraphs[0]
+#                             paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
                         
                 except:
                     pass                
@@ -151,52 +161,59 @@ def drayton_converter(path_in, path_out, path_save):
 
         if p.text.strip(' :\n').lower() == 'career experience':
             try:
+                
                 for j in dc['Career Experience']:
                     company_name = j['Company Name'].strip()
                     duration = j['Duration'].strip()
                     job_title = j['Job Title'].strip()
+                    
+                    if (j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'name of company') or (j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'title of job'):
+                        if j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'name of company':  
+                            company_run = doc.paragraphs[i+2].add_run(company_name + ' ')
+                            company_run.bold = True
+                            company_run.font.size = Pt(font_size)
+                        if j['Duration'] and j['Duration'].lower().replace(' ','') != 'working duration in company':
+                            duration_run = doc.paragraphs[i+2].add_run('(' + duration + ')' + '\n')
+                            duration_run.bold = True
+                            duration_run.font.size = Pt(font_size)
+                        if j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'title of job':
+                            job_title_run = doc.paragraphs[i+2].add_run(job_title + '\n\n')
+                            job_title_run.bold = False
+                            job_title_run.font.size = Pt(font_size)
 
-                    company_run = doc.paragraphs[i+2].add_run(company_name + ' ')
-                    company_run.bold = True
-                    company_run.font.size = Pt(font_size)
-
-                    duration_run = doc.paragraphs[i+2].add_run('(' + duration + ')' + '\n')
-                    duration_run.bold = True
-                    duration_run.font.size = Pt(font_size)
-
-                    job_title_run = doc.paragraphs[i+2].add_run(job_title + '\n\n')
-                    job_title_run.bold = False
-                    job_title_run.font.size = Pt(font_size)
-    #                 doc.paragraphs[i+2].add_run('Duties:' + '\n\n')
-                    for k in j['Responsibilities']:
-                        respo = doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
-                        respo.font.size = Pt(font_size)
-                    doc.paragraphs[i+2].add_run("\n\n")
+                        if j["Responsibilities"] and j["Responsibilities"][0].lower().replace(' ','') != "responsibility1":
+                            for k in j['Responsibilities']:
+                                respo = doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
+                                respo.font.size = Pt(font_size)
+                            doc.paragraphs[i+2].add_run("\n\n")
                     
             except:
                 pass
 
         if p.text.strip(' :\n').lower() == 'skills':
             try:
-                for j in dc['Skills']:
-                    skill_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
-                    skill_run.font.size = Pt(font_size)
+                if dc['Skills'][0] and dc['Skills'][0].lower().strip() != 'skill1':
+                    for j in dc['Skills']:
+                        skill_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                        skill_run.font.size = Pt(font_size)
             except:
                 pass
 
         if p.text.strip(' :\n').lower() == 'interest and hobbies':
             try:
-                for j in dc['Interest and Hobbies']:
-                    i_h_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
-                    i_h_run.font.size = Pt(font_size)
+                if dc['Interest and Hobbies'][0] and dc['Interest and Hobbies'][0].lower().strip() != 'interest and hobbies1':
+                    for j in dc['Interest and Hobbies']:
+                        i_h_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                        i_h_run.font.size = Pt(font_size)
             except:
                 pass
 
         if p.text.strip(' :\n').lower() == 'language':
             try:
-                for j in dc['Languages']:
-                    language_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
-                    language_run.font.size = Pt(font_size)
+                if dc['Languages'][0] and dc['Languages'][0].lower().strip() != 'language1':
+                    for j in dc['Languages']:
+                        language_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                        language_run.font.size = Pt(font_size)
             except:
                 pass
     
