@@ -93,12 +93,15 @@ def timber_seed_format_converter(path, pathout, path_save):
         2. Make it sure to keep the response in JSON format.
         3. If value not found then leave it empty/blank.
         4. Do not include Mobile number, Email and Home address.
+        5. Summary/Personal Statement should be complete without being rephrased.
+
     """
 
 
     result = get_completion(test_text)
 
-    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
+    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"|\"[Nn]ot [Mm]entioned\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
+#     print(dc)
 
     doc = docx.Document(formatted)
 
@@ -107,19 +110,20 @@ def timber_seed_format_converter(path, pathout, path_save):
         try:
             if p.text.strip().lower() == 'name':
                 doc.paragraphs[i].text = ""
-                run = doc.paragraphs[i].add_run(dc['Name'].strip().title())
-                run.bold = True
-                run.font.size = Pt(26.5)
-
-                run.font.color.rgb = RGBColor(255, 0, 0)  # Red color
+                if dc['Name'].lower().replace(' ','') != 'value':
+                    run = doc.paragraphs[i].add_run(dc['Name'].strip().title())
+                    run.bold = True
+                    run.font.size = Pt(26.5)
+                    run.font.color.rgb = RGBColor(255, 0, 0)  # Red color
         except:
-            print(traceback.print_exc())
+            pass
 
         try:
             if p.text.strip(' :\n').lower() == 'summary':
                 doc.paragraphs[i].text = ""
-                doc.paragraphs[i].add_run(dc['Summary'].strip()).bold = False
-                doc.paragraphs[i].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+                if dc['Summary'].lower().replace(' ','') != 'value':
+                    doc.paragraphs[i].add_run(dc['Summary'].strip()).bold = False
+                    doc.paragraphs[i].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
 
         except:
             pass
@@ -127,17 +131,30 @@ def timber_seed_format_converter(path, pathout, path_save):
         try:        
             if p.text.strip(' :\n').lower() == 'education':
                 for j in dc['Education']:
-        #             doc.paragraphs[i+2].add_run(j['Institute Name']).bold = Fals
-                    doc.paragraphs[i+2].add_run(j["Institute Name"].strip() + ", " + j['Location'] + "\n").font.underline = True
-                    doc.paragraphs[i+2].add_run(j['Duration'].strip() + '\n').bold = False
-                    doc.paragraphs[i+2].add_run(j['Degree Name'].strip() + '\n\n').bold = False
+                    if j['Degree Name'].strip() and j['Degree Name'].lower().replace(' ','') != "nameofdegree":
+                        if j["Institute Name"].strip():
+                            doc.paragraphs[i+2].add_run(j["Institute Name"].strip() + ", " + j['Location'] + "\n").font.underline = True
+                        else:
+                            doc.paragraphs[i+2].add_run("Institute Name not mentioned").bold=False
+                        if j['Duration'].strip():                            
+                            doc.paragraphs[i+2].add_run(j['Duration'].strip() + '\n').bold = False
+                        else:
+                            doc.paragraphs[i+2].add_run("Duration not mentioned").bold=False
+                        if j['Degree Name'].strip():                                                       
+                            doc.paragraphs[i+2].add_run(j['Degree Name'].strip() + '\n\n').bold = False
+                        else:
+                            doc.paragraphs[i+2].add_run("Degree not mentioned").bold=False
+
+                            
         except:
             pass
 
         try:
-            if p.text.strip(' :\n').lower() == 'other training':
-                for j in dc['Other Training']:
-                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+            if p.text.strip(' :\n').lower() == 'leadership and management':
+                if dc['Leadership and Management'][0].lower().replace(' ','') != 'leadership1':
+                    for j in dc['Leadership and Management']:
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -145,29 +162,37 @@ def timber_seed_format_converter(path, pathout, path_save):
 
         try:
             if p.text.strip(' :\n').lower() == 'languages':
-                for j in dc['Languages']:
-                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                if dc['Languages'][0].lower().replace(' ','') != 'languages1':
+                    for j in dc['Languages']:
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
         try:
             if p.text.strip(' :\n').lower() == 'interests':
-                for j in dc['Interests']:
-                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                if dc['Interests'][0].lower().replace(' ','') != 'interests1':
+                    for j in dc['Interests']:
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
         try:
             if p.text.strip(' :\n').lower() == 'other training':
-                for j in dc['Other Training']:
-                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                if dc['Other Training'][0].lower().replace(' ','') != 'othertraining1':
+                    for j in dc['Other Training']:
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
         try:
             if p.text.strip(' :\n').lower() == 'skills':
-                for j in dc['Skills']:
-                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                if dc['Skills'][0].lower().replace(' ','')!= 'skills1':
+                    for j in dc['Skills']:
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -175,15 +200,30 @@ def timber_seed_format_converter(path, pathout, path_save):
         try:
             if p.text.strip(' :\n').lower() == 'previous employment':
                 for j in dc['Previous Employment']:
-                    doc.paragraphs[i+2].add_run(j['Company Name'].strip() + ' ' + j['Company Location'] + '\n').font.underline = True
-                    doc.paragraphs[i+2].add_run(j['Duration'].strip() + '\n').bold = False
-                    doc.paragraphs[i+2].add_run(j['Designation'].strip() + '\n').bold = False
-                    for k in j['Responsibilities']:
-                        doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
-                    doc.paragraphs[i+2].add_run('\n\n')
+                    if j['Designation'].strip() and j['Designation'].lower().replace(' ','') !='specificdesignationinthatcompany' or (j['Company Name'].strip() and j['Company Name'].lower().replace(' ','') !='nameofcompany'):
+                        if j['Company Name'].strip():                          
+                            doc.paragraphs[i+2].add_run(j['Company Name'].strip()).font.underline=True
+                        else:
+                            doc.paragraphs[i+2].add_run("Company Name not mentioned").bold=False
+                        if j['Company Location'].strip():                            
+                            doc.paragraphs[i+2].add_run(' ' + j['Company Location'] + '\n').font.underline = True
+                        else:
+                            doc.paragraphs[i+2].add_run("Company Location not mentioned"+'\n').bold=False
+                        if j['Duration'].strip():                           
+                            doc.paragraphs[i+2].add_run(j['Duration'].strip() + '\n').bold = False
+                        else:
+                            doc.paragraphs[i+2].add_run("Duration not mentioned"+'\n').bold=False
+                        if j['Designation'].strip():
+                            doc.paragraphs[i+2].add_run(j['Designation'].strip() + '\n\n').bold = False
+                        else:
+                            doc.paragraphs[i+2].add_run("Designation not mentioned"+'\n\n').bold=False
+                            
+                        if j['Responsibilities'] and j['Responsibilities'][0].lower().replace(' ','') != 'responsibility1':
+                            for k in j['Responsibilities']:
+                                doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
+                            doc.paragraphs[i+2].add_run('\n\n')
         except:
             pass
-
 
     doc.save(path_save)
     print("Process has Completed...")
