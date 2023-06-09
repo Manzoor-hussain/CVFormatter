@@ -53,6 +53,12 @@ def harrington_morris_converter(path_in, path_out, path_save):
     # formatted document
     formatted_text = docx2txt.process(formatted)
     
+    print("----------------------------------------------------------------")
+    print("                          Unformatted Text                            ")
+    print("----------------------------------------------------------------")
+    print(unformatted_text)
+    
+    
     print("Process has started...")
     
     
@@ -80,7 +86,7 @@ def harrington_morris_converter(path_in, path_out, path_save):
     "Software Skills" : ["Software Skill1", "Software Skill2", ...],
     "Certifications" : ["Certification1", "Certification2", ...],
     "Professional Qualification" : "value",
-    "Languages" : "value",
+    "Languages" : ["Language1", "Language2", ...],
     "Nationality" : "value",
 
     "Professional Experience" : [
@@ -102,21 +108,21 @@ def harrington_morris_converter(path_in, path_out, path_save):
         2. Make it sure to keep the response in JSON format.
         3. If value not found then leave it empty/blank.
         4. Do not include Mobile number, Email and Home address.
-    
+        5. Summary/Personal Statement should be as it is. Do not change or rephrase it.
     """
     result = get_completion(test_text)
     
-#     print("----------------------------------------------------------------")
-#     print("                          Result                            ")
-#     print("----------------------------------------------------------------")
-#     print(result)
-
-    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
+    print("----------------------------------------------------------------")
+    print("                          Result                            ")
+    print("----------------------------------------------------------------")
+    print(result)
     
-#     print("----------------------------------------------------------------")
-#     print("                          Dictionary                            ")
-#     print("----------------------------------------------------------------")
-#     print(dc)
+    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"|\"[Nn]ot [Mm]entioned\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
+    
+    print("----------------------------------------------------------------")
+    print("                          Dictionary                            ")
+    print("----------------------------------------------------------------")
+    print(dc)
 
     
     doc = docx.Document(formatted)
@@ -129,59 +135,65 @@ def harrington_morris_converter(path_in, path_out, path_save):
                 
             
                 if cell.text.strip(' :\n').lower() == 'education':
-                    for j in dc['Education']:
-                        institute_name = j['Institute Name'].strip()
-                        duration = j['Duration'].strip()
-                        degree_name = j['Degree Name'].strip()
+                    try:
+                        for j in dc['Education']:
+                            institute_name = j['Institute Name'].strip()
+                            duration = j['Duration'].strip()
+                            degree_name = j['Degree Name'].strip()
 
-                        run = row.cells[i+1].paragraphs[0].add_run(institute_name + ' ')
-                        run.bold = True
+                            if j['Degree Name'].strip() and j['Degree Name'].lower().replace(' ','') != 'name of degree':
+                                
+                                if j['Institute Name'].strip() and j['Institute Name'].lower().replace(' ','') != 'name Of institute':
+                                    run = row.cells[i+1].paragraphs[0].add_run(institute_name + ' ')
+                                    run.bold = False
 
-                        if duration:
-                            run = row.cells[i+1].paragraphs[0].add_run('(' + duration + ')' + '\n')
-                            run.bold = True
-                        else:
-                            run = row.cells[i+1].paragraphs[0].add_run('(' + "Not mentioned" + ')' + '\n')
-                            run.bold = True
+                                if j['Duration'].strip() and j['Duration'].lower().replace(' ','') != 'studying duration in institute':
+                                    run = row.cells[i+1].paragraphs[0].add_run('(' + duration + ')' + '\n')
+                                    run.bold = False
+                                else:
+                                    run = row.cells[i+1].paragraphs[0].add_run('(' + "Not mentioned" + ')' + '\n')
+                                    run.bold = False
 
-                        if degree_name:
-                            run = row.cells[i+1].paragraphs[0].add_run(degree_name + '\n\n')
-                            run.bold = False
-                        else:
-                            run = row.cells[i+1].paragraphs[0].add_run("Not mentioned" + '\n\n')
-                            run.bold = False
-                
+                                row.cells[i+1].paragraphs[0].add_run(degree_name + '\n\n').bold = False
+                                
+                    except:
+                        pass
                 
                 try:
                     if cell.text.strip(' :\n').lower() == 'software skills':
-                        for j in dc['Software Skills']:
-                            row.cells[i+1].paragraphs[0].add_run('  • ' + j.strip() + '\n')
+                        if dc['Software Skills'][0] and dc['Software Skills'][0].lower().strip() != 'software skill1':
+                            for j in dc['Software Skills']:
+                                row.cells[i+1].paragraphs[0].add_run('  • ' + j.strip() + '\n')
                 except:
                     pass
                 
                 try:
                     if cell.text.strip(' :\n').lower() == 'certifications':
-                        for j in dc['Certifications']:
-                            row.cells[i+1].paragraphs[0].add_run('  • ' + j.strip() + '\n')
+                        if dc['Certifications'] and dc['Certifications'][0].lower().strip() != 'certification1':
+                            for j in dc['Certifications']:
+                                row.cells[i+1].paragraphs[0].add_run('  • ' + j.strip() + '\n')
                 except:
                     pass
                 
                 try:
                     if cell.text.strip(' :\n').lower() == 'professional qualification':
-                        row.cells[i+1].text = dc['Professional Qualification']
+                        if dc['Professional Qualifications'][0] and dc['Professional Qualifications'][0].lower().strip() != 'qualification1':
+                            row.cells[i+1].text = dc['Professional Qualification']
                 except:
                     pass
                 
                 try:
                     if cell.text.strip(' :\n').lower() == 'languages':
-                        for j in dc['Languages']:
-                            row.cells[i+1].paragraphs[0].add_run('  • ' + j.strip() + '\n')
+                        if dc['Languages'] and dc['Languages'][0].lower().strip() != 'language1':
+                            for j in dc['Languages']:
+                                row.cells[i+1].paragraphs[0].add_run('  • ' + j.strip() + '\n')
                 except:
                     pass
                 
                 try:
                     if cell.text.strip(' :\n').lower() == 'nationality':
-                        row.cells[i+1].text = dc['Nationality']
+                        if dc['Nationality'] and dc['Nationality'][0].lower().strip() != 'value':    
+                            row.cells[i+1].text = dc['Nationality']
                 except:
                     pass
 
@@ -194,37 +206,45 @@ def harrington_morris_converter(path_in, path_out, path_save):
         
         if p.text.strip(' :\n').lower() == 'name':
             try:
-                name_paragraph = doc.paragraphs[i]
-                name_paragraph.text = str(dc['Name'] + '\n')
-                name_paragraph.runs[0].bold = True
-                name_paragraph.alignment = docx.enum.text.WD_PARAGRAPH_ALIGNMENT.CENTER
-                name_paragraph.runs[0].font.size = Pt(font_size)
+                if dc['Name'] and dc['Name'].lower().replace(' ','') != 'value':
+                    name_paragraph = doc.paragraphs[i]
+                    name_paragraph.text = str(dc['Name'] + '\n')
+                    name_paragraph.runs[0].bold = True
+                    name_paragraph.alignment = docx.enum.text.WD_PARAGRAPH_ALIGNMENT.CENTER
+                    name_paragraph.runs[0].font.size = Pt(font_size)
             except:
                 pass
             
             
         if p.text.strip(' :\n').lower() == 'professional experience':
-
+            try:
                 for j in dc['Professional Experience']:
-                    
-                    doc.paragraphs[i+1].add_run("\n")
                     company_name = j['Company Name'].strip()
                     duration = j['Duration'].strip()
                     job_title = j['Job Title'].strip()
+                    
+                    if (j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'name of company') or (j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'title of job'):
+                        
+                        if j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'name of company':  
+                            doc.paragraphs[i+2].add_run(company_name + ' ').bold = True
 
-                    company_run = doc.paragraphs[i+1].add_run(company_name + ' ')
-                    company_run.bold = True
+                        if j['Duration'] and j['Duration'].lower().replace(' ','') != 'working duration in company':    
+                            doc.paragraphs[i+2].add_run('(' + duration + ')' + '\n').bold = True
+                        else:
+                            doc.paragraphs[i+2].add_run('(' + "Duration not mentioned" + ')' + '\n').bold = True
+                            
+                        if j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'title of job':
+                            doc.paragraphs[i+2].add_run(job_title + '\n\n').bold = False
+                        else:
+                            doc.paragraphs[i+2].add_run("Job Title not mentioned" + '\n\n').bold = False
 
-                    duration_run = doc.paragraphs[i+1].add_run('(' + duration + ')' + '\n')
-                    duration_run.bold = True
-
-                    job_title_run = doc.paragraphs[i+1].add_run(job_title + '\n\n')
-                    job_title_run.bold = False
-
-    #                 doc.paragraphs[i+2].add_run('Duties:' + '\n\n')
-                    for k in j['Responsibilities']:
-                        respo = doc.paragraphs[i+1].add_run('  • ' + k.strip() + '\n')
-                    doc.paragraphs[i+1].add_run("\n\n")    
+                        if j["Responsibilities"] and j["Responsibilities"][0].lower().replace(' ','') != "responsibility1":
+                            for k in j['Responsibilities']:
+                                doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
+                            doc.paragraphs[i+2].add_run('\n')
+            except:
+                pass
+ 
         
 
     doc.save(path_save)
