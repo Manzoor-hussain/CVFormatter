@@ -8,9 +8,7 @@ import json
 import re
 import textwrap
 import PyPDF2
-import pdfplumber
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
-# from docx.shared import Pt
 
 
 def get_completion(prompt, model="gpt-3.5-turbo"):
@@ -94,6 +92,8 @@ def fd_recruit_converter(path_in, path_out, path_save):
         2. Make it sure to keep the response in JSON format.
         3. If value not found then leave it empty/blank.
         4. Do not include Mobile number, Email and Home address.
+        5. Summary/Personal Statement should be complete without being rephrased.
+
     """
     result = get_completion(test_text)
     
@@ -103,7 +103,8 @@ def fd_recruit_converter(path_in, path_out, path_save):
 #     print("----------------------------------------------------------------")
 #     print(result)
     
-    dc = dict(json.loads(re.sub(',[ \n]*\]',']',re.sub(',[ \n]*\}','}',result.replace('...','')))))
+    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"|\"[Nn]ot [Mm]entioned\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
+
     
 #     print("----------------------------------------------------------------")
 #     print("                          Dictionary                            ")
@@ -122,19 +123,22 @@ def fd_recruit_converter(path_in, path_out, path_save):
 
                     try:
                         if cell.text.strip(' :\n').lower() == 'name':
-                            row.cells[i+1].text = dc['Name']
+                            if dc['Name'].lower().replace(' ','') != 'value':
+                                row.cells[i+1].text = dc['Name']
                     except:
                         pass
 
                     try:
                         if cell.text.strip(' :\n').lower() == 'resides':
-                            row.cells[i+1].text = dc['Resides']
+                            if dc['Resides'].lower().replace(' ','') != 'value':
+                                row.cells[i+1].text = dc['Resides']
                     except:
                         pass
 
                     try:
                         if cell.text.strip(' :\n').lower() == 'education':
-                            row.cells[i+1].text = dc['Education']
+                            if dc['Education'].lower().replace(' ','') != 'value':
+                                row.cells[i+1].text = dc['Education']
                     except:
                         pass
 
@@ -144,31 +148,36 @@ def fd_recruit_converter(path_in, path_out, path_save):
     
         if p.text.strip(' :\n').lower() == 'profile':
             try:
-                doc.paragraphs[i+2].add_run(dc['Profile'].strip())
-    #             name_paragraph.runs[0].bold = True
+                if dc['Profile'].lower().replace(' ','') != 'value':
+                    doc.paragraphs[i+2].add_run(dc['Profile'].strip())
             except:
                 pass
 
         if p.text.strip(' :\n').lower() == 'career history':
             try:
                 for j in dc['Career History']:
-                    company_name = j['Company Name'].strip()
-                    duration = j['Duration'].strip()
-                    job_title = j['Job Title'].strip()
+                    if j['Job Title'].strip() and j['Job Title'].lower().replace(' ','') !='titleofjob' or (j['Company Name'].strip() and j['Company Name'].lower().replace(' ','') !='nameofcompany'):
+                        if j['Company Name'].strip(): 
+                            company_run = doc.paragraphs[i+2].add_run(j['Company Name'].strip() + ' ')
+                            company_run.bold = True
+                        else:
+                            company_run = doc.paragraphs[i+2].add_run("Company Name not mentioned")                         
+                        if j['Duration'].strip():
+                            duration_run = doc.paragraphs[i+2].add_run('(' + j['Duration'].strip() + ')' + '\n')
+                            duration_run.bold = True
+                        else:
+                            duration_run = doc.paragraphs[i+2].add_run("Duration not mentioned"+'\n')                         
 
-                    company_run = doc.paragraphs[i+2].add_run(company_name + ' ')
-                    company_run.bold = True
-
-                    duration_run = doc.paragraphs[i+2].add_run('(' + duration + ')' + '\n')
-                    duration_run.bold = True
-
-                    job_title_run = doc.paragraphs[i+2].add_run(job_title + '\n\n')
-                    job_title_run.bold = False
-
-    #                 doc.paragraphs[i+2].add_run('Duties:' + '\n\n')
-                    for k in j['Responsibilities']:
-                        doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
-                    doc.paragraphs[i+2].add_run("\n\n")
+                        if j['Job Title'].strip():
+                            job_title_run = doc.paragraphs[i+2].add_run(j['Job Title'].strip() + '\n\n')
+                            job_title_run.bold = False
+                        else:
+                            job_title_run = doc.paragraphs[i+2].add_run("Job Title not mentioned"+'\n\n')
+                            
+                        if j['Responsibilities'] and j['Responsibilities'][0].lower().replace(' ','') != 'responsibility1':   
+                            for k in j['Responsibilities']:
+                                doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
+                            doc.paragraphs[i+2].add_run("\n\n")
 
             except:
                 pass
@@ -177,16 +186,20 @@ def fd_recruit_converter(path_in, path_out, path_save):
 
         if p.text.strip(' :\n').lower() == 'courses and trainings':
             try:
-                for j in dc['Courses and Trainings']:
-                    language_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                if dc['Courses and Trainings'][0].lower().replace(' ','') != 'coursesandtrainings1':
+                    for j in dc['Courses and Trainings']:
+                        if j.strip():
+                            language_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
 
             except:
                 pass
 
         if p.text.strip(' :\n').lower() == 'key skills':
             try:
-                for j in dc['Key Skills']:
-                    language_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                if dc['Key Skills'][0].lower().replace(' ','') != 'keyskill1':
+                    for j in dc['Key Skills']:
+                        if j.strip():
+                            language_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
 
             except:
                 pass
@@ -195,9 +208,11 @@ def fd_recruit_converter(path_in, path_out, path_save):
 
         if p.text.strip(' :\n').lower() == 'interests':
             try:
-                for j in dc['Interests']:
-                    doc.paragraphs[i+1].add_run("\n")
-                    doc.paragraphs[i+1].add_run('  • ' + j.strip())
+                if dc['Interests'][0].lower().replace(' ','') != 'interests1':
+                    for j in dc['Interests']:
+                        if j.strip():
+                            doc.paragraphs[i+1].add_run("\n")
+                            doc.paragraphs[i+1].add_run('  • ' + j.strip())
             except:
                 pass
 
