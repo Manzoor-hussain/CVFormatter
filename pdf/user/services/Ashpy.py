@@ -185,7 +185,7 @@ def ashbys_converter(path, pathout, path_save):
             if p.text.strip(' :\n').lower() == 'skills':
                 doc.paragraphs[i].text = ""
                 if dc['Skills'][0].lower().replace(' ','') != 'skills1':
-                    for j in dc['Skills']:'
+                    for j in dc['Skills']:
                         if j.strip():
                             doc.paragraphs[i].add_run('  • ' + j.strip() + '\n').bold = False
         except:
