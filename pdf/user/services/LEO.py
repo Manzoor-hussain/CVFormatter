@@ -8,7 +8,6 @@ import json
 import re
 import textwrap
 import PyPDF2
-import pdfplumber
 from docx.shared import Pt
 from math import ceil
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
@@ -39,7 +38,7 @@ def read_text_from_pdf(file_path):
         return '\n'.join(text)
 
 def leo_partner_converter(path_in, path_out, path_save):
-    formatted= path_out
+    formatted = path_out
     
     
     if path_in.endswith('.docx'):
@@ -52,7 +51,10 @@ def leo_partner_converter(path_in, path_out, path_save):
     
     formatted_text = docx2txt.process(formatted)
     
-    
+    print("----------------------------------------------------------------")
+    print("                          Unformatted Text                            ")
+    print("----------------------------------------------------------------")
+    print(unformatted_text)
     
     print("Process has started...")
     
@@ -112,23 +114,25 @@ def leo_partner_converter(path_in, path_out, path_save):
         2. Make it sure to keep the response in JSON format.
         3. If value not found then leave it empty/blank.
         4. Do not include Mobile number, Email and Home address.
+        5. Summary/Personal Statement should be as it is. Do not change or rephrase it.
+
         """
 
 
     # Prompt result
     result = get_completion(test_text)
     
-#     print("----------------------------------------------------------------")
-#     print("                          Result                            ")
-#     print("----------------------------------------------------------------")
-#     print(result)
+    print("----------------------------------------------------------------")
+    print("                          Result                            ")
+    print("----------------------------------------------------------------")
+    print(result)
     
-    dc = dict(json.loads(re.sub(',[ \n]*\]',']',re.sub(',[ \n]*\}','}',result.replace('...','')))))
+    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"|\"[Nn]ot [Mm]entioned\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
     
-#     print("----------------------------------------------------------------")
-#     print("                          Dictionary                            ")
-#     print("----------------------------------------------------------------")
-#     print(dc)
+    print("----------------------------------------------------------------")
+    print("                          Dictionary                            ")
+    print("----------------------------------------------------------------")
+    print(dc)
     
     
     doc = docx.Document(formatted)
@@ -136,24 +140,18 @@ def leo_partner_converter(path_in, path_out, path_save):
     for i,p in enumerate(doc.paragraphs):
         try:
             if p.text.strip().lower() == 'name':
+                if dc['Name'] and dc['Name'].lower().replace(' ','') != 'value':
                     doc.paragraphs[i].text = ""
                     run = doc.paragraphs[i].add_run(dc['Name'].strip().title())
                     run.bold = True
-    #                 run.font.size = Pt(16.5)
         except:
             pass
-    #     try:
-    #         if p.text.strip().lower() == 'location':
-    #                 doc.paragraphs[i].text = ""
-    #                 run = doc.paragraphs[i].add_run(dc['Location'].strip().title())
-    #                 run.bold = True
-    # #                 run.font.size = Pt(16.5)
-    #     except:
-    #         pass
+        
         try:
             if p.text.strip(' :\n').lower() == 'profile':
-                doc.paragraphs[i+2].add_run(dc['Profile'].strip()).bold = False
-                doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+                if dc['Profile'] and dc['Profile'].lower().replace(' ','') != 'value':
+                    doc.paragraphs[i+2].add_run(dc['Profile'].strip()).bold = False
+#                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
 
         except:
             pass
@@ -161,66 +159,72 @@ def leo_partner_converter(path_in, path_out, path_save):
         try:
             if p.text.strip(' :\n').lower() == 'education':
                 for j in dc['Education']:
-                    j["Institute Name"] = j["Institute Name"].title()
-                    a = len(j['Institute Name'])
-                  
-                    b = len(j['Degree'])
-                  
-                    c = "\t\t\t"
-                    spc = " "
-                    spec = " "
+                    if j['Degree'].strip() and j['Degree'].lower().replace(' ','') != 'name of that degree':
+                        j["Institute Name"] = j["Institute Name"].title()
+                        a = len(j['Institute Name'])
 
-                    if a > b:
-                        d = ceil((a - b) * 1.8)
-                      
+                        b = len(j['Degree'])
 
-                        spc += " " * d
-                    else:
-                        a < b
-                        e = ceil((b - a)*1.8)
-                       
-                        spec += " " * e
-                    run1 = doc.paragraphs[i+2].add_run(j['Institute Name'].strip()+ spec +c + j['Location'].strip()+"\n").bold=True
-    #                 run2 = doc.paragraphs[i+2].add_run().bold=True
-        #             doc.paragraphs[i+2].add_run(j['Location'].strip()+"\n").bold=True
-                    run3 = doc.paragraphs[i+2].add_run(j['Degree'].strip()+ spc + c + j['Duration'].strip()+"\n\n")
-                    run3.bold=False
-                    run3.italic=True
+                        c = "\t\t\t"
+                        spc = " "
+                        spec = " "
+
+                        if a > b:
+                            d = ceil((a - b) * 1.8)
+
+
+                            spc += " " * d
+                        else:
+                            a < b
+                            e = ceil((b - a)*1.8)
+
+                            spec += " " * e
+                        if j['Institute Name'].strip() and j['Institute Name'].lower().replace(' ','') != 'name of that institute':    
+                            run1 = doc.paragraphs[i+2].add_run(j['Institute Name'].strip()+ spec +c + j['Location'].strip()+"\n").bold=True
+                        
+                        run3 = doc.paragraphs[i+2].add_run(j['Degree'].strip()+ spc + c + j['Duration'].strip()+"\n\n")
+                        run3.bold=False
+                        run3.italic=True
         except:
             pass
 
         try:
             if p.text.strip(' :\n').lower() == 'certification':
-                for j in dc['Certification']:
-                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                if dc['Certification'][0] and dc['Certification'][0].lower().strip() != 'certification1':
+                    for j in dc['Certification']:
+                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
         try:
             if p.text.strip(' :\n').lower() == 'languages':
-                for j in dc['Languages']:
-                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                if dc['Languages'][0] and dc['Languages'][0].lower().strip() != 'langauge1':
+                    for j in dc['Languages']:
+                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
         try:
             if p.text.strip(' :\n').lower() == 'interests':
-                for j in dc['Interests']:
-                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                if dc['Interests'][0] and dc['Interests'][0].lower().strip() != 'interest1':
+                    for j in dc['Interests']:
+                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
         try:
             if p.text.strip(' :\n').lower() == 'training':
-                for j in dc['Training']:
-                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                if dc['Training'][0] and dc['Training'][0].lower().strip() != 'training1':
+                    for j in dc['Training']:
+                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
         try:
             if p.text.strip(' :\n').lower() == 'skills':
-                for j in dc['Skills']:
-                    doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                if dc['Skills'][0] and dc['Skills'][0].lower().strip() != 'skill1':
+                    for j in dc['Skills']:
+                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -244,23 +248,24 @@ def leo_partner_converter(path_in, path_out, path_save):
                     e = ceil((b - a)*1.75)
                    
                     spec += " " * e
-    #             if a <= 7:
-    #                 spec += " " * e
+                
+                if (j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'name of company') or (j['Designation'] and j['Designation'].lower().replace(' ','') != 'specific designation in that company'):
+                    
+                    if j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'name of company':
+                        run1=doc.paragraphs[i+2].add_run(j['Company Name'].strip()+ spec + c + j['Location'].strip()+"\n").bold=True
+                    
+                    if j['Designation'] and j['Designation'].lower().replace(' ','') != 'specific designation in that company':
+                        run = doc.paragraphs[i + 2].add_run(j['Designation'].strip()+ spc + c )
+                        run.font.bold = True
+                    
+                    if j['Duration'] and j['Duration'].lower().replace(' ','') != 'working duration in company':
+                        run = doc.paragraphs[i + 2].add_run(j['Duration'].strip()+"\n\n")
+                        run.font.bold = False
 
-
-                run1=doc.paragraphs[i+2].add_run(j['Company Name'].strip()+ spec + c + j['Location'].strip()+"\n").bold=True
-    #                 run3=doc.paragraphs[i+2].add_run(j['Designation'].strip()+ spc + c + j['Duration'].strip()+"\n\n")
-                run = doc.paragraphs[i + 2].add_run(j['Designation'].strip()+ spc + c )
-                run.font.bold = True  # Unbold the first company name
-                run = doc.paragraphs[i + 2].add_run(j['Duration'].strip()+"\n\n")
-                run.font.bold = False
-
-    #                 run3.bold=False
-    #                 run3.italic=False
-    #                     
-                for k in j['Responsibilities']:
-                    doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
-                doc.paragraphs[i+2].add_run('\n\n')
+                    if j["Responsibilities"] and j["Responsibilities"][0].lower().replace(' ','') != "responsibility 1":          
+                        for k in j['Responsibilities']:
+                            doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
+                        doc.paragraphs[i+2].add_run('\n\n')
 
 
 
