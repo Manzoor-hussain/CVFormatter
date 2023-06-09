@@ -128,6 +128,8 @@ def ashbys_converter(path, pathout, path_save):
                             doc.paragraphs[i].add_run("Institute Name not mentioned"+"\n")   
                             
                         doc.paragraphs[i].add_run(j['Degree Name'].strip() + '\n\n').bold = True
+        except:
+            pass
         
         try:
             if p.text.strip(' :\n').lower() == 'projects':
