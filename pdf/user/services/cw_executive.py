@@ -10,20 +10,6 @@ import PyPDF2
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
 
-def read_text_from_docx(file_path):
-    doc = docx.Document(file_path)
-    text = [paragraph.text for paragraph in doc.paragraphs]
-    return '\n'.join(text)
-
-def read_text_from_pdf(file_path):
-    with open(file_path, 'rb') as file:
-        pdf_reader = PyPDF2.PdfReader(file)
-        text = []
-        for page in pdf_reader.pages:
-            text.append(page.extract_text())
-        return '\n'.join(text)
-
-
 def get_completion(prompt, model="gpt-3.5-turbo"):
     messages = [{"role": "user", "content": prompt}]
     response = openai.ChatCompletion.create(
@@ -37,12 +23,20 @@ def cw_executive_converter(path, pathout, path_save):
     formatted= pathout
     file_path = path  
 
-    if file_path.endswith('.docx'):
-        unformated_text = read_text_from_docx(file_path)
-    elif file_path.endswith('.pdf'):
-        unformated_text = read_text_from_pdf(file_path)
-    else:
-        print('Unsupported file format')
+    try:
+        with open(path, 'rb') as file:
+            pdf_reader = PyPDF2.PdfReader(file)
+            unformated_text = ""
+            for i in range (len(pdf_reader.pages)):
+                first_page = pdf_reader.pages[i]
+                unformated_text += first_page.extract_text() + " "
+            print('Its PDF')
+    except:
+        try:
+            unformated_text = docx2txt.process(path)
+            print('Its Docx')
+        except:
+            print('WE DONT SUPPORT THIS TYPE OF FILE')
 
 
     os.environ["OPEN_API_KEY"] = api_key
