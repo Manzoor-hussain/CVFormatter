@@ -23,7 +23,7 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
     return response.choices[0].message["content"]
 
     
-def joss_search_converter(path_in, path_out, path_save):
+def joss_search_converter(path, path_out, path_save):
     
     formatted = path_out
     
