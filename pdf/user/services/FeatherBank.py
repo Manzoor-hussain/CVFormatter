@@ -22,30 +22,21 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
 
 def feather_bank_converter(path ,formatted_path,save_path):
     formatted= formatted_path
-#     un_formatted=os.getcwd() + path
     
-#     doc = docx.Document(un_formatted)
-#     formated_text = docx2txt.process(formatted)
-#     unformated_text = docx2txt.process(un_formatted)
-    def read_text_from_docx(path):
-        doc = docx.Document(path)
-        text = [paragraph.text for paragraph in doc.paragraphs]
-        return '\n'.join(text)
-
-    def read_text_from_pdf(path):
+    try:
         with open(path, 'rb') as file:
             pdf_reader = PyPDF2.PdfReader(file)
-            text = []
-            for page in pdf_reader.pages:
-                text.append(page.extract_text())
-            return '\n'.join(text)
-
-    if path.endswith('.docx'):
-        unformated_text = read_text_from_docx(path)
-    elif path.endswith('.pdf'):
-        unformated_text = read_text_from_pdf(path)
-    else:
-        unformated_text = 'Unsupported file format'
+            unformated_text = ""
+            for i in range (len(pdf_reader.pages)):
+                first_page = pdf_reader.pages[i]
+                unformated_text += first_page.extract_text() + " "
+            print('Its PDF')
+    except:
+        try:
+            unformated_text = docx2txt.process(path)
+            print('Its Docx')
+        except:
+            print('WE DONT SUPPORT THIS TYPE OF FILE')
         
 
     os.environ["OPEN_API_KEY"] = api_key
