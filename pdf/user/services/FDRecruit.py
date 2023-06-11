@@ -19,21 +19,6 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
         temperature=0, # this is the degree of randomness of the model's output
     )
     return response.choices[0].message["content"]
-
-
-# Functions to check whether the unformatted file is a docx or pdf
-def read_text_from_docx(file_path):
-    doc = docx.Document(file_path)
-    text = [paragraph.text for paragraph in doc.paragraphs]
-    return '\n'.join(text)
-
-def read_text_from_pdf(file_path):
-    with open(file_path, 'rb') as file:
-        pdf_reader = PyPDF2.PdfReader(file)
-        text = []
-        for page in pdf_reader.pages:
-            text.append(page.extract_text())
-    return '\n'.join(text)
  
 
 def fd_recruit_converter(path_in, path_out, path_save):
