@@ -21,18 +21,24 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
     return response.choices[0].message["content"]
  
 
-def fd_recruit_converter(path_in, path_out, path_save):
+def fd_recruit_converter(path, path_out, path_save):
     
     formatted = path_out
     
-    # unformatted document
-    if path_in.endswith('.docx'):
-        unformatted_text = read_text_from_docx(path_in)
-    elif path_in.endswith('.pdf'):
-        unformatted_text = read_text_from_pdf(path_in)
-    else:
-        error = 'Format not supported.'
-        print(error)
+    try:
+        with open(path, 'rb') as file:
+            pdf_reader = PyPDF2.PdfReader(file)
+            unformated_text = ""
+            for i in range (len(pdf_reader.pages)):
+                first_page = pdf_reader.pages[i]
+                unformated_text += first_page.extract_text() + " "
+            print('Its PDF')
+    except:
+        try:
+            unformated_text = docx2txt.process(path)
+            print('Its Docx')
+        except:
+            print('WE DONT SUPPORT THIS TYPE OF FILE')
 
     # formatted document
     formatted_text = docx2txt.process(formatted)
