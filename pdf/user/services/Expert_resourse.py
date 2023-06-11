@@ -25,18 +25,16 @@ def expert_resource_converter(path, pathout, path_save):
     formated_text = docx2txt.process(formatted)
 
     try:
-        with open(un_formatted, 'rb') as file:
-        # Create a PDF reader object
+        with open(path, 'rb') as file:
             pdf_reader = PyPDF2.PdfReader(file)
             unformated_text = ""
             for i in range (len(pdf_reader.pages)):
                 first_page = pdf_reader.pages[i]
-                unformated_text += first_page.extract_text()
+                unformated_text += first_page.extract_text() + " "
             print('Its PDF')
     except:
         try:
-    #         un_formatted.split(".")[-1] == "docx"
-            unformated_text = docx2txt.process(un_formatted)
+            unformated_text = docx2txt.process(path)
             print('Its Docx')
         except:
             print('WE DONT SUPPORT THIS TYPE OF FILE')
