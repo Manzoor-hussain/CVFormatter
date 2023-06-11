@@ -26,7 +26,7 @@ def advocate_group_converter(path, pathout, path_save):
     formatted= pathout
 
     try:
-        with open(un_formatted, 'rb') as file:
+        with open(path, 'rb') as file:
             pdf_reader = PyPDF2.PdfReader(file)
             unformated_text = ""
             for i in range (len(pdf_reader.pages)):
@@ -35,7 +35,7 @@ def advocate_group_converter(path, pathout, path_save):
             print('Its PDF')
     except:
         try:
-            unformated_text = docx2txt.process(un_formatted)
+            unformated_text = docx2txt.process(path)
             print('Its Docx')
         except:
             print('WE DONT SUPPORT THIS TYPE OF FILE')
