@@ -154,7 +154,8 @@ def harrington_morris_converter(path, path_out, path_save):
                     if cell.text.strip(' :\n').lower() == 'software skills':
                         if dc['Software Skills'][0] and dc['Software Skills'][0].lower().strip() != 'softwareskill1':
                             for j in dc['Software Skills']:
-                                row.cells[i+1].paragraphs[0].add_run('  • ' + j.strip() + '\n')
+                                if j.strip():
+                                    row.cells[i+1].paragraphs[0].add_run('  • ' + j.strip() + '\n')
                 except:
                     pass
                 
@@ -162,14 +163,16 @@ def harrington_morris_converter(path, path_out, path_save):
                     if cell.text.strip(' :\n').lower() == 'certifications':
                         if dc['Certifications'] and dc['Certifications'][0].lower().strip() != 'certification1':
                             for j in dc['Certifications']:
-                                row.cells[i+1].paragraphs[0].add_run('  • ' + j.strip() + '\n')
+                                if j.strip():
+                                    row.cells[i+1].paragraphs[0].add_run('  • ' + j.strip() + '\n')
                 except:
                     pass
                 
                 try:
                     if cell.text.strip(' :\n').lower() == 'professional qualification':
                         if dc['Professional Qualifications'][0] and dc['Professional Qualifications'][0].lower().strip() != 'qualification1':
-                            row.cells[i+1].text = dc['Professional Qualification']
+                            if j.strip():
+                                row.cells[i+1].text = dc['Professional Qualification']
                 except:
                     pass
                 
@@ -177,7 +180,8 @@ def harrington_morris_converter(path, path_out, path_save):
                     if cell.text.strip(' :\n').lower() == 'languages':
                         if dc['Languages'] and dc['Languages'][0].lower().strip() != 'language1':
                             for j in dc['Languages']:
-                                row.cells[i+1].paragraphs[0].add_run('  • ' + j.strip() + '\n')
+                                if j.strip():
+                                    row.cells[i+1].paragraphs[0].add_run('  • ' + j.strip() + '\n')
                 except:
                     pass
                 
@@ -231,7 +235,8 @@ def harrington_morris_converter(path, path_out, path_save):
 
                         if j["Responsibilities"] and j["Responsibilities"][0].strip() and j["Responsibilities"][0].lower().replace(' ','') != "responsibility1":
                             for k in j['Responsibilities']:
-                                doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
+                                if k.strip():
+                                    doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
                             doc.paragraphs[i+2].add_run('\n\n')
                         else:
                             doc.paragraphs[i+2].add_run('No responsibility is mentioned' + '\n\n').bold = False
