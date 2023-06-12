@@ -47,7 +47,7 @@ def joss_search_converter(path, path_out, path_save):
     print("----------------------------------------------------------------")
     print("                          Unformatted Text                            ")
     print("----------------------------------------------------------------")
-    print(unformatted_text)
+    print(unformated_text)
     
     print("Process has started...")
     
@@ -58,7 +58,7 @@ def joss_search_converter(path, path_out, path_save):
 
     Extract data from this text:
 
-    \"""" + unformatted_text + """\"
+    \"""" + unformated_text + """\"
 
     in following JSON format:
     {
@@ -66,7 +66,6 @@ def joss_search_converter(path, path_out, path_save):
     "Notice Period" : "value",
     "Holiday Dates" : "value",
     "Candidate Overview" : "value",
-
     "Summary" : "value",
     "Experience" : [
         {"Company Name" : "Name of company",
@@ -189,12 +188,12 @@ def joss_search_converter(path, path_out, path_save):
                     duration = j['Duration'].strip()
                     job_title = j['Job Title'].strip()
                     
-                    if (j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'name of company') or (j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'title of job'):
-                        if j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'name of company':  
+                    if (j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'nameofcompany') or (j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'titleofjob'):
+                        if j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'nameofcompany':  
                             doc.paragraphs[i+2].add_run(company_name + ' ').bold = True
-                        if j['Duration'] and j['Duration'].lower().replace(' ','') != 'working duration in company in (mon yyyy - mon yyyy) format.':    
+                        if j['Duration'] and j['Duration'].lower().replace(' ','') != 'workingdurationincompany':    
                             doc.paragraphs[i+2].add_run('(' + duration + ')' + '\n').bold = True
-                        if j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'title of job':
+                        if j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'titleofjob':
                             doc.paragraphs[i+2].add_run(job_title + '\n\n').bold = False
 
                         if j["Responsibilities"] and j["Responsibilities"][0].lower().replace(' ','') != "responsibility1":
@@ -213,15 +212,15 @@ def joss_search_converter(path, path_out, path_save):
                     duration = j['Duration'].strip()
                     degree_name = j['Degree Name'].strip()
                     
-                    if j['Degree Name'].strip() and j['Degree Name'].lower().replace(' ','') != 'name of degree': 
-                        if j['Institute Name'].strip() and j['Institute Name'].lower().replace(' ','') != 'name of institute':
+                    if j['Degree Name'].strip() and j['Degree Name'].lower().replace(' ','') != 'nameofdegree': 
+                        if j['Institute Name'].strip() and j['Institute Name'].lower().replace(' ','') != 'nameofinstitute':
                             doc.paragraphs[i+2].add_run(institute_name + ' ').bold = True
-                        if j['Duration'].strip() and j['Duration'].lower().replace(' ','') != 'studying duration in institute in (mon yyyy - mon yyyy) format.':
+                        if j['Duration'].strip() and j['Duration'].lower().replace(' ','') != 'studyingdurationininstitute':
                             doc.paragraphs[i+2].add_run('(' + duration + ')' + '\n').bold = True
                         else:
                             doc.paragraphs[i+2].add_run('(' + "Not mentioned" + ')' + '\n').bold = True
                         
-                        if j['Degree Name'].strip() and j['Degree Name'].lower().replace(' ','') != 'name of degree':
+                        if j['Degree Name'].strip() and j['Degree Name'].lower().replace(' ','') != 'nameofdegree':
                             doc.paragraphs[i+2].add_run(degree_name + '\n\n').bold = False
 
             except:
@@ -241,7 +240,7 @@ def joss_search_converter(path, path_out, path_save):
 
         if p.text.strip(' :\n').lower() == 'previous assignments':
             try:
-                if dc['Previous Assignments'][0] and dc['Previous Assignments'][0].lower().strip() != 'previous assignment1':
+                if dc['Previous Assignments'][0] and dc['Previous Assignments'][0].lower().strip() != 'previousassignment1':
                     for j in dc['Previous Assignments']:
                         doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
     #                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
@@ -261,7 +260,7 @@ def joss_search_converter(path, path_out, path_save):
 
         if p.text.strip(' :\n').lower() == 'area of expertise':
             try:
-                if dc['Area of Expertise'][0] and dc['Area of Expertise'][0].lower().strip() != 'area of expertise1':
+                if dc['Area of Expertise'][0] and dc['Area of Expertise'][0].lower().strip() != 'areaofexpertise1':
                     for j in dc['Area of Expertise']:
                         doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
 #                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
@@ -270,7 +269,7 @@ def joss_search_converter(path, path_out, path_save):
 
         if p.text.strip(' :\n').lower() == 'key skills':
             try:
-                if dc['Key Skills'][0] and dc['Key Skills'][0].lower().strip() != 'key skill1':
+                if dc['Key Skills'][0] and dc['Key Skills'][0].lower().strip() != 'keyskill1':
                     for j in dc['Key Skills']:
                         doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
     #                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
@@ -278,7 +277,7 @@ def joss_search_converter(path, path_out, path_save):
                 pass
         if p.text.strip(' :\n').lower() == 'computer skills':
             try:
-                if dc['Computer Skills'][0] and dc['Computer Skills'][0].lower().strip() != 'computer skill1':
+                if dc['Computer Skills'][0] and dc['Computer Skills'][0].lower().strip() != 'computerskill1':
                     for j in dc['Computer Skills']:
                         doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
     #                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
