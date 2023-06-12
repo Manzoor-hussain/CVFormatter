@@ -157,8 +157,9 @@ def true_method_converter(path, path_out, path_save):
             try:
                 if dc['Key Skills'][0] and dc['Key Skills'][0].lower().strip() != 'keyskill1':
                     for j in dc['Key Skills']:
-                        skill_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
-                        skill_run.font.size = Pt(font_size)
+                        if j.strip():
+                            skill_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                            skill_run.font.size = Pt(font_size)
             except:
                 pass
 
@@ -185,7 +186,8 @@ def true_method_converter(path, path_out, path_save):
 
                         if j["Responsibilities"] and j["Responsibilities"][0].lower().replace(' ','') != "responsibility1":
                             for k in j['Responsibilities']:
-                                doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
+                                if k.strip():
+                                    doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
                             doc.paragraphs[i+2].add_run('\n')
             except:
                 pass
@@ -195,8 +197,9 @@ def true_method_converter(path, path_out, path_save):
             try:
                 if dc['Languages'] and dc['Languages'][0].lower().strip() != 'language1':
                     for j in dc['Languages']:
-                        language_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
-                        language_run.font.size = Pt(font_size)
+                        if j.strip():
+                            language_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                            language_run.font.size = Pt(font_size)
             except:
                 pass
             
@@ -224,8 +227,9 @@ def true_method_converter(path, path_out, path_save):
             try:
                 if dc['Professional Certifications'] and dc['Professional Certifications'][0].lower().strip() != 'professionalcertification1':
                     for j in dc['Professional Certifications']:
-                        language_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
-                        language_run.font.size = Pt(font_size)
+                        if j.strip():
+                            language_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                            language_run.font.size = Pt(font_size)
             except:
                 pass
 
@@ -233,8 +237,9 @@ def true_method_converter(path, path_out, path_save):
             try:
                 if dc['Interests'] and dc['Interests'][0].lower().strip() != 'interest1':
                     for j in dc['Interests']:
-                        doc.paragraphs[i+1].add_run("\n")
-                        doc.paragraphs[i+1].add_run('  • ' + j.strip())
+                        if j.strip():
+                            doc.paragraphs[i+1].add_run("\n")
+                            doc.paragraphs[i+1].add_run('  • ' + j.strip())
             except:
                 pass
 
