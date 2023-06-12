@@ -24,19 +24,20 @@ def ashbys_converter(path, pathout, path_save):
     formatted= pathout
     un_formatted = path
     formated_text = docx2txt.process(formatted)
-
+    print("IM INNNNNNNNNNNNNNNNNN")
     try:
+        print("IM INNNNNNNNNNNNNNNNNN")
         with open(path, 'rb') as file:
             pdf_reader = PyPDF2.PdfReader(file)
             unformated_text = ""
             for i in range (len(pdf_reader.pages)):
                 first_page = pdf_reader.pages[i]
                 unformated_text += first_page.extract_text() + " "
-#             print('Its PDF')
+            print('Its PDF')
     except:
         try:
             unformated_text = docx2txt.process(path)
-#             print('Its Docx')
+            print('Its Docx')
         except:
             print('WE DONT SUPPORT THIS TYPE OF FILE')
 
