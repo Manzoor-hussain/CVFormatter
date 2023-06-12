@@ -169,7 +169,8 @@ def edex_converter(path, pathout, path_save):
             if p.text.strip(' :\n').lower() == 'it literacy':
                 if dc['It Literacy'][0] and dc['It Literacy'][0].lower().strip() != 'literacy1':
                     for j in dc['It Literacy']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -177,7 +178,8 @@ def edex_converter(path, pathout, path_save):
             if p.text.strip(' :\n').lower() == 'certificates':
                 if dc['Cerificates'][0] and dc['Cerificates'][0].lower().strip() != 'certificate1':
                     for j in dc['Certificates']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -185,7 +187,8 @@ def edex_converter(path, pathout, path_save):
             if p.text.strip(' :\n').lower() == 'projects':
                 if dc['Projects'][0] and dc['Projects'][0].lower().strip() != 'project1':
                     for j in dc['Projects']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
         
@@ -194,7 +197,8 @@ def edex_converter(path, pathout, path_save):
             if p.text.strip(' :\n').lower() == 'professional qualifications':
                 if dc['Professional Qualifications'][0] and dc['Professional Qualifications'][0].lower().strip() != 'qualification1':
                     for j in dc['Professional Qualifications']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -202,7 +206,8 @@ def edex_converter(path, pathout, path_save):
             if p.text.strip(' :\n').lower() == 'softwares':
                 if dc['Softwares'][0] and dc['Softwares'][0].lower().strip() != 'software1':     
                     for j in dc['Softwares']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -210,7 +215,8 @@ def edex_converter(path, pathout, path_save):
             if p.text.strip(' :\n').lower() == 'languages':
                 if dc['Languages'][0] and dc['Languages'][0].lower().strip() != 'language1':
                     for j in dc['Languages']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -218,7 +224,8 @@ def edex_converter(path, pathout, path_save):
             if p.text.strip(' :\n').lower() == 'interests':
                 if dc['Interests'][0] and dc['Interests'][0].lower().strip() != 'interest1':
                     for j in dc['Interests']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -226,7 +233,8 @@ def edex_converter(path, pathout, path_save):
             if p.text.strip(' :\n').lower() == 'trainings':
                 if dc['Trainings'][0] and dc['Trainings'][0].lower().strip() != 'training1':
                     for j in dc['Trainings']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -234,7 +242,8 @@ def edex_converter(path, pathout, path_save):
             if p.text.strip(' :\n').lower() == 'skills':
                 if dc['Skills'][0] and dc['Skills'][0].lower().strip() != 'skill1':
                     for j in dc['Skills']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -255,7 +264,8 @@ def edex_converter(path, pathout, path_save):
 
                         if j["Responsibilities"] and j["Responsibilities"][0].lower().replace(' ','') != "responsibility1":
                             for k in j['Responsibilities']:
-                                doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
+                                if k.strip():
+                                    doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
                             doc.paragraphs[i+2].add_run('\n')
         except:
             pass
