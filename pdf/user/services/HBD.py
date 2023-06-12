@@ -8,6 +8,7 @@ import json
 import re
 import textwrap
 import PyPDF2
+import pdfplumber
 from docx.shared import Pt
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
@@ -20,9 +21,8 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
         temperature=0, # this is the degree of randomness of the model's output
     )
     return response.choices[0].message["content"]
-
-
-def hbd_converter(path, path_out, path_save):
+    
+def hbd_converter(path_in, path_out, path_save):
     
     formatted = path_out
     
@@ -156,18 +156,18 @@ def hbd_converter(path, path_out, path_save):
                     duration = j['Duration'].strip()
                     degree_name = j['Degree Name'].strip()
 
-                    if j['Degree Name'].strip() and j['Degree Name'].lower().replace(' ','') != 'name of degree':
-                        if j['Duration'].strip() and j['Duration'].lower().replace(' ','') != 'studying duration in institute':
+                    if j['Degree Name'].strip() and j['Degree Name'].lower().replace(' ','') != 'nameofdegree':
+                        if j['Duration'].strip() and j['Duration'].lower().replace(' ','') != 'studyingdurationininstitute':
                             duration_run = doc.paragraphs[i+2].add_run(duration + '\n')
 #                             duration_run.font.italic = True
                         else:
                             duration_run = doc.paragraphs[i+2].add_run("Not mentioned" + '\n').bold = True
 #                             duration_run.font.italic = True
 
-                        if j['Institute Name'].strip() and j['Institute Name'].lower().replace(' ','') != 'name of institute':
+                        if j['Institute Name'].strip() and j['Institute Name'].lower().replace(' ','') != 'nameofinstitute':
                             doc.paragraphs[i+2].add_run(institute_name + '\n').bold = True
 
-                        if j['Degree Name'].strip() and j['Degree Name'].lower().replace(' ','') != 'name of degree':
+                        if j['Degree Name'].strip() and j['Degree Name'].lower().replace(' ','') != 'nameofdegree':
                             degree_run = doc.paragraphs[i+2].add_run(degree_name + '\n\n')
 #                             degree_run.font.underline = True
                         else:
@@ -212,7 +212,7 @@ def hbd_converter(path, path_out, path_save):
 
         try:
             if p.text.strip(' :\n').lower() == 'computer skills':
-                if dc['Computer Skills'] and dc['Computer Skills'][0].lower().strip() != 'computer skill1':
+                if dc['Computer Skills'] and dc['Computer Skills'][0].lower().strip() != 'computerskill1':
                     for j in dc['Computer Skills']:
                         doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
@@ -265,15 +265,15 @@ def hbd_converter(path, path_out, path_save):
                     duration = j['Duration'].strip()
                     job_title = j['Job Title'].strip()
 
-                    if (j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'name of company') or (j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'title of job'):
-                        if j['Duration'] and j['Duration'].lower().replace(' ','') != 'working duration in company':
+                    if (j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'nameofcompany') or (j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'titleofjob'):
+                        if j['Duration'] and j['Duration'].lower().replace(' ','') != 'workingdurationincompany':
                             duration_run = doc.paragraphs[i+2].add_run(duration + '\n')
                             duration_run.bold = True
                         
-                        if j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'name of company':
+                        if j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'nameofcompany':
                             doc.paragraphs[i+2].add_run(company_name + '\n').bold = True
                         
-                        if j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'title of job':
+                        if j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'titleofjob':
                             job_run = doc.paragraphs[i+2].add_run(job_title + '\n\n')
                             job_run.font.bold = True
 
