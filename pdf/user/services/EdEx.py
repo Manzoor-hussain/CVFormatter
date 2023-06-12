@@ -45,7 +45,7 @@ def edex_converter(path, pathout, path_save):
     print("----------------------------------------------------------------")
     print("                          Unformatted Text                            ")
     print("----------------------------------------------------------------")
-    print(unformatted_text)            
+    print(unformated_text)            
             
             
     os.environ["OPEN_API_KEY"] = api_key
@@ -57,7 +57,7 @@ def edex_converter(path, pathout, path_save):
 
     Ectract data from this text:
 
-    \"""" + unformatted_text + """\"
+    \"""" + unformated_text + """\"
 
     in following JSON format:
     {
@@ -153,10 +153,10 @@ def edex_converter(path, pathout, path_save):
                     duration = j['Duration'].strip()
                     degree_name = j['Degree Name'].strip()
                     
-                    if j['Degree Name'].strip() and j['Degree Name'].lower().replace(' ','') != 'name of degree': 
-                        if j['Institute Name'].strip() and j['Institute Name'].lower().replace(' ','') != 'name of institute':
+                    if j['Degree Name'].strip() and j['Degree Name'].lower().replace(' ','') != 'nameofdegree': 
+                        if j['Institute Name'].strip() and j['Institute Name'].lower().replace(' ','') != 'nameofinstitute':
                             doc.paragraphs[i+2].add_run(institute_name + ' ').bold = True
-                        if j['Duration'].strip() and j['Duration'].lower().replace(' ','') != 'studying duration in institute':
+                        if j['Duration'].strip() and j['Duration'].lower().replace(' ','') != 'studyingdurationininstitute':
                             doc.paragraphs[i+2].add_run('(' + duration + ')' + '\n').bold = True
                         else:
                             doc.paragraphs[i+2].add_run('(' + "Not mentioned" + ')' + '\n').bold = True
@@ -245,12 +245,12 @@ def edex_converter(path, pathout, path_save):
                     duration = j['Duration'].strip()
                     job_title = j['Designation'].strip()
                     
-                    if (j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'name of company') or (j['Designation'] and j['Designation'].lower().replace(' ','') != 'specific designation in that company'):
-                        if j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'name of company':  
+                    if (j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'nameofcompany') or (j['Designation'] and j['Designation'].lower().replace(' ','') != 'specificdesignationinthatcompany'):
+                        if j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'nameofcompany':  
                             doc.paragraphs[i+2].add_run(company_name + ' ').bold = True
-                        if j['Duration'] and j['Duration'].lower().replace(' ','') != 'working duration in company':    
+                        if j['Duration'] and j['Duration'].lower().replace(' ','') != 'workingdurationincompany':    
                             doc.paragraphs[i+2].add_run('(' + duration + ')' + '\n').bold = True
-                        if j['Designation'] and j['Designation'].lower().replace(' ','') != 'specific designation in that company':
+                        if j['Designation'] and j['Designation'].lower().replace(' ','') != 'specificdesignationinthatcompany':
                             doc.paragraphs[i+2].add_run(job_title + '\n\n').bold = False
 
                         if j["Responsibilities"] and j["Responsibilities"][0].lower().replace(' ','') != "responsibility1":
