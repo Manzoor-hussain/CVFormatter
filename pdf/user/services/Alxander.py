@@ -116,15 +116,13 @@ def alexander_steele_converter(path,pathoutput,save_path):
                         if j["Duration"].strip(): 
                             doc.paragraphs[i+2].add_run('  • ' + j["Duration"].strip())
                         else:
-                            doc.paragraphs[i+2].add_run("Duration not mentioned")                           
+                            doc.paragraphs[i+2].add_run('  • ' + "Duration not mentioned")                           
                         if j["Institute Name"].strip():   
                             doc.paragraphs[i+2].add_run(' – ' + j["Institute Name"].strip())
                         else:
-                            doc.paragraphs[i+2].add_run("Institute Name")                        
-                        if j["Degree title"].strip():
-                            doc.paragraphs[i+2].add_run(', ' + j["Degree title"].strip() + '\n')
-                        else:
-                            doc.paragraphs[i+2].add_run("Degree title not mentioned")                                             
+                            doc.paragraphs[i+2].add_run(" _ Institute not mentioned")
+                            
+                        doc.paragraphs[i+2].add_run(', ' + j["Degree title"].strip() + '\n\n')                                           
         except:
             pass
 
@@ -198,22 +196,21 @@ def alexander_steele_converter(path,pathoutput,save_path):
             for j in dc['Experience/Employment History']:               
                 if j['Designation'].strip() and j['Designation'].lower().replace(' ','') !='specificdesignationinthatcompany' or (j['Company Name'].strip() and j['Company Name'].lower().replace(' ','') !='nameofcompany'):
                     a = ceil(len(j["Duration"]) * 1.75)
-#                     print(a)
                     b = " " * a  
                     if j["Duration"].strip():                                             
-                        run = doc.paragraphs[i + 2].add_run(j["Duration"].strip())
+                        run = doc.paragraphs[i+2].add_run(j["Duration"].strip())
                         run.font.bold = False  # Unbold the first company name
                     else:
-                         run = doc.paragraphs[i + 2].add_run("Duration not mentioned")
+                         run = doc.paragraphs[i+2].add_run("Duration not mentioned").bold=False
                     if j['Company Name'].strip():
-                        run = doc.paragraphs[i + 2].add_run('\t\t'+j['Company Name'] + '\n')
+                        run = doc.paragraphs[i+2].add_run('\t\t'+j['Company Name'] + '\n')
                         run.font.bold = True
                     else:
-                        run = doc.paragraphs[i + 2].add_run("Company Name not mentioned"+"\n")
+                        run = doc.paragraphs[i+2].add_run('\t\t' + "Company Name not mentioned"+"\n").bold=True
                     if j["Designation"].strip():   
                         doc.paragraphs[i+2].add_run(b + "\t\t" + j["Designation"].strip() + "\n\n").bold=True
                     else:
-                        doc.paragraphs[i + 2].add_run("Designation not mentioned"+"\n\n")
+                        doc.paragraphs[i + 2].add_run(b + "\t\t" + "Designation not mentioned"+"\n\n").bold=True
                     if j['Responsibilities'] and j['Responsibilities'][0].lower().replace(' ','') != 'responsibility1':
                         for k in j["Responsibilities"]:
                             if k.strip():
