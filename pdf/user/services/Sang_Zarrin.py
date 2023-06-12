@@ -161,7 +161,8 @@ def sang_zarrin_converter(path, path_out, path_save):
                         doc.paragraphs[i+2].add_run('\n')
                         if j["Responsibilities"] and j["Responsibilities"][0].lower().replace(' ','') != "responsibility1":
                             for k in j['Responsibilities']:
-                                doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
+                                if k.strip():
+                                    doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
                             doc.paragraphs[i+2].add_run('\n\n')
         except:
             pass
@@ -189,7 +190,8 @@ def sang_zarrin_converter(path, path_out, path_save):
             if p.text.strip(' :\n').lower() == 'trainings':
                 if dc['Trainings'][0] and dc['Trainings'][0].lower().strip() != 'training1':
                     for j in dc['Trainings']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -197,7 +199,8 @@ def sang_zarrin_converter(path, path_out, path_save):
             if p.text.strip(' :\n').lower() == 'computer skills':
                 if dc['Computer Skills'][0] and dc['Computer Skills'][0].lower().strip() != 'computerskill1':
                     for j in dc['Computer Skills']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -205,7 +208,8 @@ def sang_zarrin_converter(path, path_out, path_save):
             if p.text.strip(' :\n').lower() == 'skills':
                 if dc['Skills'][0] and dc['Skills'][0].lower().strip() != 'skill1':
                     for j in dc['Skills']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -213,7 +217,8 @@ def sang_zarrin_converter(path, path_out, path_save):
             if p.text.strip(' :\n').lower() == 'qualifications':
                 if dc['Qualifications'][0] and dc['Qualifications'][0].lower().strip() != 'qualification1':
                     for j in dc['Qualifications']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -221,7 +226,8 @@ def sang_zarrin_converter(path, path_out, path_save):
             if p.text.strip(' :\n').lower() == 'languages':
                 if dc['Languages'][0] and dc['Languages'][0].lower().strip() != 'language1':
                     for j in dc['Languages']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -229,7 +235,8 @@ def sang_zarrin_converter(path, path_out, path_save):
             if p.text.strip(' :\n').lower() == 'interests':
                 if dc['Interests'][0] and dc['Interests'][0].lower().strip() != 'interest1':
                     for j in dc['Interests']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
