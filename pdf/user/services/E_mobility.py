@@ -214,7 +214,8 @@ def e_mobility_converter(path, pathout, path_save):
                         doc.paragraphs[i+1].add_run('\n')
                         if j["Responsibilities"] and j["Responsibilities"][0].lower().replace(' ','') != "responsibility1":
                             for k in j['Responsibilities']:
-                                doc.paragraphs[i+1].add_run('  • ' + k.strip() + '\n')
+                                if k.strip():
+                                    doc.paragraphs[i+1].add_run('  • ' + k.strip() + '\n')
                             doc.paragraphs[i+1].add_run('\n\n')
             except:
                 pass
@@ -244,7 +245,8 @@ def e_mobility_converter(path, pathout, path_save):
             try:
                 if dc['Publications'][0] and dc['Publications'][0].lower().strip() != 'publication1':
                     for j in dc['Publications']:
-                        doc.paragraphs[i+1].add_run('    •   ' + j.strip() + '\n')
+                        if j.strip():
+                            doc.paragraphs[i+1].add_run('    •   ' + j.strip() + '\n')
             except:
                 pass
 
@@ -252,7 +254,8 @@ def e_mobility_converter(path, pathout, path_save):
             try:
                 if dc['Projects'][0] and dc['Projects'][0].lower().strip() != 'project1':
                     for j in dc['Projects']:
-                        doc.paragraphs[i+1].add_run('    •   ' + j.strip() + '\n')
+                        if j.strip():
+                            doc.paragraphs[i+1].add_run('    •   ' + j.strip() + '\n')
             except:
                 pass
 
@@ -260,7 +263,8 @@ def e_mobility_converter(path, pathout, path_save):
             try:
                 if dc['Qualifications'][0] and dc['Qualifications'][0].lower().strip() != 'qualification1':
                     for j in dc['Qualifications']:
-                        doc.paragraphs[i+1].add_run('    •   ' + j.strip() + '\n')
+                        if j.strip():
+                            doc.paragraphs[i+1].add_run('    •   ' + j.strip() + '\n')
             except:
                 pass
 
@@ -268,7 +272,8 @@ def e_mobility_converter(path, pathout, path_save):
             try:
                 if dc['Certifications'][0] and dc['Certifications'][0].lower().strip() != 'certification1':
                     for j in dc['Certifications']:
-                        doc.paragraphs[i+1].add_run('    •   ' + j.strip() + '\n')
+                        if j.strip():
+                            doc.paragraphs[i+1].add_run('    •   ' + j.strip() + '\n')
             except:
                 pass
 
@@ -276,7 +281,8 @@ def e_mobility_converter(path, pathout, path_save):
             try:
                 if dc['Achievements'][0] and dc['Achievements'][0].lower().strip() != 'achievement1':
                     for j in dc['Achievements']:
-                        doc.paragraphs[i+1].add_run('    •   ' + j.strip() + '\n')
+                        if j.strip():
+                            doc.paragraphs[i+1].add_run('    •   ' + j.strip() + '\n')
             except:
                 pass
 
@@ -284,8 +290,8 @@ def e_mobility_converter(path, pathout, path_save):
             try:
                 if dc['Skills'][0] and dc['Skills'][0].lower().strip() != 'skill1':
                     for j in dc['Skills']:
-                        doc.paragraphs[i+1].add_run('    •   ' + j.strip() + '\n')
-    #                 doc.paragraphs[i+1].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+                        if j.strip():
+                            doc.paragraphs[i+1].add_run('    •   ' + j.strip() + '\n')
             except:
                 pass
 
@@ -293,7 +299,8 @@ def e_mobility_converter(path, pathout, path_save):
             try:
                 if dc['Languages'][0] and dc['Languages'][0].lower().strip() != 'language1':
                     for j in dc['Languages']:
-                        doc.paragraphs[i+1].add_run('    •   ' + j.strip() + '\n')
+                        if j.strip():
+                            doc.paragraphs[i+1].add_run('    •   ' + j.strip() + '\n')
             except:
                 pass
 
@@ -302,8 +309,8 @@ def e_mobility_converter(path, pathout, path_save):
             try:
                 if dc['Interests'][0] and dc['Interests'][0].lower().strip() != 'interest1':
                     for j in dc['Interests']:
-                        doc.paragraphs[i+1].add_run('    •   ' + j.strip() + '\n')
-        #                 doc.paragraphs[i+1].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+                        if j.strip():
+                            doc.paragraphs[i+1].add_run('    •   ' + j.strip() + '\n')
             except:
                 pass
 
