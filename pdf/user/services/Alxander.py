@@ -216,7 +216,8 @@ def alexander_steele_converter(path,pathoutput,save_path):
                         doc.paragraphs[i + 2].add_run("Designation not mentioned"+"\n\n")
                     if j['Responsibilities'] and j['Responsibilities'][0].lower().replace(' ','') != 'responsibility1':
                         for k in j["Responsibilities"]:
-                            doc.paragraphs[i+2].add_run('  • ' + k.strip() + "\n")
+                            if k.strip():
+                                doc.paragraphs[i+2].add_run('  • ' + k.strip() + "\n")
                         doc.paragraphs[i+2].add_run('\n\n')
 
     #     except:
