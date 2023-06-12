@@ -276,7 +276,7 @@ def linum_converter(path,formatted_path,save_path):
                     if cell.text.strip(' :\n').lower() == 'qualifications':
                         if dc['Qualifications'][0].lower().strip() != 'qualification1':
                             for j in dc['Qualifications']:
-                                if j.sprip():
+                                if j.strip():
                                     row.cells[i+1].text = row.cells[i+1].text + j + '\n'
                 except:
                     pass                
