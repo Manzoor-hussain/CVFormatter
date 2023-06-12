@@ -47,7 +47,7 @@ def drayton_converter(path, path_out, path_save):
     print("----------------------------------------------------------------")
     print("                          Unformatted Text                            ")
     print("----------------------------------------------------------------")
-    print(unformatted_text)
+    print(unformated_text)
     
     
     print("Process has started...")
@@ -58,7 +58,7 @@ def drayton_converter(path, path_out, path_save):
 
     Extract data from this text:
 
-    \"""" + unformatted_text + """\"
+    \"""" + unformated_text + """\"
 
     in following JSON format:
     {
@@ -158,16 +158,16 @@ def drayton_converter(path, path_out, path_save):
                     duration = j['Duration'].strip()
                     job_title = j['Job Title'].strip()
                     
-                    if (j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'name of company') or (j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'title of job'):
-                        if j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'name of company':  
+                    if (j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'nameofcompany') or (j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'titleofjob'):
+                        if j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'nameofcompany':  
                             company_run = doc.paragraphs[i+2].add_run(company_name + ' ')
                             company_run.bold = True
                             company_run.font.size = Pt(font_size)
-                        if j['Duration'] and j['Duration'].lower().replace(' ','') != 'working duration in company':
+                        if j['Duration'] and j['Duration'].lower().replace(' ','') != 'workingdurationincompany':
                             duration_run = doc.paragraphs[i+2].add_run('(' + duration + ')' + '\n')
                             duration_run.bold = True
                             duration_run.font.size = Pt(font_size)
-                        if j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'title of job':
+                        if j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'titleofjob':
                             job_title_run = doc.paragraphs[i+2].add_run(job_title + '\n\n')
                             job_title_run.bold = False
                             job_title_run.font.size = Pt(font_size)
@@ -192,7 +192,7 @@ def drayton_converter(path, path_out, path_save):
 
         if p.text.strip(' :\n').lower() == 'interest and hobbies':
             try:
-                if dc['Interest and Hobbies'][0] and dc['Interest and Hobbies'][0].lower().strip() != 'interest and hobbies1':
+                if dc['Interest and Hobbies'][0] and dc['Interest and Hobbies'][0].lower().strip() != 'interestandhobbies1':
                     for j in dc['Interest and Hobbies']:
                         i_h_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
                         i_h_run.font.size = Pt(font_size)
