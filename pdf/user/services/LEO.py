@@ -8,6 +8,7 @@ import json
 import re
 import textwrap
 import PyPDF2
+import pdfplumber
 from docx.shared import Pt
 from math import ceil
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
@@ -152,7 +153,7 @@ def leo_partner_converter(path, path_out, path_save):
         try:
             if p.text.strip(' :\n').lower() == 'education':
                 for j in dc['Education']:
-                    if j['Degree'].strip() and j['Degree'].lower().replace(' ','') != 'name of that degree':
+                    if j['Degree'].strip() and j['Degree'].lower().replace(' ','') != 'nameofthatdegree':
                         j["Institute Name"] = j["Institute Name"].title()
                         a = len(j['Institute Name'])
 
@@ -172,7 +173,7 @@ def leo_partner_converter(path, path_out, path_save):
                             e = ceil((b - a)*1.8)
 
                             spec += " " * e
-                        if j['Institute Name'].strip() and j['Institute Name'].lower().replace(' ','') != 'name of that institute':    
+                        if j['Institute Name'].strip() and j['Institute Name'].lower().replace(' ','') != 'nameofthatinstitute':    
                             run1 = doc.paragraphs[i+2].add_run(j['Institute Name'].strip()+ spec +c + j['Location'].strip()+"\n").bold=True
                         
                         run3 = doc.paragraphs[i+2].add_run(j['Degree'].strip()+ spc + c + j['Duration'].strip()+"\n\n")
@@ -242,23 +243,31 @@ def leo_partner_converter(path, path_out, path_save):
                    
                     spec += " " * e
                 
-                if (j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'name of company') or (j['Designation'] and j['Designation'].lower().replace(' ','') != 'specific designation in that company'):
+                if (j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'nameofcompany') or (j['Designation'] and j['Designation'].lower().replace(' ','') != 'specificdesignationinthatcompany'):
                     
-                    if j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'name of company':
+                    if j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'nameofcompany':
                         run1=doc.paragraphs[i+2].add_run(j['Company Name'].strip()+ spec + c + j['Location'].strip()+"\n").bold=True
+                    else:
+                        doc.paragraphs[i+2].add_run('(' + "Company Name not mentioned" + ')' + '\n').bold = True
                     
-                    if j['Designation'] and j['Designation'].lower().replace(' ','') != 'specific designation in that company':
+                    if j['Designation'] and j['Designation'].lower().replace(' ','') != 'specificdesignationinthatcompany':
                         run = doc.paragraphs[i + 2].add_run(j['Designation'].strip()+ spc + c )
                         run.font.bold = True
+                    else:
+                        doc.paragraphs[i+2].add_run('(' + "Designation not mentioned" + ')' + '\n').bold = True
                     
-                    if j['Duration'] and j['Duration'].lower().replace(' ','') != 'working duration in company':
+                    if j['Duration'] and j['Duration'].lower().replace(' ','') != 'workingdurationincompany':
                         run = doc.paragraphs[i + 2].add_run(j['Duration'].strip()+"\n\n")
                         run.font.bold = False
+                    else:
+                        doc.paragraphs[i+2].add_run('(' + "Duration not mentioned" + ')' + '\n').bold = True
 
                     if j["Responsibilities"] and j["Responsibilities"][0].lower().replace(' ','') != "responsibility 1":          
                         for k in j['Responsibilities']:
                             doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
                         doc.paragraphs[i+2].add_run('\n\n')
+                    else:
+                        doc.paragraphs[i+2].add_run('No responsibility is mentioned' + '\n\n').bold = False
 
 
 
