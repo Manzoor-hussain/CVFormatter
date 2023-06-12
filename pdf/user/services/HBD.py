@@ -22,7 +22,7 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
     )
     return response.choices[0].message["content"]
     
-def hbd_converter(path_in, path_out, path_save):
+def hbd_converter(path, path_out, path_save):
     
     formatted = path_out
     
