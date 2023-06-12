@@ -148,7 +148,7 @@ def linum_converter(path,formatted_path,save_path):
             try:
                 if dc['Skills'][0].lower().replace(' ','') != 'skill1':
                     for j in dc['Skills']:
-                        if j.sprip():
+                        if j.strip():
                             doc.paragraphs[i+2].add_run('    • ' + j.strip() + '\n').bold = False
             except:
                 pass
@@ -156,7 +156,7 @@ def linum_converter(path,formatted_path,save_path):
             try:
                 if dc['Attributes'][0].lower().replace(' ','') != 'attribute1':
                     for j in dc['Attributes']:
-                        if j.sprip():
+                        if j.strip():
                             doc.paragraphs[i+2].add_run('    • ' + j.strip() + '\n').bold = False
             except:
                 pass
@@ -164,7 +164,7 @@ def linum_converter(path,formatted_path,save_path):
             try:
                 if dc['Achievements'][0].lower().replace(' ','') != 'achievement1':
                     for j in dc['Achievements']:
-                        if j.sprip():
+                        if j.strip():
                             doc.paragraphs[i+2].add_run('    • ' + j.strip() + '\n').bold = False
             except:
                 pass        
@@ -172,7 +172,7 @@ def linum_converter(path,formatted_path,save_path):
             try:
                 if dc['Languages'][0].lower().replace(' ','') != 'language1':
                     for j in dc['Languages']:
-                        if j.sprip():
+                        if j.strip():
                             doc.paragraphs[i+2].add_run('    • ' + j.strip() + '\n').bold = False
             except:
                 pass     
@@ -180,7 +180,7 @@ def linum_converter(path,formatted_path,save_path):
             try:
                 if dc['Interests'][0].lower().replace(' ','') != 'interest1':
                     for j in dc['Interests']:
-                        if j.sprip():
+                        if j.strip():
                             doc.paragraphs[i+2].add_run('    • ' + j.strip() + '\n').bold = False
             except:
                 pass        
