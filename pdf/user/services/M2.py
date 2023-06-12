@@ -7,7 +7,7 @@ import traceback
 import json
 from docx.shared import Pt
 import PyPDF2 
-from keys import api_key
+from .keys import api_key
 from docx2python import docx2python
 
 
