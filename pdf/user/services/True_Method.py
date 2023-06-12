@@ -46,7 +46,7 @@ def true_method_converter(path, path_out, path_save):
     print("----------------------------------------------------------------")
     print("                          Unformatted Text                            ")
     print("----------------------------------------------------------------")
-    print(unformatted_text)
+    print(unformated_text)
     print("Process has started...")
     
     openai.api_key = api_key
@@ -54,7 +54,7 @@ def true_method_converter(path, path_out, path_save):
 
     Extract data from this text:
 
-    \"""" + unformatted_text + """\"
+    \"""" + unformated_text + """\"
 
     in following JSON format:
     {
@@ -155,7 +155,7 @@ def true_method_converter(path, path_out, path_save):
 
         if p.text.strip(' :\n').lower() == 'key skills':
             try:
-                if dc['Key Skills'][0] and dc['Key Skills'][0].lower().strip() != 'key skill1':
+                if dc['Key Skills'][0] and dc['Key Skills'][0].lower().strip() != 'keyskill1':
                     for j in dc['Key Skills']:
                         skill_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
                         skill_run.font.size = Pt(font_size)
@@ -170,16 +170,16 @@ def true_method_converter(path, path_out, path_save):
                     duration = j['Duration'].strip()
                     job_title = j['Job Title'].strip()
                     
-                    if (j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'name of company') or (j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'title of job'):
-                        if j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'name of company':  
+                    if (j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'nameofcompany') or (j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'titleofjob'):
+                        if j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'nameofcompany':  
                             doc.paragraphs[i+2].add_run(company_name + '\n').bold = True
                         
-                        if j['Duration'] and j['Duration'].lower().replace(' ','') != 'working duration in company':    
+                        if j['Duration'] and j['Duration'].lower().replace(' ','') != 'workingdurationincompany':    
                             doc.paragraphs[i+2].add_run('(' + duration + ')' + '\n').bold = True
                         else:
                             doc.paragraphs[i+2].add_run('(' + "Duration not mentioned" + ')' + '\n').bold = True
                         
-                        if j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'title of job':
+                        if j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'titleofjob':
                             job_title_run = doc.paragraphs[i+2].add_run(job_title + '\n\n')
                             job_title_run.bold = False
 
@@ -208,10 +208,10 @@ def true_method_converter(path, path_out, path_save):
                     duration = j['Duration'].strip()
                     degree_name = j['Degree Name'].strip()
                     
-                    if j['Degree Name'].strip() and j['Degree Name'].lower().replace(' ','') != 'name of degree': 
-                        if j['Institute Name'].strip() and j['Institute Name'].lower().replace(' ','') != 'name of institute':
+                    if j['Degree Name'].strip() and j['Degree Name'].lower().replace(' ','') != 'nameofdegree': 
+                        if j['Institute Name'].strip() and j['Institute Name'].lower().replace(' ','') != 'nameofinstitute':
                             doc.paragraphs[i+2].add_run(institute_name + ' ').bold = True
-                        if j['Duration'].strip() and j['Duration'].lower().replace(' ','') != 'studying duration in institute':
+                        if j['Duration'].strip() and j['Duration'].lower().replace(' ','') != 'studyingdurationininstitute':
                             doc.paragraphs[i+2].add_run('(' + duration + ')' + '\n').bold = True
                         else:
                             doc.paragraphs[i+2].add_run('(' + "Not mentioned" + ')' + '\n').bold = True
@@ -222,7 +222,7 @@ def true_method_converter(path, path_out, path_save):
 
         if p.text.strip(' :\n').lower() == 'professional certifications':
             try:
-                if dc['Professional Certifications'] and dc['Professional Certifications'][0].lower().strip() != 'professional certification1':
+                if dc['Professional Certifications'] and dc['Professional Certifications'][0].lower().strip() != 'professionalcertification1':
                     for j in dc['Professional Certifications']:
                         language_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
                         language_run.font.size = Pt(font_size)
