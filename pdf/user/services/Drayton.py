@@ -174,8 +174,9 @@ def drayton_converter(path, path_out, path_save):
 
                         if j["Responsibilities"] and j["Responsibilities"][0].lower().replace(' ','') != "responsibility1":
                             for k in j['Responsibilities']:
-                                respo = doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
-                                respo.font.size = Pt(font_size)
+                                if k.strip():
+                                    respo = doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
+                                    respo.font.size = Pt(font_size)
                             doc.paragraphs[i+2].add_run("\n\n")
                     
             except:
@@ -185,8 +186,9 @@ def drayton_converter(path, path_out, path_save):
             try:
                 if dc['Skills'][0] and dc['Skills'][0].lower().strip() != 'skill1':
                     for j in dc['Skills']:
-                        skill_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
-                        skill_run.font.size = Pt(font_size)
+                        if j.strip():
+                            skill_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                            skill_run.font.size = Pt(font_size)
             except:
                 pass
 
@@ -194,8 +196,9 @@ def drayton_converter(path, path_out, path_save):
             try:
                 if dc['Interest and Hobbies'][0] and dc['Interest and Hobbies'][0].lower().strip() != 'interestandhobbies1':
                     for j in dc['Interest and Hobbies']:
-                        i_h_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
-                        i_h_run.font.size = Pt(font_size)
+                        if j.strip():
+                            i_h_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                            i_h_run.font.size = Pt(font_size)
             except:
                 pass
 
@@ -203,8 +206,9 @@ def drayton_converter(path, path_out, path_save):
             try:
                 if dc['Languages'][0] and dc['Languages'][0].lower().strip() != 'language1':
                     for j in dc['Languages']:
-                        language_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
-                        language_run.font.size = Pt(font_size)
+                        if j.strip():
+                            language_run = doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                            language_run.font.size = Pt(font_size)
             except:
                 pass
     
