@@ -233,7 +233,8 @@ def ashbys_converter(path, pathout, path_save):
 
                         if j['Responsibilities'] and j['Responsibilities'][0].lower().replace(' ','') != 'responsibility1':       
                             for k in j['Responsibilities']:
-                                doc.paragraphs[i].add_run('\t' + '  • ' + k.strip() + '\n').bold = False
+                                if k.strip():
+                                    doc.paragraphs[i].add_run('\t' + '  • ' + k.strip() + '\n').bold = False
                             doc.paragraphs[i].add_run('\n')
         except:
             pass
