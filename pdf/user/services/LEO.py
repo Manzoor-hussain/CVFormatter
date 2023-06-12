@@ -48,7 +48,7 @@ def leo_partner_converter(path, path_out, path_save):
     print("----------------------------------------------------------------")
     print("                          Unformatted Text                            ")
     print("----------------------------------------------------------------")
-    print(unformatted_text)
+    print(unformated_text)
     
     print("Process has started...")
     
@@ -60,7 +60,7 @@ def leo_partner_converter(path, path_out, path_save):
 
     Ectract data from this text:
 
-    \"""" + unformatted_text + """\"
+    \"""" + unformated_text + """\"
 
     in following JSON format:
     {
