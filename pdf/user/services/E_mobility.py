@@ -2,7 +2,7 @@ import os
 import openai
 import docx
 import docx2txt
-from .keys import api_key
+from keys import api_key
 from pprint import pprint
 import json
 import re
@@ -129,56 +129,56 @@ def e_mobility_converter(path, pathout, path_save):
         for row in table.rows:
             for i,cell in enumerate(row.cells):
                 try:
-                    if cell.text.strip(' :\n').lower() == 'name':
+                    if cell.text.strip(' :\n').lower().replace(' ','') == 'name':
                         if dc['Name'] and dc['Name'].lower().replace(' ','') != 'value':
                             row.cells[i+1].text = dc['Name']
                 except:
                     pass
 
                 try:
-                    if cell.text.strip(' :\n').lower() == 'current company':
+                    if cell.text.strip(' :\n').lower().replace(' ','') == 'currentcompany':
                         if dc['Current Company'] and dc['Current Company'].lower().replace(' ','') != 'value':
                             row.cells[i+1].text = dc['Current Company']
                 except:
                     pass
 
                 try:
-                    if cell.text.strip(' :\n').lower() == 'position applied':
+                    if cell.text.strip(' :\n').lower().replace(' ','') == 'positionapplied':
                         if dc['Position Applied'] and dc['Position Applied'].lower().replace(' ','') != 'value':
                             row.cells[i+1].text = dc['Position applied']
                 except:
                     pass              
 
                 try:
-                    if cell.text.strip(' :\n').lower() == 'location':
+                    if cell.text.strip(' :\n').lower().replace(' ','') == 'location':
                         if dc['Location'] and dc['Location'].lower().replace(' ','') != 'value':
                             row.cells[i+1].text = dc['Location']
                 except:
                     pass                  
 
                 try:
-                    if cell.text.strip(' :\n').lower() == 'notice period':
+                    if cell.text.strip(' :\n').lower().replace(' ','') == 'noticeperiod':
                         if dc['Notice Period'] and dc['Notice Period'].lower().replace(' ','') != 'value':
                             row.cells[i+1].text = ['Notice period']
                 except:
                     pass                
 
                 try:
-                    if cell.text.strip(' :\n').lower() == 'reason for leaving':
+                    if cell.text.strip(' :\n').lower().replace(' ','') == 'reasonforleaving':
                         if dc['Reason for Leaving'] and dc['Reason for Leaving'].lower().replace(' ','') != 'value':
                             row.cells[i+1].text = dc['Reason for Leaving']
                 except:
                     pass                
 
                 try:
-                    if cell.text.strip(' :\n').lower() == 'system used':
+                    if cell.text.strip(' :\n').lower().replace(' ','') == 'systemused':
                         if dc['System Used'] and dc['System Used'].lower().replace(' ','') != 'value':
                             row.cells[i+1].text = dc['System Used']
                 except:
                     pass
 
                 try:
-                    if cell.text.strip(' :\n').lower() == 'dealbreakers':
+                    if cell.text.strip(' :\n').lower().replace(' ','') == 'dealbreakers':
                         if dc['Dealbreakers'] and dc['Dealbreakers'].lower().replace(' ','') != 'value':    
                             row.cells[i+1].text = dc['Dealbreakers']
                 except:
@@ -203,12 +203,12 @@ def e_mobility_converter(path, pathout, path_save):
                     company_name = j['Company Name'].strip()
                     duration = j['Duration'].strip()
                     
-                    if (j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'name of company') or (j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'title of job'):
-                        if j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'title of job':
+                    if (j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'nameofcompany') or (j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'titleofjob'):
+                        if j['Job Title'] and j['Job Title'].lower().replace(' ','') != 'titleofjob':
                             doc.paragraphs[i+1].add_run(job_title + '\n').bold = True
-                        if j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'name of company':  
+                        if j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'nameofcompany':  
                             doc.paragraphs[i+1].add_run(company_name + '\n').bold = True
-                        if j['Duration'] and j['Duration'].lower().replace(' ','') != 'working duration in company':    
+                        if j['Duration'] and j['Duration'].lower().replace(' ','') != 'workingdurationincompany':    
                             doc.paragraphs[i+1].add_run('(' + duration + ')' + '\n').bold = True
                         
                         doc.paragraphs[i+1].add_run('\n')
@@ -227,13 +227,13 @@ def e_mobility_converter(path, pathout, path_save):
                     duration = j['Duration'].strip()
                     degree_name = j['Degree Name'].strip()
                     
-                    if j['Degree Name'].strip() and j['Degree Name'].lower().replace(' ','') != 'name of degree': 
-                        if j['Institute Name'].strip() and j['Institute Name'].lower().replace(' ','') != 'name of institute':
+                    if j['Degree Name'].strip() and j['Degree Name'].lower().replace(' ','') != 'nameofdegree': 
+                        if j['Institute Name'].strip() and j['Institute Name'].lower().replace(' ','') != 'nameofinstitute':
                             doc.paragraphs[i+1].add_run(institute_name + ' ').bold = True
                         
                         doc.paragraphs[i+1].add_run(degree_name + '\n').bold = False
                         
-                        if j['Duration'].strip() and j['Duration'].lower().replace(' ','') != 'studying duration in institute':
+                        if j['Duration'].strip() and j['Duration'].lower().replace(' ','') != 'studyingdurationininstitute':
                             doc.paragraphs[i+1].add_run('(' + duration + ')' + '\n\n').bold = True
                         else:
                             doc.paragraphs[i+1].add_run('(' + "Not mentioned" + ')' + '\n\n').bold = True
