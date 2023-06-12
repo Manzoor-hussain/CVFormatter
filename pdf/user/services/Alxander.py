@@ -194,7 +194,7 @@ def alexander_steele_converter(path,pathoutput,save_path):
 
         if p.text.strip(' :\n').lower() == 'experience':
             for j in dc['Experience/Employment History']:               
-                if j['Designation'].strip() and j['Designation'].lower().replace(' ','') !='specificdesignationinthatcompany' or (j['Company Name'].strip() and j['Company Name'].lower().replace(' ','') !='nameofcompany'):
+                if (j['Designation'].strip() and j['Designation'].lower().replace(' ','') !='specificdesignationinthatcompany') or (j['Company Name'].strip() and j['Company Name'].lower().replace(' ','') !='nameofcompany'):
                     a = ceil(len(j["Duration"]) * 1.75)
                     b = " " * a  
                     if j["Duration"].strip():                                             
