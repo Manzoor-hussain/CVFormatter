@@ -182,7 +182,8 @@ def hbd_converter(path, path_out, path_save):
             if p.text.strip(' :\n').lower() == 'expertise':
                 if dc['Expertise'] and dc['Expertise'][0].lower().strip() != 'expertise1':
                     for j in dc['Expertise']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -190,7 +191,8 @@ def hbd_converter(path, path_out, path_save):
             if p.text.strip(' :\n').lower() == 'certificates':
                 if dc['Certificates'] and dc['Certificates'][0].lower().strip() != 'certificate1':
                     for j in dc['Certificates']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -198,7 +200,8 @@ def hbd_converter(path, path_out, path_save):
             if p.text.strip(' :\n').lower() == 'achievements':
                 if dc['Achievements'] and dc['Achievements'][0].lower().strip() != 'achievement1':
                     for j in dc['Achievements']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -206,7 +209,8 @@ def hbd_converter(path, path_out, path_save):
             if p.text.strip(' :\n').lower() == 'qualifications':
                 if dc['Qualifications'] and dc['Qualifications'][0].lower().strip() != 'qualification1':
                     for j in dc['Qualifications']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -214,7 +218,8 @@ def hbd_converter(path, path_out, path_save):
             if p.text.strip(' :\n').lower() == 'computer skills':
                 if dc['Computer Skills'] and dc['Computer Skills'][0].lower().strip() != 'computerskill1':
                     for j in dc['Computer Skills']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -222,7 +227,8 @@ def hbd_converter(path, path_out, path_save):
             if p.text.strip(' :\n').lower() == 'softwares':
                 if dc['Softwares'] and dc['Softwares'][0].lower().strip() != 'software1':
                     for j in dc['Softwares']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -230,7 +236,8 @@ def hbd_converter(path, path_out, path_save):
             if p.text.strip(' :\n').lower() == 'languages':
                 if dc['Languages'] and dc['Languages'][0].lower().strip() != 'language1':
                     for j in dc['Languages']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -238,7 +245,8 @@ def hbd_converter(path, path_out, path_save):
             if p.text.strip(' :\n').lower() == 'interests':
                 if dc['Interests'] and dc['Interests'][0].lower().strip() != 'interest1':
                     for j in dc['Interests']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -246,7 +254,8 @@ def hbd_converter(path, path_out, path_save):
             if p.text.strip(' :\n').lower() == 'trainings':
                 if dc['Trainings'] and dc['Trainings'][0].lower().strip() != 'training1':
                     for j in dc['Trainings']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -254,7 +263,8 @@ def hbd_converter(path, path_out, path_save):
             if p.text.strip(' :\n').lower() == 'skills':
                 if dc['Skills'] and dc['Skills'][0].lower().strip() != 'skill1':
                     for j in dc['Skills']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -280,7 +290,8 @@ def hbd_converter(path, path_out, path_save):
                         if j["Duties"] and j["Duties"][0].lower().replace(' ','') != "duty1":
 #                             doc.paragraphs[i+2].add_run('Duties:' + '\n')
                             for k in j['Duties']:
-                                doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
+                                if k.strip():
+                                    doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
                             doc.paragraphs[i+2].add_run('\n')
         except:
             pass
