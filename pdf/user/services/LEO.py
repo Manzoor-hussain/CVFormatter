@@ -186,7 +186,8 @@ def leo_partner_converter(path, path_out, path_save):
             if p.text.strip(' :\n').lower() == 'certification':
                 if dc['Certification'][0] and dc['Certification'][0].lower().strip() != 'certification1':
                     for j in dc['Certification']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -194,7 +195,8 @@ def leo_partner_converter(path, path_out, path_save):
             if p.text.strip(' :\n').lower() == 'languages':
                 if dc['Languages'][0] and dc['Languages'][0].lower().strip() != 'langauge1':
                     for j in dc['Languages']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -202,7 +204,8 @@ def leo_partner_converter(path, path_out, path_save):
             if p.text.strip(' :\n').lower() == 'interests':
                 if dc['Interests'][0] and dc['Interests'][0].lower().strip() != 'interest1':
                     for j in dc['Interests']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -210,7 +213,8 @@ def leo_partner_converter(path, path_out, path_save):
             if p.text.strip(' :\n').lower() == 'training':
                 if dc['Training'][0] and dc['Training'][0].lower().strip() != 'training1':
                     for j in dc['Training']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -218,7 +222,8 @@ def leo_partner_converter(path, path_out, path_save):
             if p.text.strip(' :\n').lower() == 'skills':
                 if dc['Skills'][0] and dc['Skills'][0].lower().strip() != 'skill1':
                     for j in dc['Skills']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
             pass
 
@@ -264,7 +269,8 @@ def leo_partner_converter(path, path_out, path_save):
 
                     if j["Responsibilities"] and j["Responsibilities"][0].lower().replace(' ','') != "responsibility 1":          
                         for k in j['Responsibilities']:
-                            doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
+                            if k.strip():
+                                doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
                         doc.paragraphs[i+2].add_run('\n\n')
                     else:
                         doc.paragraphs[i+2].add_run('No responsibility is mentioned' + '\n\n').bold = False
