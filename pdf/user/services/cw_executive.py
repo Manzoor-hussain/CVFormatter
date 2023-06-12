@@ -148,7 +148,8 @@ def cw_executive_converter(path, pathout, path_save):
                             doc.paragraphs[i+1].add_run("Company Name not mentioned"+ '\n\n').bold = True                          
                         if j['Responsibilities'] and j['Responsibilities'][0].lower().replace(' ','') != 'responsibility1':
                             for k in j['Responsibilities']:
-                                doc.paragraphs[i+1].add_run('•   ' + k.strip() + '\n').bold = False
+                                if k.strip():
+                                    doc.paragraphs[i+1].add_run('•   ' + k.strip() + '\n').bold = False
                             doc.paragraphs[i+1].add_run('\n')
             except:
                 pass
