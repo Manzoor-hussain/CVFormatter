@@ -218,7 +218,8 @@ def timber_seed_format_converter(path, pathout, path_save):
                             
                         if j['Responsibilities'] and j['Responsibilities'][0].lower().replace(' ','') != 'responsibility1':
                             for k in j['Responsibilities']:
-                                doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
+                                if k.strip():
+                                    doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
                             doc.paragraphs[i+2].add_run('\n\n')
         except:
             pass
