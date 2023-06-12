@@ -216,7 +216,8 @@ def linum_converter(path,formatted_path,save_path):
                                 if j["Responsibilities"][0].strip() and j["Responsibilities"][0].lower().replace(' ','') != "responsibility1":
                                     doc.paragraphs[i+2].add_run('Duties:' + '\n').bold = False
                                     for k in j['Responsibilities']:
-                                        doc.paragraphs[i+2].add_run('    • ' + k.strip() + '\n').bold = False
+                                        if k.strip():
+                                            doc.paragraphs[i+2].add_run('    • ' + k.strip() + '\n').bold = False
                                     doc.paragraphs[i+2].add_run('\n').bold = False
                             except:
                                 pass
