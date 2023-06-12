@@ -47,7 +47,7 @@ def sang_zarrin_converter(path, path_out, path_save):
     print("----------------------------------------------------------------")
     print("                          Unformatted Text                            ")
     print("----------------------------------------------------------------")
-    print(unformatted_text)
+    print(unformated_text)
     
     print("Process has started...")
 
@@ -61,7 +61,7 @@ def sang_zarrin_converter(path, path_out, path_save):
 
     Ectract data from this text:
 
-    \"""" + unformatted_text + """\"
+    \"""" + unformated_text + """\"
 
     in following JSON format:
     {
@@ -135,7 +135,7 @@ def sang_zarrin_converter(path, path_out, path_save):
             if p.text.strip(' :\n').lower() == 'summary':
                 if dc['Summary'] and dc['Summary'].lower().replace(' ','') != 'value':
                     doc.paragraphs[i+2].add_run(dc['Summary'].strip()).bold = False
-                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+#                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
         except:
             pass
 
@@ -147,15 +147,15 @@ def sang_zarrin_converter(path, path_out, path_save):
                     designation = j['Designation'].strip()
                     location = j['Location'].strip()
                     
-                    if (j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'name of company') or (j['Designation'] and j['Designation'].lower().replace(' ','') != 'designation'):
+                    if (j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'nameofcompany') or (j['Designation'] and j['Designation'].lower().replace(' ','') != 'designation'):
                         
                         if j['Designation'] and j['Designation'].lower().replace(' ','') != 'designation':
                             doc.paragraphs[i+2].add_run(designation + '\n').bold = False
-                        if j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'name of company':  
+                        if j['Company Name'] and j['Company Name'].lower().replace(' ','') != 'nameofcompany':  
                             doc.paragraphs[i+2].add_run(company_name + '\n').bold = True
-                        if j['Location'] and j['Location'].lower().replace(' ','') != 'location of company':  
+                        if j['Location'] and j['Location'].lower().replace(' ','') != 'locationofcompany':  
                             doc.paragraphs[i+2].add_run(location + '\n').bold = True    
-                        if j['Duration'] and j['Duration'].lower().replace(' ','') != 'working duration in company':    
+                        if j['Duration'] and j['Duration'].lower().replace(' ','') != 'workingdurationincompany':    
                             doc.paragraphs[i+2].add_run('(' + duration + ')' + '\n').bold = True
                             
                         doc.paragraphs[i+2].add_run('\n')
@@ -173,10 +173,10 @@ def sang_zarrin_converter(path, path_out, path_save):
                     duration = j['Duration'].strip()
                     degree_name = j['Degree Name'].strip()
                     
-                    if j['Degree Name'].strip() and j['Degree Name'].lower().replace(' ','') != 'name of degree': 
-                        if j['Institute Name'].strip() and j['Institute Name'].lower().replace(' ','') != 'name of institute':
+                    if j['Degree Name'].strip() and j['Degree Name'].lower().replace(' ','') != 'nameofdegree': 
+                        if j['Institute Name'].strip() and j['Institute Name'].lower().replace(' ','') != 'nameofinstitute':
                             doc.paragraphs[i+2].add_run(institute_name + ' ').bold = True
-                        if j['Duration'].strip() and j['Duration'].lower().replace(' ','') != 'studying duration in institute':
+                        if j['Duration'].strip() and j['Duration'].lower().replace(' ','') != 'studyingdurationininstitute':
                             doc.paragraphs[i+2].add_run('(' + duration + ')' + '\n').bold = True
                         else:
                             doc.paragraphs[i+2].add_run('(' + "Not mentioned" + ')' + '\n').bold = True
@@ -195,7 +195,7 @@ def sang_zarrin_converter(path, path_out, path_save):
 
         try:
             if p.text.strip(' :\n').lower() == 'computer skills':
-                if dc['Computer Skills'][0] and dc['Computer Skills'][0].lower().strip() != 'computer skill1':
+                if dc['Computer Skills'][0] and dc['Computer Skills'][0].lower().strip() != 'computerskill1':
                     for j in dc['Computer Skills']:
                         doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n').bold = False
         except:
