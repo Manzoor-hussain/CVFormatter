@@ -47,7 +47,7 @@ def clarus_converter(path, path_out, path_save):
     print("----------------------------------------------------------------")
     print("                          Unformatted Text                            ")
     print("----------------------------------------------------------------")
-    print(unformatted_text)
+    print(unformated_text)
     
     
     print("Process has started...")
@@ -59,7 +59,7 @@ def clarus_converter(path, path_out, path_save):
     test_text = """
 
     Extract data from this text:
-    \"""" + unformatted_text + """\"
+    \"""" + unformated_text + """\"
     in following JSON format:
     {
     "Name" : "value",
@@ -141,7 +141,7 @@ def clarus_converter(path, path_out, path_save):
             try:
                 if dc['Personal Statement'].strip() and dc['Personal Statement'].lower().replace(' ','') != 'value':
                     doc.paragraphs[i+2].text = str(dc['Personal Statement'])
-                    doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+#                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
 
