@@ -2,7 +2,7 @@ import os
 import openai
 import docx
 import docx2txt
-from keys import api_key
+from .keys import api_key
 from pprint import pprint
 import json
 import re
