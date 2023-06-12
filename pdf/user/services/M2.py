@@ -7,9 +7,23 @@ import traceback
 import json
 from docx.shared import Pt
 import PyPDF2 
-from .keys import api_key
+from keys import api_key
 from docx2python import docx2python
 
+
+def month_parser(date):
+    date = date.strip()
+    date = date.replace('january','Jan').replace('January','Jan').replace('February', 'Feb').replace('february', 'Feb').replace('March', 'Mar').replace('march', 'Mar').replace('April', 'Apr').replace('april', 'Apr').replace('may', 'May').replace('June', 'Jun').replace('june', 'Jun').replace('July', 'Jul').replace('july', 'Jul').replace('August', 'Aug').replace('august', 'Aug').replace('September', 'Sep').replace('september', 'Sep').replace('October', 'Oct').replace('october', 'Oct').replace('November', 'Nov').replace('november', 'Nov').replace('December', 'Dec').replace('december', 'Dec').replace('01','Jan').replace('02', 'Feb').replace('03', 'Mar').replace('04', 'Apr').replace('05', 'May').replace('06', 'Jun').replace('07', 'Jul').replace('08', 'Aug').replace('09', 'Sep').replace('10', 'Oct').replace('11', 'Nov').replace('12', 'Dec').replace('1','Jan').replace('2', 'Feb').replace('3', 'Mar').replace('4', 'Apr').replace('5', 'May').replace('6', 'Jun').replace('7', 'Jul').replace('8', 'Aug').replace('9', 'Sep')
+    return date
+
+def year_parser(date):
+    date = date.strip()
+    if len(date) == 2:
+        if int(date) <= 35:
+            date = "20" + date
+        else:
+            date = "19" + date
+    return date
 
 def get_completion(prompt, model="gpt-3.5-turbo"):
     messages = [{"role": "user", "content": prompt}]
@@ -41,7 +55,7 @@ def m2_partnership_converter(path,pathout,path_save):
         except:
             print('WE DONT SUPPORT THIS TYPE OF FILE')
     
-    print("Proces has Started...")
+    print("Process has Started...")
     test_text = """
     Extract data from this text:
 
@@ -53,12 +67,14 @@ def m2_partnership_converter(path,pathout,path_save):
     "Work Experience" : [
         {"Company Name" : "Name of company",
         "Company Location" : "Location of company",
-        "Duration" : "Working Duration in Company",
+        "Designation" : "Designation in that company",
+        "Duration" : {"start_month": "month when person started working at company", "start_year": "year when person started working at company", "end_month": "month when person ended working at company", "end_year": "year when person ended working at company"},
         "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
         },
         {"Company Name" : "Name of company",
         "Company Location" : "Location of company",
-        "Duration" : "Working Duration in Company",
+        "Designation" : "Designation in that company",
+        "Duration" : {"start_month": "month when person started working at company", "start_year": "year when person started working at company", "end_month": "month when person ended working at company", "end_year": "year when person ended working at company"}
         "Responsibilities" : ["Responsibility 1", "Responsibility 2", ...]
         },
         ...
@@ -66,11 +82,11 @@ def m2_partnership_converter(path,pathout,path_save):
     "Education" : [
         {"Institute Name" : "Name Of institute",
         "Degree Name": "Name of degree",
-        "Duration" : "Studying duration in institute"
+        "Duration" : {"start_month": "month when person started studying at institute", "start_year": "year when person started studying at institute", "end_month": "month when person ended studying at institute", "end_year": "year when person ended studying at institute"}
         },
         {"Institute Name" : "Name Of institute",
         "Degree Name": "Name of degree",
-        "Duration" : "Studying duration in institute"
+        "Duration" : {"start_month": "month when person started studying at institute", "start_year": "year when person started studying at institute", "end_month": "month when person ended studying at institute", "end_year": "year when person ended studying at institute"}
         },
         ...
         ],
@@ -93,9 +109,11 @@ def m2_partnership_converter(path,pathout,path_save):
     os.environ["OPEN_API_KEY"] = api_key
     openai.api_key = api_key
     result = get_completion(test_text)
-
-    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
-
+    print('\n\n\n')
+    print(result)
+    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"|\"[Nn]ot [Mm]entioned\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
+    print('\n\n\n')
+    print(dc)
     # Open the existing document
     doc = docx.Document(formatted)
 
@@ -108,138 +126,198 @@ def m2_partnership_converter(path,pathout,path_save):
                         try:
                             if r.cells[0].text.strip(' :\n').lower() == 'name':
                                 tb.cell(i,0).text = ""
-                                para = tb.cell(i,0).add_paragraph()
-                                para.style.font.name = "Century Gothic"
-                                run = para.add_run(dc['Candidate Name'].strip() + '\n')
-                                run.font.size = Pt(22)
-                                run.bold = True
+                                if dc['Candidate Name'] and dc['Candidate Name'].lower().replace(' ','') != "value":
+                                    para = tb.cell(i,0).add_paragraph()
+                                    para.style.font.name = "Century Gothic"
+                                    run = para.add_run(dc['Candidate Name'].strip() + '\n')
+                                    run.font.size = Pt(22)
+                                    run.bold = True
                         except:
-                            print(traceback.print_exc())                  
+                            pass
+                            
                         try:
                             if r.cells[0].text.strip(' :\n').lower() == 'e education':
                                 para = tb.cell(i+1,0).add_paragraph()
                                 para.style.font.name = "Century Gothic"
                                 for j in dc['Education']:
-                                    try:
-                                        if j['Institute Name'].strip():
-                                            para.add_run(j['Institute Name'].strip() + '\n').bold = True
-                                        else:
+                                    if j['Degree Name'] and j['Degree Name'].lower().replace(' ','') != "nameofdegree":
+                                        try:
+                                            if j['Institute Name'].strip():
+                                                para.add_run(j['Institute Name'].strip() + '\n').bold = True
+                                            else:
+                                                para.add_run('Institute Name not mentioned\n').bold = True
+                                        except:
                                             para.add_run('Institute Name not mentioned\n').bold = True
-                                    except:
-                                        para.add_run('Institute Name not mentioned\n').bold = True                                 
-                                    try:
-                                        if j['Duration'].strip():
-                                            para.add_run(j['Duration'].strip() + '\n').bold = True
-                                        else:
+                                        try:
+                                            duration = ""
+                                            if j['Duration']['start_year'].strip() and (len(j['Duration']['start_year'].strip()) == 2 or len(j['Duration']['start_year'].strip())==4):
+                                                if j['Duration']['start_month'].strip() and len(j['Duration']['start_year']) < 20:
+                                                    duration += month_parser(j['Duration']['start_month']) + " "
+
+                                                duration += year_parser(j['Duration']['start_year'])
+
+                                            if j['Duration']['end_year'].strip() and (len(j['Duration']['end_year'].strip())==2 or len(j['Duration']['end_year'].strip())==4):
+                                                if duration:
+                                                        duration += ' - '
+                                                if j['Duration']['end_month'].strip() and len(j['Duration']['end_month']) < 20:
+                                                    duration += month_parser(j['Duration']['end_month']) + " "
+
+                                                duration += year_parser(j['Duration']['end_year'])
+                                            if duration:
+                                                para.add_run(duration + '\n').bold = True
+                                            else:
+                                                para.add_run('Duration not mentioned\n').bold = True
+                                        except:
                                             para.add_run('Duration not mentioned\n').bold = True
-                                    except:
-                                        para.add_run('Duration not mentioned\n').bold = True
-                                    try:
-                                        if j['Degree Name'].strip():
-                                            para.add_run(j['Degree Name'].strip() + '\n\n').bold = False
-                                        else:
-                                            para.add_run('Degree Name not mentioned\n\n').bold = False
-                                    except:
-                                        para.add_run('Degree Name not mentioned\n\n').bold = False                           
-
-
+                                        try:
+                                            if j['Degree Name'].strip():
+                                                para.add_run(j['Degree Name'].strip() + '\n\n').bold = False
+                                            else:
+                                                para.add_run('Degree Name not mentioned\n\n').bold = False
+                                        except:
+                                            para.add_run('Degree Name not mentioned\n\n').bold = False                           
                         except:
                             pass 
-                        try:
-                            if r.cells[0].text.strip(' :\n').lower() == 's skills':
-                                para = tb.cell(i+1,0).add_paragraph()
-                                para.style.font.name = "Century Gothic"
-                                for j in dc['Skills']:
-                                    para.add_run('    • ' + j.strip() + '\n').bold = False
-
-
-                        except:
-                            print(traceback.print_exc())
-                        try:
-                            if r.cells[0].text.strip(' :\n').lower() == 'h hobbies':
-                                para = tb.cell(i+1,0).add_paragraph()
-                                para.style.font.name = "Century Gothic"
-                                for j in dc['Hobbies']:
-                                    para.add_run('    • ' + j.strip() + '\n').bold = False
-                        except:
-                            pass 
+                        
                         try:
                             if r.cells[0].text.strip(' :\n').lower() == 'e experience':
                                 para = tb.cell(i+1,0).add_paragraph()
                                 para.style.font.name = "Century Gothic"
                                 for j in dc['Work Experience']:
-                                    try:
-                                        if j['Company Name'].strip():
-                                            para.add_run(j['Company Name'].strip() + '\n').bold = True
-                                        else:
-                                            para.add_run('Company Name not mentioned\n').bold = True
-                                    except:
-                                        para.add_run('Company Name not mentioned\n').bold = True
-                                    try:
-                                        if j['Company Location'].strip():
-                                            para.add_run(j['Company Location'].strip() + ' | ').bold = False
-                                        else:
-                                            para.add_run('Company Location not mentioned | ').bold = False
-                                    except:
-                                        para.add_run('Company Location not mentioned | ').bold = False
-                                    try:
-                                        if j['Duration'].strip():
-                                            para.add_run(j['Duration'].strip() + '\n\n').bold = False
-                                        else:
-                                            para.add_run('Duration not mentioned\n\n').bold = False
-                                    except:
-                                        para.add_run('Duration not mentioned\n\n').bold = False
-                                    try:
-                                        if j['Responsibilities']:
-                                            for k in j['Responsibilities']:
-                                                para.add_run('    • ' + k.strip() + '\n').bold = False
-                                    except:
-                                        pass
-                                    para.add_run('\n\n').bold = False                            
+                                    if (j['Designation'] and j['Designation'].lower().replace(' ','') != "designationinthatcompany") or (j['Company Name'] and j['Company Name'].lower().replace(' ','') != "nameofcompany"):
+                                        try:
+                                            if j['Company Name'].strip():
+                                                para.add_run(j['Company Name'].strip()).bold = True
+                                            else:
+                                                para.add_run('Name not mentioned').bold = True
+                                        except:
+                                            para.add_run('Name not mentioned').bold = True
+                                        try:
+                                            if j['Company Location'].strip():
+                                                para.add_run( ', ' + j['Company Location\n'].strip()).bold = False
+                                            else:
+                                                para.add_run('\n').bold = False
+                                        except:
+                                            para.add_run('\n').bold = False
+
+                                        try:
+                                            if j['Designation'].strip():
+                                                para.add_run(j['Designation'].strip()).bold = True
+                                            else:
+                                                para.add_run('Designation not mentioned').bold = True
+                                        except:
+                                            para.add_run('Designation not mentioned').bold = True
+                                        try:
+                                            duration = ""
+                                            if j['Duration']['start_year'].strip() and (len(j['Duration']['start_year'].strip())==2 or len(j['Duration']['start_year'].strip())==4):
+                                                if j['Duration']['start_month'].strip() and len(j['Duration']['start_year']) < 20:
+                                                    duration += month_parser(j['Duration']['start_month']) + " "
+
+                                                duration += year_parser(j['Duration']['start_year'])
+
+                                            if j['Duration']['end_year'].strip() and (len(j['Duration']['end_year'].strip())==2 or len(j['Duration']['end_year'].strip())==4):
+                                                if duration:
+                                                        duration += ' - '
+                                                if j['Duration']['end_month'].strip() and len(j['Duration']['end_month']) < 20:
+                                                    duration += month_parser(j['Duration']['end_month']) + " "
+
+                                                duration += year_parser(j['Duration']['end_year'])
+
+                                            if duration:
+                                                para.add_run(' | ' + duration + '\n').bold = True
+                                            else:
+                                                para.add_run(' | Duration not mentioned\n').bold = True
+
+                                        except:
+                                            para.add_run('Duration not mentioned\n').bold = True
 
 
+                                        try:
+                                            if j['Responsibilities'] and j['Responsibilities'][0].lower().replace(' ','') != 'responsibility1':
+                                                for k in j['Responsibilities']:
+                                                    para.add_run('    • ' + k.strip() + '\n').bold = False
+                                        except:
+                                            pass
+                                        para.add_run('\n\n').bold = False
                         except:
                             pass 
+                        
+                        try:
+                            if r.cells[0].text.strip(' :\n').lower() == 's skills':
+                                if dc['Skills'] and dc['Skills'][0].lower().replace(' ','') != "skill1":
+                                    para = tb.cell(i+1,0).add_paragraph()
+                                    para.style.font.name = "Century Gothic"
+                                    for j in dc['Skills']:
+                                        if j.strip():
+                                            para.add_run('    • ' + j.strip() + '\n').bold = False
+                        except:
+                            pass
+                            
+                        try:
+                            if r.cells[0].text.strip(' :\n').lower() == 'h hobbies':
+                                if dc['Hobbies'] and dc['Hobbies'][0].lower().replace(' ','') != "hobby1":
+                                    para = tb.cell(i+1,0).add_paragraph()
+                                    para.style.font.name = "Century Gothic"
+                                    for j in dc['Hobbies']:
+                                        if j.strip():
+                                            para.add_run('    • ' + j.strip() + '\n').bold = False
+                        except:
+                            pass                         
+                        
                         try:
                             if r.cells[0].text.strip(' :\n').lower() == 'k key projects':
-                                para = tb.cell(i+1,0).add_paragraph()
-                                para.style.font.name = "Century Gothic"
-                                for j in dc['Projects']:
-                                    para.add_run(j.strip() + '\n').bold = False
+                                if dc['Projects'] and dc['Projects'][0].lower().replace(' ','') != "project1":
+                                    para = tb.cell(i+1,0).add_paragraph()
+                                    para.style.font.name = "Century Gothic"
+                                    for j in dc['Projects']:
+                                        if j.strip():
+                                            para.add_run(j.strip() + '\n').bold = False
                         except:
                             pass 
+                        
                         try:
                             if r.cells[0].text.strip(' :\n').lower() == 'a awards':
-                                para = tb.cell(i+1,0).add_paragraph()
-                                para.style.font.name = "Century Gothic"
-                                for j in dc['Awards']:
-                                    para.add_run(j.strip() + '\n').bold = False
+                                if dc['Awards'] and dc['Awards'][0].lower().replace(' ','') != "award1":
+                                    para = tb.cell(i+1,0).add_paragraph()
+                                    para.style.font.name = "Century Gothic"
+                                    for j in dc['Awards']:
+                                        if j.strip():
+                                            para.add_run(j.strip() + '\n').bold = False
                         except:
                             pass 
+                        
                         try:
                             if r.cells[0].text.strip(' :\n').lower() == 'l languages':
-                                para = tb.cell(i+1,0).add_paragraph()
-                                para.style.font.name = "Century Gothic"
-                                for j in dc['Languages']:
-                                    para.add_run('    • ' + j.strip() + '\n').bold = False
+                                if dc['Languages'] and dc['Languages'][0].lower().replace(' ','') != "language1":
+                                    para = tb.cell(i+1,0).add_paragraph()
+                                    para.style.font.name = "Century Gothic"
+                                    for j in dc['Languages']:
+                                        if j.strip():
+                                            para.add_run('    • ' + j.strip() + '\n').bold = False
                         except:
                             pass 
+                        
                         try:
                             if r.cells[0].text.strip(' :\n').lower() == 'i interests':
-                                para = tb.cell(i+1,0).add_paragraph()
-                                para.style.font.name = "Century Gothic"
-                                for j in dc['Interests']:
-                                    para.add_run('    • ' + j.strip() + '\n').bold = False
+                                if dc['Interests'] and dc['Interests'][0].lower().replace(' ','') != "interest1":
+                                    para = tb.cell(i+1,0).add_paragraph()
+                                    para.style.font.name = "Century Gothic"
+                                    for j in dc['Interests']:
+                                        if j.strip():
+                                            para.add_run('    • ' + j.strip() + '\n').bold = False
                         except:
                             pass 
+                        
                         try:
                             if r.cells[0].text.strip(' :\n').lower() == 't trainings':
-                                para = tb.cell(i+1,0).add_paragraph()
-                                para.style.font.name = "Century Gothic"
-                                for j in dc['Trainings']:
-                                    para.add_run(j.strip() + '\n').bold = False
+                                if dc['Trainings'] and dc['Trainings'][0].lower().replace(' ','') != "training1":
+                                    para = tb.cell(i+1,0).add_paragraph()
+                                    para.style.font.name = "Century Gothic"
+                                    for j in dc['Trainings']:
+                                        if j.strip():
+                                            para.add_run(j.strip() + '\n').bold = False
                         except:
-                            print(traceback.print_exc())                   
+                            pass                  
 
 
 
@@ -247,4 +325,3 @@ def m2_partnership_converter(path,pathout,path_save):
     doc.save(path_save)
     print("Process has Completed...")
     
-
