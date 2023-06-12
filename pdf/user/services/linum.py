@@ -49,14 +49,14 @@ def linum_converter(path,formatted_path,save_path):
     print("----------------------------------------------------------------")
     print("                          Unformatted Text                            ")
     print("----------------------------------------------------------------")
-    print(unformatted_text)
+    print(unformated_text)
     
     print("Process has started...")
 
     test_text = """
     Extract data from this text:
 
-    \"""" + re.sub('\n+','\n', unformatted_text) + """\"
+    \"""" + re.sub('\n+','\n', unformated_text) + """\"
 
     in following JSON format:
     {
