@@ -235,7 +235,8 @@ def m2_partnership_converter(path,pathout,path_save):
                                         try:
                                             if j['Responsibilities'] and j['Responsibilities'][0].lower().replace(' ','') != 'responsibility1':
                                                 for k in j['Responsibilities']:
-                                                    para.add_run('    • ' + k.strip() + '\n').bold = False
+                                                    if k.strip():
+                                                        para.add_run('    • ' + k.strip() + '\n').bold = False
                                         except:
                                             pass
                                         para.add_run('\n\n').bold = False
