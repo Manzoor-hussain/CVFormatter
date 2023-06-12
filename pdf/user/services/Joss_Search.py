@@ -198,7 +198,8 @@ def joss_search_converter(path, path_out, path_save):
 
                         if j["Responsibilities"] and j["Responsibilities"][0].lower().replace(' ','') != "responsibility1":
                             for k in j['Responsibilities']:
-                                doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
+                                if k.strip():
+                                    doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n')
                             doc.paragraphs[i+2].add_run('\n')
             except:
                 pass
@@ -232,7 +233,8 @@ def joss_search_converter(path, path_out, path_save):
             try:
                 if dc['Courses'][0] and dc['Courses'][0].lower().strip() != 'course1':
                     for j in dc['Courses']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
     #                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
@@ -242,7 +244,8 @@ def joss_search_converter(path, path_out, path_save):
             try:
                 if dc['Previous Assignments'][0] and dc['Previous Assignments'][0].lower().strip() != 'previousassignment1':
                     for j in dc['Previous Assignments']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
     #                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass        
@@ -253,7 +256,8 @@ def joss_search_converter(path, path_out, path_save):
             try:
                 if dc['Professional Qualifications'][0] and dc['Professional Qualifications'][0].lower().strip() != 'qualification1':
                     for j in dc['Professional Qualifications']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
     #                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
@@ -262,7 +266,8 @@ def joss_search_converter(path, path_out, path_save):
             try:
                 if dc['Area of Expertise'][0] and dc['Area of Expertise'][0].lower().strip() != 'areaofexpertise1':
                     for j in dc['Area of Expertise']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
 #                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
@@ -271,7 +276,8 @@ def joss_search_converter(path, path_out, path_save):
             try:
                 if dc['Key Skills'][0] and dc['Key Skills'][0].lower().strip() != 'keyskill1':
                     for j in dc['Key Skills']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
     #                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
@@ -279,7 +285,8 @@ def joss_search_converter(path, path_out, path_save):
             try:
                 if dc['Computer Skills'][0] and dc['Computer Skills'][0].lower().strip() != 'computerskill1':
                     for j in dc['Computer Skills']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
     #                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
@@ -288,7 +295,8 @@ def joss_search_converter(path, path_out, path_save):
             try:
                 if dc['Languages'][0] and dc['Languages'][0].lower().strip() != 'language1':
                     for j in dc['Languages']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
             except:
                 pass
 
@@ -296,7 +304,8 @@ def joss_search_converter(path, path_out, path_save):
             try:
                 if dc['Interests'][0] and dc['Interests'][0].lower().strip() != 'interest1':
                     for j in dc['Interests']:
-                        doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
+                        if j.strip():
+                            doc.paragraphs[i+2].add_run('  • ' + j.strip() + '\n')
     #                     doc.paragraphs[i+2].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             except:
                 pass
