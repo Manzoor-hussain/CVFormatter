@@ -291,7 +291,8 @@ def expert_resource_converter(path, pathout, path_save):
                         doc.paragraphs[i+2].add_run("Company not mentioned"+"\n\n")
                     if j['Responsibilities'] and j['Responsibilities'][0].lower().replace(' ','') != 'responsibility1':          
                         for k in j['Responsibilities']:
-                            doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
+                            if k.strip():
+                                doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
                         doc.paragraphs[i+2].add_run('\n')
 
     doc.save(path_save)
