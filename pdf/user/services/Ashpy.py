@@ -8,6 +8,7 @@ import PyPDF2
 from docx.enum.text import WD_UNDERLINE
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from .keys import api_key
+# import traceback
 
 def get_completion(prompt, model="gpt-3.5-turbo"):
     messages = [{"role": "user", "content": prompt}]
@@ -31,14 +32,20 @@ def ashbys_converter(path, pathout, path_save):
             for i in range (len(pdf_reader.pages)):
                 first_page = pdf_reader.pages[i]
                 unformated_text += first_page.extract_text() + " "
-            print('Its PDF')
+#             print('Its PDF')
     except:
         try:
             unformated_text = docx2txt.process(path)
-            print('Its Docx')
+#             print('Its Docx')
         except:
             print('WE DONT SUPPORT THIS TYPE OF FILE')
 
+    print("----------------------------------------------------------------")
+    print("                          Unformatted                            ")
+    print("----------------------------------------------------------------")
+    
+    print(unformated_text)        
+            
     os.environ["OPEN_API_KEY"] = api_key
     openai.api_key = api_key
 
@@ -97,7 +104,22 @@ def ashbys_converter(path, pathout, path_save):
     """
 
     result = get_completion(test_text)
-    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"|\"[Nn]ot [Mm]entioned\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))  
+    
+    print("----------------------------------------------------------------")
+    print("                          Result                            ")
+    print("----------------------------------------------------------------")
+    
+    print(result)
+    
+    dc = dict(json.loads(re.sub(r'\[\"\"\]',r'[]',re.sub(r'\"[Un]nknown\"|\"[Nn]one\"|\"[Nn]ull\"|\"[Nn]ot [Mm]entioned\"',r'""',re.sub(r',[ \n]*\]',r']',re.sub(r',[ \n]*\}',r'}',result.replace('...','')))))))
+
+    
+    print("----------------------------------------------------------------")
+    print("                          Dictionary                            ")
+    print("----------------------------------------------------------------")
+    
+    print(dc)
+    
     doc = docx.Document(formatted)
 
     
@@ -105,7 +127,7 @@ def ashbys_converter(path, pathout, path_save):
         try:
             if p.text.strip(' :\n').lower() == 'profile':
                 doc.paragraphs[i].text = ""
-                if dc['Profile'].lower().replace(' ','') != 'value':
+                if dc['Profile'] and dc['Profile'].lower().replace(' ','') != 'value':
                     doc.paragraphs[i].add_run(dc['Profile'].strip()).bold = False
                     doc.paragraphs[i].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
         except:
@@ -132,7 +154,7 @@ def ashbys_converter(path, pathout, path_save):
         try:
             if p.text.strip(' :\n').lower() == 'projects':
                 doc.paragraphs[i].text = ""
-                if dc['Projects'][0].lower().replace(' ','') != 'project1':
+                if dc['Projects'] and dc['Projects'][0].lower().replace(' ','') != 'project1':
                     for j in dc['Projects']:
                         if j.strip():
                             doc.paragraphs[i].add_run('  • ' + j.strip() + '\n').bold = False
@@ -141,20 +163,20 @@ def ashbys_converter(path, pathout, path_save):
         
 
         try:
-            if p.text.strip(' :\n').lower() == 'personal skill':
+            if p.text.strip(' :\n').lower() == 'personal skills':
                 doc.paragraphs[i].text = ""
-                if dc['Personal Skills'][0].lower().replace(' ','') != 'personalskill1':
+                if dc['Personal Skills'] and dc['Personal Skill'][0].lower().replace(' ','') != 'personalskill1':
                     for j in dc['Personal Skills']:
                         if j.strip():
                             doc.paragraphs[i].add_run('  • ' + j.strip() + '\n').bold = False
-        except:
+        except: 
             pass
 
 
         try:
             if p.text.strip(' :\n').lower() == 'languages':
                 doc.paragraphs[i].text = ""
-                if dc['Languages'][0].lower().replace(' ','') != 'languages1':
+                if dc['Languages'] and dc['Languages'][0].lower().replace(' ','') != 'languages1':
                     for j in dc['Languages']:
                         if j.strip():
                             doc.paragraphs[i].add_run('  • ' + j.strip() + '\n').bold = False
@@ -164,7 +186,7 @@ def ashbys_converter(path, pathout, path_save):
         try:
             if p.text.strip(' :\n').lower() == 'interests':
                 doc.paragraphs[i].text = ""
-                if dc['Interests'][0].lower().replace(' ','') != 'interests1':
+                if dc['Interests'] and dc['Interests'][0].lower().replace(' ','') != 'interests1':
                     for j in dc['Interests']:
                         if j.strip():
                             doc.paragraphs[i].add_run('  • ' + j.strip() + '\n').bold = False
@@ -174,7 +196,7 @@ def ashbys_converter(path, pathout, path_save):
         try:
             if p.text.strip(' :\n').lower() == 'training':
                 doc.paragraphs[i].text = ""
-                if dc['Trainings'][0].lower().replace(' ','') != 'training1':
+                if dc['Trainings'] and dc['Trainings'][0].lower().replace(' ','') != 'training1':
                     for j in dc['Trainings']:
                         if j.strip():
                             doc.paragraphs[i].add_run('  • ' + j.strip() + '\n').bold = False
@@ -184,7 +206,7 @@ def ashbys_converter(path, pathout, path_save):
         try:
             if p.text.strip(' :\n').lower() == 'skills':
                 doc.paragraphs[i].text = ""
-                if dc['Skills'][0].lower().replace(' ','') != 'skills1':
+                if dc['Skills'] and dc['Skills'][0].lower().replace(' ','') != 'skills1':
                     for j in dc['Skills']:
                         if j.strip():
                             doc.paragraphs[i].add_run('  • ' + j.strip() + '\n').bold = False
