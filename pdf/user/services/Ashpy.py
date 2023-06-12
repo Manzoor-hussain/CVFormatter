@@ -20,7 +20,7 @@ def get_completion(prompt, model="gpt-3.5-turbo"):
     return response.choices[0].message["content"]
 
 def ashbys_converter(path, pathout, path_save):
-    
+    print("IM INNNNNNNNNNNNNNNNNN")
     formatted= pathout
     un_formatted = path
     formated_text = docx2txt.process(formatted)
