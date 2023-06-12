@@ -225,7 +225,8 @@ def adway_converter(path ,formatted_path,save_path):
                         if j['Responsibilities'] and j['Responsibilities'][0].lower().replace(' ','') != 'responsibility1':   
                             doc.paragraphs[i+2].add_run('Responsibilities:' + '\n').bold = True
                             for k in j['Responsibilities']:
-                                doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
+                                if k.strip():
+                                    doc.paragraphs[i+2].add_run('  • ' + k.strip() + '\n').bold = False
                             doc.paragraphs[i+2].add_run('\n\n')
         except:
             pass
