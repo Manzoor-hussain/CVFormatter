@@ -159,15 +159,15 @@ def expert_resource_converter(path, pathout, path_save):
                         if j['Duration'].strip():                                                  
                             doc.paragraphs[i+2].add_run(j['Duration'].strip() + '\n').bold = True
                         else:
-                            doc.paragraphs[i].add_run("Duration not mentioned"+"\n")
+                            doc.paragraphs[i+2].add_run("Duration not mentioned"+"\n").bold=True
                         if j['Institute'].strip():    
                             doc.paragraphs[i+2].add_run(j['Institute'].strip()).bold=False
                         else:
-                            doc.paragraphs[i].add_run("Institute name not mentioned")
+                            doc.paragraphs[i+2].add_run("Institute name not mentioned").bold=False
                         if j["Location"].strip():    
                             doc.paragraphs[i+2].add_run(", " + j["Location"].strip() + '\n').bold = False
                         else:
-                            doc.paragraphs[i].add_run("Location not mentioned")
+                            doc.paragraphs[i+2].add_run("\n").bold=False
   
                         doc.paragraphs[i+2].add_run(j['Degree title'].strip() + '\n\n').bold = False
         except:
