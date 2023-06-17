@@ -54,6 +54,13 @@ def get_index_page(request):
     myservices = Myservice.objects.filter(mypermission__user=request.user,is_permisstion=True)
     services_ = UserSerializerForCount(myservices, many=True, context={'request': request})
     services_ = services_.data
+    data=services_
+    subset_list = []
+    subset_size = 6
+
+    for i in range(0, len(data), subset_size):
+        subset = data[i:i+subset_size]
+        subset_list.append(subset)
  
     if request.user.is_superuser:
         #username = request.GET.get('username').strip()
@@ -61,12 +68,9 @@ def get_index_page(request):
         return render(request, 'superadmin/index.html',context={'service': services_})
     
 
-    return render(request, 'user/index.html',context={'service': services_})
+    return render(request, 'user/index.html',context={'service': services_ ,"data":subset_list})
 
-# @api_view(['GET'])
-# def index(request):
-#     file=Pdf.objects.get(id=5)
-#     return render(request, 'user/index.html', context={"file":file})
+
 
 @api_view(['GET'])
 @login_required
