@@ -1,55 +1,194 @@
 {% extends 'user/layout/base.html' %}
 {% load tz %}
+{% load custom_tags %}
 
 {% block content %}
 
+<div class="container" >
+  {% load custom_tags %}
+  
+  
+          
+  <a href="" class="btn btn-primary" style="visibility: hidden;">dd</a>
+</div> 
+
+      <div class="container" style="width:90%; margin: auto">
+        <!-- Carousel wrapper -->
+<div
+id="carouselMultiItemExample"
+class="carousel slide carousel-dark text-center"
+data-mdb-ride="carousel"
+>
+
+<!-- Inner -->
+<div class="carousel-inner py-4">
+  <!-- Single item -->
+  <div class="carousel-item active">
+    <div class="container">
+      <div class="row">
+        {% for item in service|slice:6 %}
       
-        <div class="container" >
-            <a href="" class="btn btn-primary" style="visibility: hidden;">dd</a>
-        </div> 
-
-      
-        <div class="main__container">
-         
-            <div class="" style="display: flex;     flex-wrap: wrap;">
-              {% now "Y-m-d" as current_date %}
-               {% for obj in service %}
-                <div class="card mycard">
-                
-                  <div class="card-body" >
-                     
-                   <a href="{% url 'user:upload_file' %}{{ obj.title }}/"> <h5 class="card-title">{{ obj.title }}</h5></a>
-                    <p class="card-text">{{ obj.description}}</p>
-                    {% if obj.count %}
-
-                    <p class="card-text"><small class="text-muted">{{ obj.count}} time used that service </small></p>
-
-                  
-                   
-                     <p class="card-text"><small class="text-muted">{{ obj.created_at}}  {{ obj.time}} </small></p>
-
-                   
-                   
-                   
-                    {% endif %}
-
-                  </div>
-                </div>
-                {% endfor %}
-              
-              </div>
-                 
-          </div>
         
+        <div class="col-lg-4 col-md-12" style="    margin-bottom: 20px;">
+          <div class="card" style="height: 240px;">
+      
+            <div class="card-body">
+              <h5 class="card-title">{{ item.title }}</h5>
+              <p class="card-text">
+              {{ item.description}}
+              </p>
+              {% if item.count %}
+              <p class="card-text"><small class="text-muted">{{ item.count}} time used that service </small></p> 
+               <p class="card-text"><small class="text-muted">{{ item.created_at}}  {{ item.time}} </small></p>
+              {% else %}
+              <p  style= "height: 25px;
+              margin-bottom: 39px;" class="card-text"><small class="text-muted">{{ item.count}}  </small></p> 
+              <p class="card-text"><small class="text-muted">{{ item.created_at}} </small></p>
+
+              {% endif %}
+              <a href="{% url 'user:upload_file' %}{{ item.title }}/" class="btn btn-danger">Click</a>
+            </div>
+          </div>
+        </div>
+       
+        <!-- <div class="col-lg-4">
+          <div class="card">
+            <img
+              src="https://mdbcdn.b-cdn.net/img/new/standard/nature/181.webp"
+              class="card-img-top"
+              alt="Waterfall"
+            />
+            <div class="card-body">
+              <h5 class="card-title">{{ obj.title }}</h5>
+              <p class="card-text">
+                Some quick example text to build on the card title and make up the bulk
+                of the card's content.
+              </p>
+              <a href="#!" class="btn btn-primary">Button</a>
+            </div>
+          </div>
+        </div> -->
+        {% endfor %}
+
+       
+      </div>
+    </div>
+  </div>
+
+  <!-- Single item -->
+  {% for subset in data  %}
+  
+
+  
+  <div class="carousel-item">
+    <div class="container">
+      <div class="row">
+      
+        {% for item in subset %}
+        
+        <div class="col-lg-4 col-md-12" style="    margin-bottom: 20px;">
+          <div class="card" style="height: 240px;">
+      
+            <div class="card-body">
+              <h5 class="card-title">{{ item.title }}</h5>
+              <p class="card-text">
+              {{ item.description}}
+              </p>
+              {% if item.count %}
+              <p class="card-text"><small class="text-muted">{{ item.count}} time used that service </small></p> 
+               <p class="card-text"><small class="text-muted">{{ item.created_at}}  {{ item.time}} </small></p>
+              {% else %}
+              <p  style= "height: 25px;
+              margin-bottom: 39px;" class="card-text"><small class="text-muted">{{ item.count}}  </small></p> 
+              <p class="card-text"><small class="text-muted">{{ item.created_at}} </small></p>
+
+              {% endif %}
+              <a href="{% url 'user:upload_file' %}{{ item.title }}/" class="btn btn-danger">Click</a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      
+      </div>
+    </div>
+  </div>
+ {% endfor %}
+ 
+</div>
+<!-- Inner -->
+
+
+<!-- Controls -->
+<div class="d-flex justify-content-center mb-4">
+  <button style="background-color: red;"
+    class="carousel-control-prev position-relative"
+    type="button"
+    data-mdb-target="#carouselMultiItemExample"
+    data-mdb-slide="prev"
+  >
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button  style="background-color: red;"
+    class="carousel-control-next position-relative"
+    type="button"
+    data-mdb-target="#carouselMultiItemExample"
+    data-mdb-slide="next"
+  >
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+
+
+
+
+
+
+</div>
+<!-- Carousel wrapper -->
+
+
+
+
+
+      </div>
+  
+
+      
+      
+       
 
 {% endblock %}
 
 {% block javascript %}
 <script type="text/javascript">
+  $(document).ready(function() {
+  // Initialize the carousel
+  $('#carouselMultiItemExample').carousel();
 
+  // Enable the next and previous buttons
+  $('.carousel-control-next').click(function() {
+    $('#carouselMultiItemExample').carousel('next');
+  });
+
+  $('.carousel-control-prev').click(function() {
+    $('#carouselMultiItemExample').carousel('prev');
+  });
+});
+
+
+    $(document).ready(function() {
+      $('.dropdown-toggle').on('click', function(e) {
+        e.preventDefault();
+        $(this).siblings('.dropdown-menu').toggleClass('show');
+      });
+    });
 
 
 </script>
 
 
 {% endblock %}
+
+

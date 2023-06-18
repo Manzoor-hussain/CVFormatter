@@ -58,7 +58,7 @@ def get_index_page(request):
     subset_list = []
     subset_size = 6
 
-    for i in range(0, len(data), subset_size):
+    for i in range(6, len(data), subset_size):
         subset = data[i:i+subset_size]
         subset_list.append(subset)
  

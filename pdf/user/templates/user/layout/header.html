@@ -1,5 +1,6 @@
 <div class="top_nav">
-    <div class="nav_menu">
+    
+    <div class="nav_menu" style="align-items: center;">
         <div class="nav_left mt-1 ml-5"> 
             <label class="fa-2x">
                 <a href="{% url 'user:dashboard' %}">
@@ -12,9 +13,43 @@
         <div class="nav_right mt-1">
 
             {% if request.user.email %}
-            <a href="{% url 'logout' %}">
+            <!-- Avatar -->
+      <div class="dropdown">
+        <a
+          class="dropdown-toggle d-flex align-items-center hidden-arrow"
+          href="#"
+          id="navbarDropdownMenuAvatar"
+          role="button"
+          data-mdb-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <img
+            src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
+            class="rounded-circle"
+            height="25"
+            alt="Black and White Portrait of a Man"
+            loading="lazy"
+          />
+        </a>
+        <ul
+          class="dropdown-menu dropdown-menu-end"
+          aria-labelledby="navbarDropdownMenuAvatar"
+        >
+          <li>
+            <a class="dropdown-item" href="#">My profile</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="#">Settings</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+          </li>
+        </ul>
+      </div>
+            
+            <!-- <a href="{% url 'logout' %}">
                 <button type="button" class="btn btn-danger btn-lg">Logout</button>
-                </a>
+                </a> -->
               {% else %}
               <a href="{% url 'login' %}">
                 <button type="button" class="btn btn-danger btn-lg" >Login</button></a>
@@ -39,4 +74,4 @@
   
   
   
-  
+
