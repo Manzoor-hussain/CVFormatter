@@ -19,17 +19,29 @@ id="carouselMultiItemExample"
 class="carousel slide carousel-dark text-center"
 data-mdb-ride="carousel"
 >
+<div style="display: flex; justify-content: flex-end;">
+  <div class="mb-4" style="width:313px">
+    <input type="search" class="form-control" id="datatable-search-input" placeholder="search with title name">
+   
+  </div>
+ 
+</div>
+
+<div id="serviceList">
+  <!-- Initial HTML content or placeholder -->
+  
+</div>
 
 <!-- Inner -->
 <div class="carousel-inner py-4">
   <!-- Single item -->
   <div class="carousel-item active">
     <div class="container">
-      <div class="row">
+      <div class="row" id="rowid">
         {% for item in service|slice:6 %}
       
         
-        <div class="col-lg-4 col-md-12" style="    margin-bottom: 20px;">
+        <div class="col-lg-4 col-md-12"  id="boxid" style="    margin-bottom: 20px;">
           <div class="card" style="height: 240px;">
       
             <div class="card-body">
@@ -51,23 +63,7 @@ data-mdb-ride="carousel"
           </div>
         </div>
        
-        <!-- <div class="col-lg-4">
-          <div class="card">
-            <img
-              src="https://mdbcdn.b-cdn.net/img/new/standard/nature/181.webp"
-              class="card-img-top"
-              alt="Waterfall"
-            />
-            <div class="card-body">
-              <h5 class="card-title">{{ obj.title }}</h5>
-              <p class="card-text">
-                Some quick example text to build on the card title and make up the bulk
-                of the card's content.
-              </p>
-              <a href="#!" class="btn btn-primary">Button</a>
-            </div>
-          </div>
-        </div> -->
+     
         {% endfor %}
 
        
@@ -184,6 +180,72 @@ data-mdb-ride="carousel"
         $(this).siblings('.dropdown-menu').toggleClass('show');
       });
     });
+
+
+
+  document.getElementById('datatable-search-input').addEventListener('input', (e) => {
+  //instance.input-group(e.target.value);
+ 
+  var servicesData = JSON.parse('{{ json_data|safe }}');
+  // const tableBody = document.getElementById("tableBody");
+  //         let tableRows = "";
+  //         for (var i = 0; i < data.length; i++) {
+
+  //         var obj = data[i];
+  //         var count = obj.count
+  //         if (typeof count === "number")
+  //           {
+        
+  //             console.log(obj.count)
+          
+  //         tableRows += `<tr>
+  //                 <td>${i}</td>
+  //                 <td>${obj.title}</td>
+  //                 <td>${obj.count}</td>
+  //                 <td>${obj.created_at}</td>
+  //                 </tr>`;
+        
+          
+        
+  //         }
+  //         }
+  //         tableBody.innerHTML = tableRows;
+
+
+
+
+
+
+
+  // console.log("value",e.target.value)
+  // console.log("service",servicesData)
+
+  $.ajax({ 
+    url: "/search/?search="+e.target.value,
+    type: 'GET',
+  
+    success: function(response) {
+      //console.log("success")
+     // console.log("mamn",response)
+    
+      if (e.target.value === "") {
+            // Clear the '#serviceList' element if the input value is empty
+            $('#serviceList').empty();
+        } else {
+            // Update the '#serviceList' element with the received HTML content
+            $('#serviceList').html(response.html_content);
+        }
+    
+     // $('#serviceList').html(response);
+      
+    },
+    error: function(xhr, status, error) {
+     // $('#select_button').css('display','block');
+      console.log("error");
+    }
+  });
+
+});
 
 
 </script>

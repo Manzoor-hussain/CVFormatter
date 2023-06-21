@@ -1,0 +1,27 @@
+
+{% load tz %}
+{% load custom_tags %}
+
+{% for item in services|slice:":3" %}
+      <div class="col-lg-4 col-md-12" style="margin-bottom: 20px;">
+        <div class="card" style="height: 240px;">
+          <div class="card-body">
+            <h5 class="card-title">{{ item.title }}</h5>
+            <p class="card-text">
+              {{ item.description }}
+            </p>
+            {% if item.count %}
+              <p class="card-text"><small class="text-muted">{{ item.count }} time used that service</small></p>
+              <p class="card-text"><small class="text-muted">{{ item.created_at }} {{ item.time }}</small></p>
+            {% else %}
+              <p style="height: 25px; margin-bottom: 39px;" class="card-text"><small class="text-muted">{{ item.count }}</small></p>
+              <p class="card-text"><small class="text-muted">{{ item.created_at }}</small></p>
+            {% endif %}
+            <a href="{% url 'user:upload_file' item.title %}" class="btn btn-danger">Click</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+
+
+  

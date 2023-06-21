@@ -46,14 +46,35 @@ from .serializers import UserSerializerForCount
 import os
 import time
 import pdb
+import json
 
 # Create your views here.
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+
+def get_index_pagee(request):
+    search_value = request.GET.get('search')
+
+    # Perform search operation using Django ORM
+    services = Myservice.objects.filter(title__icontains=search_value)
+
+    # Render the updated HTML content for the service list
+    html_content = render_to_string('user/service_list.html', {'services': services})
+
+    # # Prepare JSON response
+    response_data = {
+        'html_content': html_content,
+    }
+    #data=json.dumps(services)
+    return JsonResponse(response_data)
+
 @login_required
 def get_index_page(request):
     mypermissions = Mypermission.objects.filter(user=request.user)
     myservices = Myservice.objects.filter(mypermission__user=request.user,is_permisstion=True)
     services_ = UserSerializerForCount(myservices, many=True, context={'request': request})
     services_ = services_.data
+    new_data=json.dumps(services_)
     data=services_
     subset_list = []
     subset_size = 6
@@ -67,8 +88,8 @@ def get_index_page(request):
         services_ = Myservice.objects.all()
         return render(request, 'superadmin/index.html',context={'service': services_})
     
-
-    return render(request, 'user/index.html',context={'service': services_ ,"data":subset_list})
+    #print("data",data)
+    return render(request, 'user/index.html',context={'service': services_ ,"data":subset_list,"json_data":new_data})
 
 
 
