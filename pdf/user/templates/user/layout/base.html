@@ -45,7 +45,11 @@
     <!-- Custom Theme Style -->
     <link href="{% static 'build/css/custom.min.css' %}" rel="stylesheet">
     <link href="{% static 'custom_css/custom.css' %}" rel="stylesheet">
-
+  <!-- Include jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
+  <!-- Include Bootstrap JavaScript (jQuery required) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
  <style>
 
@@ -69,6 +73,42 @@
         .card:hover {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
+
+
+.dropbtn {
+  background-color: #04AA6D;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 106px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 8px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {background-color: #ddd;}
+
+.dropdown:hover .dropdown-content {display: block;}
+
+.dropdown:hover .dropbtn {background-color: #3e8e41;}
         .nav_menu{
             background: #fff;
             display:flex;
@@ -77,11 +117,11 @@
             
         }
         .nav_left{
-            width:80%;
+            width:92%;
 
         }
         .nav_right{
-            width:20%;
+            width:8%;
             
         }
        
@@ -97,7 +137,7 @@
         height:20px;
         }
         .main__container{
-            width:95%;
+            width:90%;
             margin:auto;
         }
         .mycard{
@@ -151,6 +191,7 @@
            -->
   
     
+
 <!-- jQuery -->
 <script src="{% static 'vendors/jquery/dist/jquery.min.js' %}"></script>
 <!-- Bootstrap -->
@@ -260,6 +301,12 @@
         });
 
     }
+
+
+
+    // Assuming you have an element with the class 'dropdown'
+
+
 
 </script>
 

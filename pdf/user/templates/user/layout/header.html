@@ -1,7 +1,7 @@
 <div class="top_nav">
     
     <div class="nav_menu" style="align-items: center;">
-        <div class="nav_left mt-1 ml-5"> 
+        <div class="nav_left mt-1 ml-5" style="margin-left: 5rem!important;"> 
             <label class="fa-2x">
                 <a href="{% url 'user:dashboard' %}">
                 <span class="text-dark">Resume Formatter</span>
@@ -13,50 +13,86 @@
         <div class="nav_right mt-1">
 
             {% if request.user.email %}
+
+
+            <div class="dropdown" >
+              <img src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
+              class="rounded-circle"
+              height="25"
+              alt="Black and White Portrait of a Man"
+              loading="lazy" /
+              class="dropbtn">
+              <div class="dropdown-content">
+                <a href="#">Profile</a>
+                <a href="#">Setting</a>
+               
+                  <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+             
+              </div>
+            </div>
+            
+            <!-- <div class="dropdown">
+              <a class="dropdown-toggle d-flex align-items-center hidden-arrow"
+              href="#"
+              id="navbarDropdownMenuAvatar"
+              role="button"
+              aria-expanded="false">
+              <img src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
+                class="rounded-circle"
+                height="25"
+                alt="Black and White Portrait of a Man"
+                loading="lazy" />
+            </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuAvatar">
+                <li><a class="dropdown-item" href="#">Item 1</a></li>
+                <li><a class="dropdown-item" href="#">Item 2</a></li>
+                <li><a class="dropdown-item" href="#">Item 3</a></li>
+                <li>
+                  <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                </li>
+              </ul>
+            </div> -->
+
             <!-- Avatar -->
-      <div class="dropdown">
-        <a
-          class="dropdown-toggle d-flex align-items-center hidden-arrow"
-          href="#"
-          id="navbarDropdownMenuAvatar"
-          role="button"
-          data-mdb-toggle="dropdown"
-          aria-expanded="false"
-        >
-          <img
-            src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
-            class="rounded-circle"
-            height="25"
-            alt="Black and White Portrait of a Man"
-            loading="lazy"
-          />
-        </a>
-        <ul
-          class="dropdown-menu dropdown-menu-end"
-          aria-labelledby="navbarDropdownMenuAvatar"
-        >
-          <li>
-            <a class="dropdown-item" href="#">My profile</a>
-          </li>
-          <li>
-            <a class="dropdown-item" href="#">Settings</a>
-          </li>
-          <li>
-            <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
-          </li>
-        </ul>
-      </div>
+            <!-- <div class="dropdown" style="width: 20px;">
+              <a class="dropdown-toggle d-flex align-items-center hidden-arrow"
+                href="#"
+                id="navbarDropdownMenuAvatar"
+                role="button"
+                aria-expanded="false">
+                <img src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
+                  class="rounded-circle"
+                  height="25"
+                  alt="Black and White Portrait of a Man"
+                  loading="lazy" />
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="navbarDropdownMenuAvatar">
+                <li>
+                  <a class="dropdown-item" href="#">My profile</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#">Settings</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                </li>
+              </ul>
+            </div> -->
             
             <!-- <a href="{% url 'logout' %}">
                 <button type="button" class="btn btn-danger btn-lg">Logout</button>
                 </a> -->
               {% else %}
               <a href="{% url 'login' %}">
-                <button type="button" class="btn btn-danger btn-lg" >Login</button></a>
+               <span style="font-size: 20px;margin-right: 20px;
+               font-weight: 400;">Login</span></a>
                 <a href="{% url 'register_page' %}">
-                <button type="button" class="btn btn-danger btn-lg">Signup</button>
+             <span style="font-size: 20px;
+             font-weight: 400;">Signup</span>
                 </a>
 
+               
 
               {% endif %}
             
@@ -71,7 +107,31 @@
     </div>
 </div>
   
-  
+{% block javascript %}
+
+<!-- <script>
+
+var dropdown = document.querySelector('.dropdown');
+
+// Show the dropdown menu on hover
+dropdown.addEventListener('mouseover', function() {
+  console.log("click hop gea ")
+});
+
+// Hide the dropdown menu when the mouse leaves
+dropdown.addEventListener('mouseout', function() {
+  console.log("click remove gea ")
+}); -->
+<script>
+  // $(document).ready(function() {
+  //   $('.rounded-circle').on('hide.bs.rounded-circle', function() {
+  //     return false;
+  //   });
+  // });
+</script>
+
+
+{% endblock %}
   
   
 
